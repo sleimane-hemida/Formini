@@ -1,0 +1,26 @@
+{
+  "header": {
+    "catalog": "كتالوج",
+    "trainers": "المدربون",
+    "subscription": "الاشتراك",
+    "about": "حول",
+    "connect": "تسجيل الدخول",
+    "becomeTrainer": "كن مدربًا",
+    "searchPlaceholder": "ابحث عن المنتجات..."
+  },
+  "footer": {
+    "brand": "فورميني",
+    "addressLabel": ":العنوان",
+    "address": "نواكشوط عرفات",
+    "emailLabel": ":البريد الإلكتروني",
+    "email": "juleediengg@mail.com",
+    "phoneLabel": ":الهاتف",
+    "phone": "00 222 44590985",
+    "categoriesTitle": "التسوق والفئات",
+    "categories": ["تسوق الرجال", "تسوق النساء", "تسوق الأطفال"],
+    "linksTitle": "روابط مفيدة",
+    "links": ["الصفحة الرئيسية", "معلومات عنا", "مساعدة", "اتصل بنا"],
+    "helpTitle": "المساعدة والمعلومات",
+    "help": ["الأسئلة الشائعة", "الشحن", "معرف التتبع"]
+  }
+}

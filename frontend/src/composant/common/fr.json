@@ -1,0 +1,26 @@
+{
+  "header": {
+    "catalog": "Catalogue",
+    "trainers": "Formateurs",
+    "subscription": "Abonnement",
+    "about": "A propos",
+    "connect": "Connecter",
+    "becomeTrainer": "Devenir formateur",
+    "searchPlaceholder": "Rechercher un produit..."
+  },
+  "footer": {
+    "brand": "Formini",
+    "addressLabel": "Adresse :",
+    "address": "Nouakchott Arrafat",
+    "emailLabel": "E-mail :",
+    "email": "juleediengg@mail.com",
+    "phoneLabel": "Téléphone :",
+    "phone": "00 222 44590985",
+    "categoriesTitle": "Catégories",
+    "categories": ["Shopping Homme", "Shopping Femme", "Shopping Enfant"],
+    "linksTitle": "Liens utiles",
+    "links": ["Accueil", "À propos", "Aide", "Contact"],
+    "helpTitle": "Aide & Infos",
+    "help": ["FAQ", "Livraison", "Suivi"]
+  }
+}
