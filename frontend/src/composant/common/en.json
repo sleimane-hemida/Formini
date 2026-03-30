@@ -22,5 +22,156 @@
     "links": ["Homepage", "About Us", "Help", "Contact Us"],
     "helpTitle": "Help & Information",
     "help": ["FAQ'S", "Shipping", "Tracking Id"]
-  }
+  },
+  "categoriesList": [
+    {
+      "key": "devtech",
+      "label": "Development & Tech",
+      "subcategories": [
+        "Web Development",
+        "Mobile Development",
+        "Artificial Intelligence & Machine Learning",
+        "Cybersecurity & Ethical Hacking",
+        "Databases",
+        "DevOps & Cloud",
+        "General Programming"
+      ]
+    },
+    {
+      "key": "design",
+      "label": "Design & Creativity",
+      "subcategories": [
+        "UI/UX Design",
+        "Graphic Design",
+        "Video Editing",
+        "Motion Design & Animation",
+        "Photography & Retouching",
+        "3D Modeling",
+        "Digital Illustration"
+      ]
+    },
+    {
+      "key": "business",
+      "label": "Business Creation & Startup",
+      "subcategories": [
+        "Project Management",
+        "Leadership & Management",
+        "E-commerce & Online Sales",
+        "Business Plan Writing",
+        "Accounting & Business Management",
+        "Import/Export & International Trade"
+      ]
+    },
+    {
+      "key": "marketing",
+      "label": "Marketing & Communication",
+      "subcategories": [
+        "Digital Marketing",
+        "Social Networks",
+        "SEO & Natural Referencing",
+        "Online Advertising",
+        "Email Marketing & Automation",
+        "Copywriting & Web Writing",
+        "Community Management"
+      ]
+    },
+    {
+      "key": "finance",
+      "label": "Finance & Investment",
+      "subcategories": [
+        "Personal Finance & Savings",
+        "Practical Accounting",
+        "Stock Market & Trading",
+        "Cryptocurrencies & Blockchain",
+        "Budget Management",
+        "Taxation & Taxes",
+        "Real Estate Investment"
+      ]
+    },
+    {
+      "key": "langues",
+      "label": "Languages",
+      "subcategories": [
+        "English",
+        "French",
+        "Arabic",
+        "Spanish",
+        "Mandarin Chinese",
+        "German",
+        "Other Languages"
+      ]
+    },
+    {
+      "key": "devperso",
+      "label": "Personal Development",
+      "subcategories": [
+        "Productivity & Organization",
+        "Public Speaking",
+        "Stress & Emotion Management",
+        "Self-confidence & Motivation",
+        "Memory & Learning Techniques",
+        "Meditation & Mindfulness",
+        "Interpersonal Relationships"
+      ]
+    },
+    {
+      "key": "education",
+      "label": "Education & School Support",
+      "subcategories": [
+        "Mathematics",
+        "Sciences",
+        "French & Literature",
+        "History & Geography",
+        "Exam Preparation",
+        "Learning Methods & Note-taking"
+      ]
+    },
+    {
+      "key": "sante",
+      "label": "Health & Well-being",
+      "subcategories": [
+        "Nutrition & Healthy Eating",
+        "Fitness & Bodybuilding",
+        "Yoga & Stretching",
+        "Psychology & Mental Health",
+        "First Aid & Emergencies",
+        "Natural Medicine & Plants"
+      ]
+    },
+    {
+      "key": "pratique",
+      "label": "Practical Trades",
+      "subcategories": [
+        "Electricity & Installations",
+        "Plumbing & Sanitary",
+        "Carpentry & Cabinetmaking",
+        "Sewing, Fashion & Embroidery",
+        "Cooking & Pastry",
+        "Agriculture & Livestock",
+        "Automotive Mechanics"
+      ]
+    },
+    {
+      "key": "droit",
+      "label": "Law & Legal",
+      "subcategories": [
+        "Business Law",
+        "Labor Law",
+        "Civil & Family Law",
+        "Contract Drafting",
+        "Intellectual Property"
+      ]
+    },
+    {
+      "key": "media",
+      "label": "Media & Content Creation",
+      "subcategories": [
+        "YouTube Content Creation",
+        "Podcasting",
+        "Journalism & Writing",
+        "Radio & Audio",
+        "Public Relations & Communication"
+      ]
+    }
+  ]
 }

@@ -22,5 +22,156 @@
     "links": ["Accueil", "À propos", "Aide", "Contact"],
     "helpTitle": "Aide & Infos",
     "help": ["FAQ", "Livraison", "Suivi"]
-  }
+  },
+  "categoriesList": [
+    {
+      "key": "devtech",
+      "label": "Développement & Tech",
+      "subcategories": [
+        "Développement web",
+        "Développement mobile",
+        "Intelligence artificielle & Machine learning",
+        "Cybersécurité & Ethical hacking",
+        "Bases de données",
+        "DevOps & Cloud",
+        "Programmation générale"
+      ]
+    },
+    {
+      "key": "design",
+      "label": "Design & Créativité",
+      "subcategories": [
+        "UI/UX Design",
+        "Graphic Design",
+        "Montage vidéo",
+        "Motion design & Animation",
+        "Photographie & Retouche",
+        "Modélisation 3D",
+        "Illustration digitale"
+      ]
+    },
+    {
+      "key": "business",
+      "label": "Création d'entreprise & Startup",
+      "subcategories": [
+        "Gestion de projet",
+        "Leadership & Management",
+        "E-commerce & Vente en ligne",
+        "Rédaction de business plan",
+        "Comptabilité & Gestion d'entreprise",
+        "Import / Export & Commerce international"
+      ]
+    },
+    {
+      "key": "marketing",
+      "label": "Marketing & Communication",
+      "subcategories": [
+        "Marketing digital",
+        "Réseaux sociaux",
+        "SEO & Référencement naturel",
+        "Publicité en ligne",
+        "Email marketing & Automation",
+        "Copywriting & Rédaction web",
+        "Community management"
+      ]
+    },
+    {
+      "key": "finance",
+      "label": "Finance & Investissement",
+      "subcategories": [
+        "Finance personnelle & Épargne",
+        "Comptabilité pratique",
+        "Bourse & Trading",
+        "Cryptomonnaies & Blockchain",
+        "Gestion budgétaire",
+        "Fiscalité & Impôts",
+        "Investissement immobilier"
+      ]
+    },
+    {
+      "key": "langues",
+      "label": "Langues",
+      "subcategories": [
+        "Anglais",
+        "Français",
+        "Arabe",
+        "Espagnol",
+        "Chinois mandarin",
+        "Allemand",
+        "Autres langues"
+      ]
+    },
+    {
+      "key": "devperso",
+      "label": "Développement personnel",
+      "subcategories": [
+        "Productivité & Organisation",
+        "Prise de parole en public",
+        "Gestion du stress & Émotions",
+        "Confiance en soi & Motivation",
+        "Mémoire & Techniques d'apprentissage",
+        "Méditation & Pleine conscience",
+        "Relations interpersonnelles"
+      ]
+    },
+    {
+      "key": "education",
+      "label": "Éducation & Soutien scolaire",
+      "subcategories": [
+        "Mathématiques",
+        "Sciences",
+        "Français & Littérature",
+        "Histoire & Géographie",
+        "Préparation aux examens",
+        "Méthodes d'apprentissage & Prise de notes"
+      ]
+    },
+    {
+      "key": "sante",
+      "label": "Santé & Bien-être",
+      "subcategories": [
+        "Nutrition & Alimentation saine",
+        "Fitness & Musculation",
+        "Yoga & Stretching",
+        "Psychologie & Santé mentale",
+        "Premiers secours & Urgences",
+        "Médecine naturelle & Plantes"
+      ]
+    },
+    {
+      "key": "pratique",
+      "label": "Métiers pratiques",
+      "subcategories": [
+        "Électricité & Installations",
+        "Plomberie & Sanitaire",
+        "Menuiserie & Ébénisterie",
+        "Couture, Mode & Broderie",
+        "Cuisine & Pâtisserie",
+        "Agriculture & Élevage",
+        "Mécanique automobile"
+      ]
+    },
+    {
+      "key": "droit",
+      "label": "Droit & Juridique",
+      "subcategories": [
+        "Droit des affaires",
+        "Droit du travail",
+        "Droit civil & Famille",
+        "Rédaction de contrats",
+        "Propriété intellectuelle"
+      ]
+    },
+    {
+      "key": "media",
+      "label": "Médias & Création de contenu",
+      "subcategories": [
+        "Création de contenu YouTube",
+        "Podcasting",
+        "Journalisme & Rédaction",
+        "Radio & Audio",
+        "Relations publiques & Communication"
+      ]
+    }
+  ]
 }
