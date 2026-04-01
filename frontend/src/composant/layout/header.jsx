@@ -1,8 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslation } from "../common/useTranslation";
+import { ROUTES } from "../../utils/routes";
 
 export default function Header() {
+    const router = useRouter();
     const [menuOpen, setMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [showBurger, setShowBurger] = useState(false);
@@ -66,7 +69,12 @@ export default function Header() {
             <nav className="hidden sm:flex items-center gap-4 md:gap-6 text-base text-black font-normal">
                 {/* CATALOGUE: visible >= md */}
                 <div className="relative group hidden md:block">
-                    <a href="#" className="flex items-center gap-1 focus:outline-none hover:text-[#0C8CE9] transition-colors max-[840px]:hidden">{t('header.catalog')}</a>
+                    <button 
+                        onClick={() => router.push(ROUTES.BROWSE_COURSES)}
+                        className="flex items-center gap-1 focus:outline-none hover:text-[#0C8CE9] transition-colors max-[840px]:hidden"
+                    >
+                        {t('header.catalog')}
+                    </button>
                 </div>
                 {/* FORMATEURS: visible >= md */}
                 <a href="#" className="hover:text-[#0C8CE9] transition-colors hidden md:block">{t('header.trainers')}</a>
@@ -83,7 +91,10 @@ export default function Header() {
                 {screenWidth >= 640 && (
                     <>
                         <a href="#" className="text-black hover:text-[#0C8CE9] font-medium px-4 py-2 rounded transition-colors">{t('header.connect')}</a>
-                        <button className="bg-[#0C8CE9] hover:bg-[#0A71BC] text-white font-medium px-5 py-2 rounded-md flex items-center gap-2">
+                        <button 
+                            className="bg-[#0C8CE9] hover:bg-[#0A71BC] text-white font-medium px-5 py-2 rounded-md flex items-center gap-2"
+                            onClick={() => router.push(ROUTES.SIGNUP)}
+                        >
                             {t('header.becomeTrainer')}
                         </button>
                     </>
@@ -114,7 +125,12 @@ export default function Header() {
                         <a href="#" className="w-full py-2 px-2 rounded text-black transition-colors hover:bg-[#E6F1FA] hover:text-[#0C8CE9] focus:text-[#0C8CE9] active:text-[#0C8CE9]">{t('header.subscription')}</a>
                     )}
                     {screenWidth < 840 && (
-                        <a href="#" className="w-full py-2 px-2 rounded text-black transition-colors hover:bg-[#E6F1FA] hover:text-[#0C8CE9] focus:text-[#0C8CE9] active:text-[#0C8CE9]">{t('header.catalog')}</a>
+                        <button 
+                            onClick={() => router.push(ROUTES.BROWSE_COURSES)}
+                            className="w-full py-2 px-2 rounded text-black transition-colors hover:bg-[#E6F1FA] hover:text-[#0C8CE9] focus:text-[#0C8CE9] active:text-[#0C8CE9] text-left"
+                        >
+                            {t('header.catalog')}
+                        </button>
                     )}
                     {screenWidth < 768 && (
                         <a href="#" className="w-full py-2 px-2 rounded text-black transition-colors hover:bg-[#E6F1FA] hover:text-[#0C8CE9] focus:text-[#0C8CE9] active:text-[#0C8CE9]">{t('header.trainers')}</a>
@@ -123,7 +139,10 @@ export default function Header() {
                     {screenWidth < 640 && (
                         <>
                             <a href="#" className="w-full py-2 px-2 rounded text-black transition-colors hover:bg-[#E6F1FA] hover:text-[#0C8CE9] focus:text-[#0C8CE9] active:text-[#0C8CE9] text-center">{t('header.connect')}</a>
-                            <button className="w-full mt-2 bg-[#0C8CE9] hover:bg-[#0A71BC] text-white font-medium px-5 py-2 rounded-md flex items-center gap-2 justify-center">
+                            <button 
+                                className="w-full mt-2 bg-[#0C8CE9] hover:bg-[#0A71BC] text-white font-medium px-5 py-2 rounded-md flex items-center gap-2 justify-center"
+                                onClick={() => router.push(ROUTES.SIGNUP)}
+                            >
                                 {t('header.becomeTrainer')}
                             </button>
                         </>

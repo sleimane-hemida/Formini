@@ -1,5 +1,3 @@
-
-import { setupFsCheck } from "next/dist/server/lib/router-utils/filesystem";
 import Image from "next/image";
 import { FaThLarge, FaRegClone, FaUsers } from "react-icons/fa";
 
