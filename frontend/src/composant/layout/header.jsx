@@ -4,13 +4,30 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "../common/useTranslation";
 import { ROUTES } from "../../utils/routes";
 
-export default function Header() {
+export default function Header({ onSearchChange, searchValue: externalSearchValue }) {
     const router = useRouter();
     const [menuOpen, setMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [showBurger, setShowBurger] = useState(false);
     const [screenWidth, setScreenWidth] = useState(0);
+    const [searchValue, setSearchValue] = useState(externalSearchValue || "");
     const { t } = useTranslation('fr'); // Remplace 'fr' par la langue souhaitée
+
+    // Synchroniser avec la valeur externe
+    useEffect(() => {
+        if (externalSearchValue !== undefined) {
+            setSearchValue(externalSearchValue);
+        }
+    }, [externalSearchValue]);
+
+    // Gérer les changements de recherche
+    const handleSearchChange = (e) => {
+        const value = e.target.value;
+        setSearchValue(value);
+        if (onSearchChange) {
+            onSearchChange(value);
+        }
+    };
 
     useEffect(() => {
         // Initialiser la largeur d'écran côté client uniquement
@@ -47,10 +64,10 @@ export default function Header() {
     }, []);
 
     return (
-        <header className={`w-full bg-white border-b border-gray-200 px-4 sm:px-6 transition-all duration-300 flex items-center z-50 top-0 left-0 ${scrolled ? 'py-1 shadow-md' : 'py-4 sm:py-6'} fixed`}> 
+        <header className={`w-full bg-white border-b border-gray-200 px-4 sm:px-6 transition-all duration-700 ease-in-out flex items-center z-50 top-0 left-0 ${scrolled ? 'py-1 shadow-md' : 'py-4 sm:py-6'} fixed`}> 
             {/* Logo + Search bar (toujours visibles) */}
-            <div className="flex items-center flex-1 min-w-0 gap-2 sm:gap-6">
-                <div className={`font-serif font-bold text-black mr-2 sm:mr-8 transition-all duration-300 ${scrolled ? 'text-xl sm:text-2xl' : 'text-2xl sm:text-3xl'}`}>Formini</div>
+            <div className="flex items-center flex-1 min-w-0 gap-2 sm:gap-6 mr-8 md:mr-12 lg:mr-16">
+                <div className={`font-serif font-bold text-black mr-2 sm:mr-8 transition-all duration-700 ease-in-out ${scrolled ? 'text-xl sm:text-2xl' : 'text-2xl sm:text-3xl'}`}>Formini</div>
                 <div className="flex-1 min-w-0">
                     <div className="relative w-full max-w-xs sm:max-w-md">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
@@ -59,6 +76,8 @@ export default function Header() {
                         <input
                             type="text"
                             placeholder={t('header.searchPlaceholder')}
+                            value={searchValue}
+                            onChange={handleSearchChange}
                             className="w-full pl-10 pr-4 py-2 rounded-full bg-gray-100 border-none focus:ring-2 focus:ring-blue-200 text-sm placeholder-gray-400 outline-none text-black"
                         />
                     </div>

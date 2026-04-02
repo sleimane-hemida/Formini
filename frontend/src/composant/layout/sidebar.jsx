@@ -252,12 +252,6 @@ export default function Sidebar({ isOpen, onClose, filters, onFiltersChange }) {
                     <FaFilter className="text-gray-600 text-lg" />
                     <h2 className="text-xl font-bold text-gray-800">Filtres</h2>
                 </div>
-                <button
-                    onClick={onClose}
-                    className="text-gray-500 hover:text-gray-700 hover:bg-gray-200 p-2 rounded-lg transition-colors"
-                >
-                    <FaTimes size={18} />
-                </button>
             </div>
 
             <div className="sidebar-scroll-content h-full overflow-y-auto overflow-x-hidden p-6 pb-20 lg:h-auto lg:overflow-y-visible">

@@ -291,10 +291,13 @@ export default function Catalogue() {
 
     return (
         <div className="min-h-screen bg-white">
-            <Header />
+            <Header 
+                onSearchChange={setSearchTerm}
+                searchValue={searchTerm}
+            />
             
             {/* Barre de catégories fixe avec comportement scroll */}
-            <div className={`fixed left-0 right-0 z-30 bg-white border-b border-gray-200 transition-all duration-300 ${scrolled ? 'top-12 py-1 shadow-md' : 'top-20 sm:top-22 py-3 pb-6 shadow-sm'}`}>
+            <div className={`fixed left-0 right-0 z-30 bg-white border-b border-gray-200 transition-all duration-700 ease-in-out ${scrolled ? 'top-12 py-1 shadow-md' : 'top-20 sm:top-22 py-3 pb-6 shadow-sm'}`}>
                 <CategorieBar 
                     selectedCategory={selectedCategory}
                     onCategoryChange={setSelectedCategory}
@@ -311,10 +314,10 @@ export default function Catalogue() {
             )}
 
             {/* Section principale avec sidebar et contenu */}
-            <div className={`container mx-auto px-4 py-8 transition-all duration-300 ${scrolled ? 'mt-[4.5rem]' : 'mt-40 sm:mt-54'}`}>
+            <div className={`container mx-auto px-4 py-8 transition-all duration-700 ease-in-out ${scrolled ? 'mt-[4.5rem]' : 'mt-40 sm:mt-44'}`}>
                 <div className="flex gap-6 lg:items-start">
                     {/* Sidebar unique - responsive */}
-                    <div className={`lg:sticky ${scrolled ? 'lg:top-24' : 'lg:top-60'} transition-all duration-300`}>
+                    <div className={`lg:sticky ${scrolled ? 'lg:top-24' : 'lg:top-36'} transition-all duration-700 ease-in-out`}>
                         <Sidebar 
                             isOpen={sidebarOpen}
                             onClose={() => setSidebarOpen(false)}
@@ -332,41 +335,8 @@ export default function Catalogue() {
                                     <h2 className="text-lg font-semibold text-gray-700">
                                         {filteredFormations.length} formation{filteredFormations.length > 1 ? 's' : ''} trouvée{filteredFormations.length > 1 ? 's' : ''}
                                     </h2>
-                                    {/* Champ de recherche déplacé ici */}
-                                    <div className="relative">
-                                        <input
-                                            type="text"
-                                            placeholder="Rechercher..."
-                                            value={searchTerm}
-                                            onChange={(e) => setSearchTerm(e.target.value)}
-                                            className="w-80 px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0C8CE9] focus:border-transparent text-gray-700 text-sm"
-                                        />
-                                        <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                                            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                            </svg>
-                                        </div>
-                                        {searchTerm && (
-                                            <button
-                                                onClick={() => setSearchTerm('')}
-                                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                                            >
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                                </svg>
-                                            </button>
-                                        )}
-                                    </div>
                                 </div>
                             </div>
-                            {searchTerm && (
-                                <p className="text-gray-600 mb-2 flex items-center gap-2">
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                    </svg>
-                                    Résultats pour "{searchTerm}"
-                                </p>
-                            )}
                             {(selectedCategory !== "foryou" || filters.categories.length > 0 || filters.hasPromotion || filters.isFree || filters.isNew || filters.languages.length > 0) && (
                                 <div className="flex items-center gap-2 text-sm">
                                     <div className="flex items-center gap-1 text-gray-600">
