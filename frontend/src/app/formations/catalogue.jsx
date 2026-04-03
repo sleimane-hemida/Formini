@@ -323,6 +323,8 @@ export default function Catalogue() {
                             onClose={() => setSidebarOpen(false)}
                             filters={filters}
                             onFiltersChange={setFilters}
+                            onSearchReset={() => setSearchTerm("")}
+                            onCategoryReset={() => setSelectedCategory("foryou")}
                         />
                     </div>
 

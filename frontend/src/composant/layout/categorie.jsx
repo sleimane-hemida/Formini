@@ -225,7 +225,7 @@ export default function CategorieBar({ selectedCategory = "foryou", onCategoryCh
 					       key={cat.key}
 					       onClick={() => handleSelect(cat.key)}
 					       className={`flex flex-col items-center justify-center transition-all duration-700 ease-in-out hover:text-[#0C8CE9] rounded-lg
-						       ${selected === cat.key ? "text-black font-bold" : "text-gray-700"}
+						       ${selected === cat.key ? "text-[#0C8CE9] font-bold" : "text-gray-700"}
 						       ${scrolled 
 						           ? "px-4 sm:px-6 py-2 min-w-[60px] sm:min-w-[80px]" 
 						           : "px-6 sm:px-8 py-3 min-w-[100px] sm:min-w-[120px]"
@@ -237,7 +237,7 @@ export default function CategorieBar({ selectedCategory = "foryou", onCategoryCh
 					           <span className="text-[10px] leading-tight text-center break-words transition-opacity duration-700 ease-in-out">{cat.label}</span>
 					       )}
 					       {selected === cat.key && (
-						       <span className={`block bg-black rounded-full mt-1 transition-all duration-700 ease-in-out ${
+				       <span className={`block bg-[#0C8CE9] rounded-full mt-1 transition-all duration-700 ease-in-out ${
 						           scrolled ? "w-4 h-0.5" : "w-6 h-1"
 						       }`} />
 					       )}

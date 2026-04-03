@@ -25,7 +25,14 @@ import {
     FaFlag
 } from "react-icons/fa";
 
-export default function Sidebar({ isOpen, onClose, filters, onFiltersChange }) {
+export default function Sidebar({ 
+    isOpen, 
+    onClose, 
+    filters, 
+    onFiltersChange, 
+    onSearchReset, 
+    onCategoryReset 
+}) {
     const [priceRange, setPriceRange] = useState(filters.priceRange || [0, 2000]);
     const [isDragging, setIsDragging] = useState({ min: false, max: false });
     const [expandedSections, setExpandedSections] = useState({
@@ -217,6 +224,14 @@ export default function Sidebar({ isOpen, onClose, filters, onFiltersChange }) {
             hasPromotion: false,
             priceRange: [0, 2000]
         });
+        
+        // Réinitialiser aussi la recherche et la catégorie sélectionnée
+        if (onSearchReset) {
+            onSearchReset();
+        }
+        if (onCategoryReset) {
+            onCategoryReset();
+        }
     };
 
     const FilterSection = ({ title, icon, isExpanded, onToggle, children }) => (
