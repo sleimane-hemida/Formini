@@ -14,9 +14,15 @@ export default function Signup() {
 		confirmPassword: "",
 	});
 	const [error, setError] = useState("");
+	const [success, setSuccess] = useState("");
 
 	const handleRoleSelect = (selectedRole) => {
-		setRole(selectedRole);
+		// Si l'utilisateur clique sur "apprenant", on met "acheteur" directement
+		if (selectedRole === "apprenant") {
+			setRole("acheteur");
+		} else {
+			setRole(selectedRole); // "formateur"
+		}
 		setShowRoleModal(false);
 	};
 
@@ -24,15 +30,48 @@ export default function Signup() {
 		setForm({ ...form, [e.target.name]: e.target.value });
 	};
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setError("");
+
 		if (form.password !== form.confirmPassword) {
 			setError("Les mots de passe ne correspondent pas.");
+			setSuccess("");
 			return;
 		}
-		// TODO: Envoyer les données au backend
-		alert("Inscription réussie !");
+
+		// Préparer les données à envoyer au backend
+		const data = {
+			name: form.username,
+			email: form.email,
+			password: form.password,
+			role: role // "formateur" ou "acheteur"
+		};
+
+		try {
+			const response = await fetch('http://localhost:5000/api/auth/register', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(data),
+			});
+			const result = await response.json();
+			if (response.ok) {
+				setSuccess('Inscription réussie !');
+				setError("");
+				// Optionnel : rediriger après un court délai
+				setTimeout(() => {
+					router.push(ROUTES.LOGIN || '/connexion/login');
+				}, 1500);
+			} else {
+				setError(result.error || result.message || 'Erreur lors de l\'inscription');
+				setSuccess("");
+			}
+		} catch (error) {
+			setError('Erreur réseau ou serveur.');
+			setSuccess("");
+		}
 	};
 
 	return (
@@ -91,7 +130,9 @@ export default function Signup() {
 							Inscription {role === "formateur" ? "Formateur" : "Apprenant"}
 						</h2>
 						<p className="text-gray-600">
-						{role === "formateur" ? "Créez et partagez vos formations" : "Commencez votre apprentissage"}
+						{role === "formateur"
+							? "Créez et partagez vos formations"
+							: "Commencez votre apprentissage"}
 						</p>
 					</div>
 
@@ -147,9 +188,14 @@ export default function Signup() {
 							</div>
 						</div>
 
-						{/* Message d'erreur */}
+						{/* Message de succès ou d'erreur */}
+						{success && (
+							<div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl text-sm flex items-center gap-2 mb-2">
+								<span>{success}</span>
+							</div>
+						)}
 						{error && (
-							<div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm flex items-center gap-2">
+							<div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm flex items-center gap-2 mb-2">
 								<span>{error}</span>
 							</div>
 						)}
