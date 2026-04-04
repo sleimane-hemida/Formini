@@ -1,13 +1,33 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslation } from "../common/useTranslation";
+import { ROUTES } from "../../utils/routes";
 
-export default function Header() {
+export default function Header({ onSearchChange, searchValue: externalSearchValue }) {
+    const router = useRouter();
     const [menuOpen, setMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [showBurger, setShowBurger] = useState(false);
     const [screenWidth, setScreenWidth] = useState(0);
+    const [searchValue, setSearchValue] = useState(externalSearchValue || "");
     const { t } = useTranslation('fr'); // Remplace 'fr' par la langue souhaitée
+
+    // Synchroniser avec la valeur externe
+    useEffect(() => {
+        if (externalSearchValue !== undefined) {
+            setSearchValue(externalSearchValue);
+        }
+    }, [externalSearchValue]);
+
+    // Gérer les changements de recherche
+    const handleSearchChange = (e) => {
+        const value = e.target.value;
+        setSearchValue(value);
+        if (onSearchChange) {
+            onSearchChange(value);
+        }
+    };
 
     useEffect(() => {
         // Initialiser la largeur d'écran côté client uniquement
@@ -44,10 +64,10 @@ export default function Header() {
     }, []);
 
     return (
-        <header className={`w-full bg-white border-b border-gray-200 px-4 sm:px-6 transition-all duration-300 flex items-center z-50 top-0 left-0 ${scrolled ? 'py-1 shadow-md' : 'py-4 sm:py-6'} fixed`}> 
+        <header className={`w-full bg-white border-b border-gray-200 px-4 sm:px-6 transition-all duration-700 ease-in-out flex items-center z-50 top-0 left-0 ${scrolled ? 'py-1 shadow-md' : 'py-4 sm:py-6'} fixed`}> 
             {/* Logo + Search bar (toujours visibles) */}
-            <div className="flex items-center flex-1 min-w-0 gap-2 sm:gap-6">
-                <div className={`font-serif font-bold text-black mr-2 sm:mr-8 transition-all duration-300 ${scrolled ? 'text-xl sm:text-2xl' : 'text-2xl sm:text-3xl'}`}>Formini</div>
+            <div className="flex items-center flex-1 min-w-0 gap-2 sm:gap-6 mr-8 md:mr-12 lg:mr-16">
+                <div className={`font-serif font-bold text-black mr-2 sm:mr-8 transition-all duration-700 ease-in-out ${scrolled ? 'text-xl sm:text-2xl' : 'text-2xl sm:text-3xl'}`}>Formini</div>
                 <div className="flex-1 min-w-0">
                     <div className="relative w-full max-w-xs sm:max-w-md">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
@@ -56,6 +76,8 @@ export default function Header() {
                         <input
                             type="text"
                             placeholder={t('header.searchPlaceholder')}
+                            value={searchValue}
+                            onChange={handleSearchChange}
                             className="w-full pl-10 pr-4 py-2 rounded-full bg-gray-100 border-none focus:ring-2 focus:ring-blue-200 text-sm placeholder-gray-400 outline-none text-black"
                         />
                     </div>
@@ -66,7 +88,12 @@ export default function Header() {
             <nav className="hidden sm:flex items-center gap-4 md:gap-6 text-base text-black font-normal">
                 {/* CATALOGUE: visible >= md */}
                 <div className="relative group hidden md:block">
-                    <a href="#" className="flex items-center gap-1 focus:outline-none hover:text-[#0C8CE9] transition-colors max-[840px]:hidden">{t('header.catalog')}</a>
+                    <button 
+                        onClick={() => router.push(ROUTES.BROWSE_COURSES)}
+                        className="flex items-center gap-1 focus:outline-none hover:text-[#0C8CE9] transition-colors max-[840px]:hidden"
+                    >
+                        {t('header.catalog')}
+                    </button>
                 </div>
                 {/* FORMATEURS: visible >= md */}
                 <a href="#" className="hover:text-[#0C8CE9] transition-colors hidden md:block">{t('header.trainers')}</a>
@@ -83,7 +110,10 @@ export default function Header() {
                 {screenWidth >= 640 && (
                     <>
                         <a href="#" className="text-black hover:text-[#0C8CE9] font-medium px-4 py-2 rounded transition-colors">{t('header.connect')}</a>
-                        <button className="bg-[#0C8CE9] hover:bg-[#0A71BC] text-white font-medium px-5 py-2 rounded-md flex items-center gap-2">
+                        <button 
+                            className="bg-[#0C8CE9] hover:bg-[#0A71BC] text-white font-medium px-5 py-2 rounded-md flex items-center gap-2"
+                            onClick={() => router.push(ROUTES.SIGNUP)}
+                        >
                             {t('header.becomeTrainer')}
                         </button>
                     </>
@@ -114,7 +144,12 @@ export default function Header() {
                         <a href="#" className="w-full py-2 px-2 rounded text-black transition-colors hover:bg-[#E6F1FA] hover:text-[#0C8CE9] focus:text-[#0C8CE9] active:text-[#0C8CE9]">{t('header.subscription')}</a>
                     )}
                     {screenWidth < 840 && (
-                        <a href="#" className="w-full py-2 px-2 rounded text-black transition-colors hover:bg-[#E6F1FA] hover:text-[#0C8CE9] focus:text-[#0C8CE9] active:text-[#0C8CE9]">{t('header.catalog')}</a>
+                        <button 
+                            onClick={() => router.push(ROUTES.BROWSE_COURSES)}
+                            className="w-full py-2 px-2 rounded text-black transition-colors hover:bg-[#E6F1FA] hover:text-[#0C8CE9] focus:text-[#0C8CE9] active:text-[#0C8CE9] text-left"
+                        >
+                            {t('header.catalog')}
+                        </button>
                     )}
                     {screenWidth < 768 && (
                         <a href="#" className="w-full py-2 px-2 rounded text-black transition-colors hover:bg-[#E6F1FA] hover:text-[#0C8CE9] focus:text-[#0C8CE9] active:text-[#0C8CE9]">{t('header.trainers')}</a>
@@ -123,7 +158,10 @@ export default function Header() {
                     {screenWidth < 640 && (
                         <>
                             <a href="#" className="w-full py-2 px-2 rounded text-black transition-colors hover:bg-[#E6F1FA] hover:text-[#0C8CE9] focus:text-[#0C8CE9] active:text-[#0C8CE9] text-center">{t('header.connect')}</a>
-                            <button className="w-full mt-2 bg-[#0C8CE9] hover:bg-[#0A71BC] text-white font-medium px-5 py-2 rounded-md flex items-center gap-2 justify-center">
+                            <button 
+                                className="w-full mt-2 bg-[#0C8CE9] hover:bg-[#0A71BC] text-white font-medium px-5 py-2 rounded-md flex items-center gap-2 justify-center"
+                                onClick={() => router.push(ROUTES.SIGNUP)}
+                            >
                                 {t('header.becomeTrainer')}
                             </button>
                         </>
