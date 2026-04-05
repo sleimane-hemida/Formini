@@ -6,13 +6,15 @@
 export const ROUTES = {
   // Pages principales
   HOME: "/",
-  SIGNUP: "/connexion",
-  LOGIN: "/login", // À créer plus tard si besoin
+  SIGNUP: "/connexion/signup",
+  LOGIN: "/connexion/login",
   
   // Pages utilisateur (futures)
-  PROFILE: "/profil",
+  PROFILE: "/profile",
   DASHBOARD: "/dashboard",
   SETTINGS: "/parametres",
+  MES_FORMATIONS_GENERAL: "/mes_formations/forma_general",
+  MES_FORMATIONS_DETAILS: "/mes_formations/forma_details",
   
   // Pages formateur (futures)
   TRAINER_DASHBOARD: "/formateur/tableau-de-bord",
