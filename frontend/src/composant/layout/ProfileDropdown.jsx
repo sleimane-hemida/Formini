@@ -43,7 +43,8 @@ export default function ProfileDropdown({ isOpen, onClose, user, onLogout }) {
                 <button 
                     className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center gap-3 text-gray-700 hover:text-[#0C8CE9]"
                     onClick={() => {
-                        router.push(ROUTES.MES_FORMATIONS_GENERAL);
+                        const target = user?.role === 'formateur' ? ROUTES.TRAINER_FORMATIONS_LIST : ROUTES.MES_FORMATIONS_GENERAL;
+                        router.push(target);
                         onClose();
                     }}
                 >

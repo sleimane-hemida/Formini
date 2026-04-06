@@ -133,7 +133,7 @@ export default function ProfileGestion() {
                                 <p className="text-white/80 mb-3">{user?.email}</p>
                                 <div className="flex flex-wrap gap-2 justify-center md:justify-start">
                                     <span className="px-3 py-1 bg-white/20 rounded-full text-sm">
-                                        {user?.role === 'trainer' ? 'Formateur' : 'Apprenant'}
+                                        {user?.role === 'formateur' ? 'Formateur' : (user?.role === 'administrateur' ? 'Administrateur' : 'Apprenant')}
                                     </span>
                                     {user?.location && (
                                         <span className="px-3 py-1 bg-white/20 rounded-full text-sm">

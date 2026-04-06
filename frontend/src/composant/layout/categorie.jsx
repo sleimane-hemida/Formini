@@ -259,3 +259,5 @@ export default function CategorieBar({ selectedCategory = "foryou", onCategoryCh
 		       </div>
 	       );
 	}
+
+export { categories };
