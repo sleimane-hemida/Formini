@@ -15,7 +15,8 @@ export const ROUTES = {
   SETTINGS: "/parametres",
   MES_FORMATIONS_GENERAL: "/mes_formations/forma_general",
   MES_FORMATIONS_DETAILS: "/mes_formations/forma_details",
-  TRAINER_FORMATIONS_LIST: "/formations_formateurs/formationListe",
+  // Updated to match folder name `formations_liste`
+  TRAINER_FORMATIONS_LIST: "/dash_formation/formations_formateurs/formations_liste",
   
   // Pages formateur (futures)
   TRAINER_DASHBOARD: "/formateur/tableau-de-bord",

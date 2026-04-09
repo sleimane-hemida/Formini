@@ -60,13 +60,6 @@ export default function Home() {
 
       {/* Bouton et titre centrés après les formations */}
       <div className="flex flex-col items-center justify-center w-full mt-8 mb-0.5">
-        <button 
-          className="block text-[#00A3FF] text-lg font-semibold border-2 border-[#00A3FF] rounded-xl px-10 py-3 text-center mb-1 hover:bg-[#E6F6FF] transition-colors hidden sm:block" 
-          type="button"
-          onClick={() => router.push(ROUTES.BROWSE_COURSES)}
-        >
-          Voir toutes les formations
-        </button>
         <h2 className="text-3xl md:text-4xl font-bold text-[#00A3FF] mb-0 text-center leading-tight">N'importe où N'importe quand</h2>
       </div>
 

@@ -1,12 +1,11 @@
-
-
+import Link from "next/link";
 import { useTranslation } from "../common/useTranslation";
 import { FaEnvelope, FaPhone, FaMapMarkerAlt } from "react-icons/fa";
 
 export default function Footer() {
   const { t } = useTranslation('fr');
   return (
-    <footer className="w-full bg-[#0C8CE9] text-white pt-10 pb-4 px-4 sm:px-12 mt-auto">
+    <footer className="w-full bg-[#0C8CE9] text-white pt-10 pb-4 px-4 sm:px-12">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-8 pb-6 border-b border-white/20">
         {/* Bloc 1 — Identité */}
         <div className="flex flex-col gap-3">
@@ -27,6 +26,11 @@ export default function Footer() {
         <div>
           <div className="font-bold mb-2">Devenir formateur</div>
           <ul className="space-y-1">
+            <li>
+              <Link href="/dash_formation/dash_principale" className="hover:underline text-white/90 text-sm">
+                Tableau de bord
+              </Link>
+            </li>
             <li><a href="#" className="hover:underline text-white/90 text-sm">Comment ça marche</a></li>
             <li><a href="#" className="hover:underline text-white/90 text-sm">Créer mon espace formateur</a></li>
             <li><a href="#" className="hover:underline text-white/90 text-sm">Les avantages formateur</a></li>

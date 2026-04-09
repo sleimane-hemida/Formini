@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Ensure Turbopack picks the frontend folder as the workspace root
+  turbopack: {
+    root: ".",
+  },
 };
 
 export default nextConfig;

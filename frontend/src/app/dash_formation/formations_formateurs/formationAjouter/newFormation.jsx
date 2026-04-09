@@ -1,8 +1,8 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Header from '../../../composant/layout/header';
-import { categories } from '../../../composant/layout/categorie';
+import Header from '../../../../composant/layout/header';
+import { categories } from '../../../../composant/layout/categorie';
 
 export default function NewFormation() {
   const router = useRouter();
@@ -19,7 +19,6 @@ export default function NewFormation() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
-  // Keep subcategory in sync when category changes
   useEffect(() => {
     if (!form.categoryKey) return;
     const cat = categories.find(c => c.key === form.categoryKey);
@@ -114,7 +113,7 @@ export default function NewFormation() {
       }
 
       setSuccess(true);
-      setTimeout(() => router.push('/formations_formateurs/formationListe'), 900);
+      setTimeout(() => router.push('/dash_formation/formations_formateurs/formations_liste'), 900);
     } catch (err) {
       console.error(err);
       setError('Erreur réseau.');
@@ -208,11 +207,10 @@ export default function NewFormation() {
             <button type="submit" disabled={isSubmitting} className="bg-[#0C8CE9] hover:bg-[#096bb3] active:scale-95 transform text-white px-5 py-2 rounded-lg shadow hover:shadow-md transition">
               {isSubmitting ? 'Enregistrement...' : 'Enregistrer la formation'}
             </button>
-            <button type="button" onClick={() => router.push('/formations_formateurs/formationListe')} className="px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition">Annuler</button>
+            <button type="button" onClick={() => router.push('/dash_formation/formations_formateurs/formations_liste')} className="px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition">Annuler</button>
           </div>
         </form>
       </div>
     </div>
   );
 }
-

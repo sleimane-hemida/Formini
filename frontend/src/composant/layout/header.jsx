@@ -41,6 +41,15 @@ export default function Header({ onSearchChange, searchValue: externalSearchValu
         }
     }, []);
 
+    // Debug: log mounting to help detect client-side rendering issues
+    useEffect(() => {
+        try {
+            console.log('Debug: Header mounted', { isLoggedIn, user });
+        } catch (err) {
+            console.error('Header debug error:', err);
+        }
+    }, [isLoggedIn, user]);
+
     // Gérer les clics en dehors du popup de notifications
     useEffect(() => {
         function handleClickOutside(event) {
