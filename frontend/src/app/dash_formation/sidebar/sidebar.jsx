@@ -26,7 +26,7 @@ export default function Sidebar() {
 		{ id: "profile", label: "Profil", icon: FiUser, href: "/dash_formation/profile" },
 		// NB: le dossier actuel pour la liste des formations est `formations_liste`
 		{ id: "formations", label: "Formations", icon: FiBook, href: "/dash_formation/formations_formateurs/formations_liste" },
-		{ id: "facturation", label: "Facturation", icon: FiCreditCard, href: "/dash_formation/gestions_facturation" },
+		{ id: "facture", label: "Facture", icon: FiCreditCard, href: "/dash_formation/gestion_facture/liste_facturation" },
 		{ id: "propulseur", label: "Propulseur", icon: FiTrendingUp, href: "/dash_formation/propulseur" },
 	];
 
@@ -35,6 +35,11 @@ export default function Sidebar() {
 		// Keep 'Formations' active for any route under /dash_formation/formations_formateurs
 		if (href && href.startsWith('/dash_formation/formations_formateurs')) {
 			return pathname === href || pathname.startsWith('/dash_formation/formations_formateurs');
+		}
+
+		// Keep 'Facturation' active for any route under /dash_formation/gestion_facture
+		if (href && href.startsWith('/dash_formation/gestion_facture')) {
+			return pathname === href || pathname.startsWith('/dash_formation/gestion_facture');
 		}
 		return pathname === href || pathname.startsWith(href + "/");
 	};

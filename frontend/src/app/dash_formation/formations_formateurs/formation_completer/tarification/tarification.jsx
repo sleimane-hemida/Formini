@@ -105,7 +105,6 @@ export default function TarificationPage() {
     const gross = net / 0.9; // reverse 10% commission
     const grossStr = (Math.round(gross * 100) / 100).toFixed(2);
     setPrice(grossStr);
-    setComputeMsg(`Prix requis : ${grossStr} MRU (approximatif)`);
     // re-validate promo
     if (promoPrice !== '' && toNumber(promoPrice) >= toNumber(grossStr)) {
       setPromoError('Le prix promotionnel doit être strictement inférieur au prix normal.');
