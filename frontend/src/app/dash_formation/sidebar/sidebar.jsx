@@ -32,6 +32,10 @@ export default function Sidebar() {
 
 	const isActive = (href) => {
 		if (!pathname) return false;
+		// Keep 'Formations' active for any route under /dash_formation/formations_formateurs
+		if (href && href.startsWith('/dash_formation/formations_formateurs')) {
+			return pathname === href || pathname.startsWith('/dash_formation/formations_formateurs');
+		}
 		return pathname === href || pathname.startsWith(href + "/");
 	};
 

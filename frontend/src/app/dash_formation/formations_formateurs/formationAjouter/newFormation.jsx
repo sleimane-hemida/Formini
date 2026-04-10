@@ -1,8 +1,25 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Header from '../../../../composant/layout/header';
+import dynamic from 'next/dynamic';
 import { categories } from '../../../../composant/layout/categorie';
+
+// Dynamic Header import with fallback (match pattern used in profile.jsx / liste_forma.jsx)
+const Header = dynamic(
+  () =>
+    import("../../../../composant/layout/header")
+      .then((mod) => mod.default || mod)
+      .catch((err) => {
+        console.error("Failed to load Header:", err);
+        return () => (
+          <div className="w-full bg-red-100 text-red-700 p-4">Header indisponible</div>
+        );
+      }),
+  { ssr: false, loading: () => <div className="w-full bg-gray-200 p-4">Chargement header...</div> }
+);
+import Sidebar from '../../sidebar/sidebar';
+import PageHeader from '../../dash_principale/PageHeader';
+import Footer from '../../../../composant/layout/footer';
 
 export default function NewFormation() {
   const router = useRouter();
@@ -125,14 +142,22 @@ export default function NewFormation() {
   const currentSubcategories = categories.find(c => c.key === form.categoryKey)?.subcategories || [];
 
   return (
-    <div className="min-h-screen bg-gray-50 text-black">
-      <Header />
-      <div className="container mx-auto px-6 py-8 pt-20">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold">Ajouter une formation</h1>
-        </div>
+    <>
+      <div className="min-h-screen bg-white pt-24 text-black">
+        <Header />
 
-        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-lg max-w-3xl mx-auto">
+        <div className="flex w-full">
+          <div className="pl-[17px] sm:pl-[17px]">
+            <Sidebar />
+          </div>
+
+          <div className="flex-1">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6">
+              <main>
+                <div className="container mx-auto px-4 py-8 pt-6 max-w-4xl">
+                  <PageHeader title="Ajouter une formation" actions={(<></>)} />
+
+                  <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-lg w-full text-black">
           {error && <div className="mb-4 text-sm text-red-600">{error}</div>}
           {success && <div className="mb-4 text-sm text-green-600">Formation créée avec succès.</div>}
 
@@ -203,14 +228,25 @@ export default function NewFormation() {
             </div>
           </div>
 
-          <div className="mt-6 flex items-center gap-3">
-            <button type="submit" disabled={isSubmitting} className="bg-[#0C8CE9] hover:bg-[#096bb3] active:scale-95 transform text-white px-5 py-2 rounded-lg shadow hover:shadow-md transition">
-              {isSubmitting ? 'Enregistrement...' : 'Enregistrer la formation'}
-            </button>
-            <button type="button" onClick={() => router.push('/dash_formation/formations_formateurs/formations_liste')} className="px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition">Annuler</button>
+          <div className="mt-6 flex items-center justify-between">
+            <div>
+              <button type="button" onClick={() => router.push('/dash_formation/formations_formateurs/formations_liste')} className="px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition">Annuler</button>
+            </div>
+            <div>
+              <button type="submit" disabled={isSubmitting} className="bg-[#0C8CE9] hover:bg-[#096bb3] active:scale-95 transform text-white px-5 py-2 rounded-lg shadow hover:shadow-md transition">
+                {isSubmitting ? 'Enregistrement...' : 'Enregistrer la formation'}
+              </button>
+            </div>
           </div>
-        </form>
+                  </form>
+                </div>
+              </main>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+
+      <Footer />
+    </>
   );
 }
