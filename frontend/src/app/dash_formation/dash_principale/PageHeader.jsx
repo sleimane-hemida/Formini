@@ -19,8 +19,10 @@ export default function PageHeader({ title, subtitle, actions }) {
   const defaultStart = isoDate(s);
 
   const [open, setOpen] = useState(false);
+  // To avoid hydration mismatches, initialize dates/label to stable server-friendly values
   const [startDate, setStartDate] = useState(defaultStart);
   const [endDate, setEndDate] = useState(defaultEnd);
+  const [label, setLabel] = useState("Derniers 30 jours");
   const ref = useRef(null);
 
   useEffect(() => {
@@ -31,7 +33,11 @@ export default function PageHeader({ title, subtitle, actions }) {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const label = startDate === defaultStart && endDate === defaultEnd ? "Derniers 30 jours" : `${formatDisplay(startDate)} - ${formatDisplay(endDate)}`;
+  // Compute label on mount to keep server/client markup stable
+  useEffect(() => {
+    const computed = startDate === defaultStart && endDate === defaultEnd ? "Derniers 30 jours" : `${formatDisplay(startDate)} - ${formatDisplay(endDate)}`;
+    setLabel(computed);
+  }, [startDate, endDate]);
 
   const applyRange = () => {
     setOpen(false);

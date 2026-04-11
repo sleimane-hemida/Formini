@@ -24,3 +24,50 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Print styles for exporting invoice only (hide sidebar and UI chrome) */
+@media print {
+  @page { size: A4 portrait; margin: 8mm; }
+  html, body { margin: 0; padding: 0; height: auto; }
+  /* Hide everything by default, then reveal the invoice */
+  body * { visibility: hidden !important; }
+  #invoice-print-wrapper, #invoice-root, #invoice-print-wrapper *, #invoice-root * { visibility: visible !important; }
+
+  /* Use a full-page flex layout to distribute content vertically */
+  #invoice-print-wrapper, #invoice-root {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    height: calc(297mm - 16mm) !important; /* A4 height minus margins */
+    box-sizing: border-box !important;
+    width: 100% !important;
+    background: #fff !important;
+    padding: 6mm !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    box-shadow: none !important;
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+  }
+
+  /* Spacing between major blocks */
+  #invoice-root header { margin-bottom: 8px !important; }
+  #invoice-root section { margin-bottom: 12px !important; }
+  #invoice-root hr { margin: 8px 0 !important; }
+  #invoice-root .overflow-hidden { margin-bottom: 8px !important; }
+
+  /* Hide interactive / nav elements */
+  #invoice-root .no-print { display: none !important; }
+
+  /* Table styling to avoid generating extra pages */
+  #invoice-root table { width: 100% !important; border-collapse: collapse !important; }
+  #invoice-root td, #invoice-root th { padding: 6px 8px !important; vertical-align: middle !important; }
+  #invoice-root table thead { display: table-header-group !important; }
+  #invoice-root table tbody { display: table-row-group !important; }
+
+  /* Slight zoom fallback */
+  @supports (zoom: 1) { #invoice-root { zoom: 0.98; } }
+
+  /* Prevent page breaks inside core sections */
+  #invoice-root header, #invoice-root section, #invoice-root table { page-break-inside: avoid !important; }
+}

@@ -27,7 +27,7 @@ export default function Sidebar() {
 		// NB: le dossier actuel pour la liste des formations est `formations_liste`
 		{ id: "formations", label: "Formations", icon: FiBook, href: "/dash_formation/formations_formateurs/formations_liste" },
 		{ id: "facture", label: "Facture", icon: FiCreditCard, href: "/dash_formation/gestion_facture/liste_facturation" },
-		{ id: "propulseur", label: "Propulseur", icon: FiTrendingUp, href: "/dash_formation/propulseur" },
+		{ id: "propulseur", label: "Propulseur", icon: FiTrendingUp, href: "/dash_formation/abonnement/propulseur" },
 	];
 
 	const isActive = (href) => {

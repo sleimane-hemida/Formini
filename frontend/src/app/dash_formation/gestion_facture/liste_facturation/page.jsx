@@ -6,7 +6,7 @@ import Sidebar from '../../sidebar/sidebar';
 import PageHeader from '../../dash_principale/PageHeader';
 import Footer from '../../../../composant/layout/footer';
 import { invoices } from '../mockInvoices';
-import { FiSearch, FiDownload, FiCheckSquare } from 'react-icons/fi';
+import { FiSearch, FiEye } from 'react-icons/fi';
 
 const Header = dynamic(() => import('../../../../composant/layout/header').then((m) => m.default || m), { ssr: false, loading: () => <div className="w-full bg-gray-200 p-4">Chargement header...</div> });
 
@@ -87,9 +87,9 @@ export default function ListeFacturationPage() {
 															</span>
 														</td>
 														<td className="py-4 px-4 align-top whitespace-nowrap text-right text-sm font-medium">
-															<Link href={`/dash_formation/gestion_facture/facture_detail?invoiceId=${inv.id}`} className="text-[#0C8CE9] hover:underline mr-3">Voir</Link>
-															<button aria-label={`Télécharger ${inv.ref}`} className="text-gray-600 hover:text-gray-800 mr-3"><FiDownload className="inline-block" /></button>
-															<button aria-label={`Marquer payée ${inv.ref}`} className="text-gray-600 hover:text-gray-800"><FiCheckSquare className="inline-block" /></button>
+															<Link href={`/dash_formation/gestion_facture/facture_detail?invoiceId=${inv.id}`} aria-label={`Voir ${inv.ref}`} className="text-gray-600 hover:text-gray-700 inline-flex items-center justify-center p-2 rounded-md">
+																<FiEye className="w-5 h-5" />
+															</Link>
 														</td>
 													</tr>
 												))}
