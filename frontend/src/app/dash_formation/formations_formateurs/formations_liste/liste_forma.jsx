@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { HiCheck } from 'react-icons/hi2';
-import { FiMoreVertical, FiSend, FiEdit, FiFileText, FiTrash2, FiExternalLink } from 'react-icons/fi';
+import { FiMoreVertical, FiSend, FiEdit, FiFileText, FiTrash2, FiExternalLink, FiTrendingUp } from 'react-icons/fi';
 import { BsGripVertical } from 'react-icons/bs';
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
@@ -26,15 +25,16 @@ export default function ListeForma() {
   const router = useRouter();
 
   const initialRows = [
-    { id: 'ph1', name: 'Exemple — Initiation React', description: 'Introduction aux composants, props et états', price: 'Gratuit', status: 'Publié', active: true, image: 'https://picsum.photos/seed/ph1/320/180' },
+    { id: 'ph1', name: 'Exemple — Initiation React', description: 'Introduction aux composants, props et états', price: 'Gratuit', status: 'Publié', active: true, image: 'https://picsum.photos/seed/ph1/320/180', promotionStatus: 'pending' },
     { id: 'ph2', name: 'Exemple — CSS Avancé', description: 'Flexbox, Grid et animations pratiques', price: '50 €', status: 'Brouillon', active: false, image: 'https://picsum.photos/seed/ph2/320/180' },
-    { id: 'ph3', name: 'Exemple — Productivité Dev', description: 'Outils et méthodes pour développeurs', price: '20 €', status: 'Publié', active: true, image: 'https://picsum.photos/seed/ph3/320/180' }
+    { id: 'ph3', name: 'Exemple — Productivité Dev', description: 'Outils et méthodes pour développeurs', price: '20 €', status: 'Publié', active: true, image: 'https://picsum.photos/seed/ph3/320/180', promotionStatus: 'approved' }
   ];
 
   const [formations, setFormations] = useState(initialRows);
   const [menuOpen, setMenuOpen] = useState(null);
   const [draggedIndex, setDraggedIndex] = useState(null);
   const [dragOverIndex, setDragOverIndex] = useState(null);
+  const [promotionStatuses, setPromotionStatuses] = useState({});
   const [draggingItem, setDraggingItem] = useState(null);
   const [ghostPos, setGhostPos] = useState({ x: 0, y: 0 });
   const [ghostWidth, setGhostWidth] = useState(null);
@@ -203,8 +203,21 @@ export default function ListeForma() {
                         onClick={() => router.push(`/dash_formation/formations_formateurs/formation_completer/general_forma?fId=${f.id}`)}
                         onDragOver={(e) => handleDragOver(e, idx)}
                         onDrop={(e) => handleDrop(e, idx)}
-                        className={`bg-[#F8F8FA] p-4 rounded-lg border border-gray-200 flex items-center justify-between gap-6 transition ${dragOverIndex === idx ? 'border-dashed border-gray-400' : ''} ${draggedIndex === idx ? 'opacity-40' : ''}`}
+                        className={`relative bg-[#F8F8FA] p-4 rounded-lg border border-gray-200 flex items-center justify-between gap-6 cursor-pointer hover:shadow-md hover:bg-white transition ${dragOverIndex === idx ? 'border-dashed border-gray-400' : ''} ${draggedIndex === idx ? 'opacity-40' : ''}`}
                       >
+                        {(() => {
+                          const pStatus = (f && f.promotionStatus) || (promotionStatuses && promotionStatuses[f.id]);
+                          if (!pStatus) return null;
+                          return (
+                            <span
+                              className={`${pStatus === 'approved' ? 'bg-[#0C8CE9]' : 'bg-gray-400'} text-white rounded-full flex items-center justify-center w-[30px] h-[30px] absolute top-[10px] left-[10px] -translate-x-1/2 -translate-y-1/2 z-20 ring-2 ring-white shadow`}
+                              title={pStatus === 'approved' ? 'Propulsé' : 'En attente de paiement'}
+                              aria-hidden="true"
+                            >
+                              {pStatus === 'approved' ? (<FiTrendingUp className="w-4 h-4" />) : (<span className="text-sm font-semibold">!</span>)}
+                            </span>
+                          );
+                        })()}
                         <div className="flex items-center gap-4 min-w-0">
                           <button
                             draggable
@@ -227,9 +240,9 @@ export default function ListeForma() {
 
                         {/* price moved under title; thumbnail on the left */}
 
-                        <div className="flex items-center gap-4 relative">
+                        <div className="flex items-center gap-4">
                           <span className={`px-3 py-1 rounded-md text-sm font-medium ${f.active ? 'bg-green-900 text-white' : 'bg-gray-100 text-gray-700'}`}>
-                            {f.active ? (<><HiCheck className="inline-block mr-1 w-4 h-4"/>En vente</>) : 'Désactivée'}
+                            {f.active ? (<><FiTrendingUp className="inline-block mr-1 w-4 h-4"/>En vente</>) : 'Désactivée'}
                           </span>
 
                           <button
@@ -247,7 +260,7 @@ export default function ListeForma() {
                             </button>
                             {menuOpen === f.id && (
                               <div data-menu-id={f.id} onClick={(e) => e.stopPropagation()} className="absolute right-0 top-10 z-50 w-48 bg-white border border-gray-200 rounded-md shadow-sm py-1">
-                                <button onClick={(e) => { e.stopPropagation(); router.push('/dash_formation/propulseur'); setMenuOpen(null); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 text-black">
+                                <button onClick={(e) => { e.stopPropagation(); const q = `formationId=${encodeURIComponent(f.id)}&budget=${encodeURIComponent(100)}&days=${encodeURIComponent(30)}`; router.push(`/dash_formation/abonnement/propulseur_valid?${q}`); setMenuOpen(null); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 text-black">
                                   <FiSend className="w-4 h-4 text-gray-500" />
                                   <span>Propulser</span>
                                 </button>
@@ -303,7 +316,7 @@ export default function ListeForma() {
 
             <div className="flex items-center gap-4">
               <span className={`px-3 py-1 rounded-md text-sm font-medium ${draggingItem.active ? 'bg-green-900 text-white' : 'bg-gray-100 text-gray-700'}`}>
-                {draggingItem.active ? (<><HiCheck className="inline-block mr-1 w-4 h-4"/>En vente</>) : 'Désactivée'}
+                {draggingItem.active ? (<><FiTrendingUp className="inline-block mr-1 w-4 h-4"/>En vente</>) : 'Désactivée'}
               </span>
             </div>
           </article>

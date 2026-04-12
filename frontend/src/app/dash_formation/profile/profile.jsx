@@ -152,7 +152,7 @@ export default function Profile() {
 														<div className="flex gap-2">
 															<button onClick={handleSave} className="bg-white text-green-600 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center gap-2">
 																<HiCheck className="w-4 h-4" />
-																Sauvegarder
+																Enregistrer
 															</button>
 															<button onClick={handleCancel} className="bg-white/20 text-white px-4 py-2 rounded-lg font-medium hover:bg-white/30 transition-colors flex items-center gap-2">
 																<HiXMark className="w-4 h-4" />

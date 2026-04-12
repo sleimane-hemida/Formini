@@ -32,7 +32,12 @@ export default function ProfileDropdown({ isOpen, onClose, user, onLogout }) {
                 <button 
                     className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center gap-3 text-gray-700 hover:text-[#0C8CE9]"
                     onClick={() => {
-                        router.push(ROUTES.PROFILE);
+                        // Redirige vers le bon profil dashboard si formateur
+                        if (user?.role === 'formateur') {
+                            router.push('/dash_formation/profile');
+                        } else {
+                            router.push(ROUTES.PROFILE);
+                        }
                         onClose();
                     }}
                 >

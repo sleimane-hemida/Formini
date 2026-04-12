@@ -41,6 +41,11 @@ export default function Sidebar() {
 		if (href && href.startsWith('/dash_formation/gestion_facture')) {
 			return pathname === href || pathname.startsWith('/dash_formation/gestion_facture');
 		}
+
+		// Keep 'Propulseur' active for any route under /dash_formation/abonnement/propulseur (including propulseur_valid)
+		if (href && href === '/dash_formation/abonnement/propulseur') {
+			return pathname === href || pathname.startsWith('/dash_formation/abonnement/propulseur');
+		}
 		return pathname === href || pathname.startsWith(href + "/");
 	};
 

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Header from "../../../../composant/layout/header";
 import Sidebar from "../../sidebar/sidebar";
 import Footer from "../../../../composant/layout/footer";
@@ -9,7 +10,7 @@ import PageHeader from "../../dash_principale/PageHeader";
 export default function AbonnementAccueil() {
 	const [mode, setMode] = useState("promote");
 	const [budget, setBudget] = useState(100);
-	const [days, setDays] = useState(7);
+	const [days, setDays] = useState(30);
 	const [message, setMessage] = useState("");
 
 	const formatPrice = (n) => `${Number(n).toLocaleString("fr-FR")} MRU`;
@@ -26,6 +27,7 @@ export default function AbonnementAccueil() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [formations, setFormations] = useState([]);
 	const [selectedFormation, setSelectedFormation] = useState(null);
+	const router = useRouter();
 
 	useEffect(() => {
 		// try to fetch real formations, fallback to sample list
@@ -99,10 +101,10 @@ export default function AbonnementAccueil() {
 								<section>
 									<h3 className="text-lg font-semibold mb-3">Propulser un service</h3>
 									<div className="w-full mb-4 flex justify-center">
-										<img src="/images/hero/propulser.jpg" alt="Propulser" className="w-full max-w-2xl h-auto rounded-lg object-cover" />
+										<img src="/images/hero/propulser.jpg" alt="Propulser" className="w-[180px] md:w-[290px] lg:w-[380px] h-auto rounded-lg object-cover" />
 									</div>
 									<div className="max-w-2xl mx-auto mb-4 text-gray-700 text-base leading-relaxed px-4 text-center">
-										Donnez plus de visibilité à votre service : mettez-le en avant auprès d'utilisateurs ciblés pour augmenter les contacts et les demandes. Cliquez sur « Propulser » pour lancer la promotion.
+										Donnez plus de visibilité à votre service : mettez-le en avant auprès d'utilisateurs ciblés pour augmenter les contacts et les demandes. Cliquez sur « choisir une formation » pour lancer la promotion.
 									</div>
 									<div className="flex justify-end">
 										<button onClick={() => setIsModalOpen(true)} className="px-4 py-2 bg-[#0C8CE9] hover:bg-[#096bb3] text-white rounded">Choisir une formation</button>
@@ -114,23 +116,48 @@ export default function AbonnementAccueil() {
 
 								{isModalOpen && (
 									<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-										<div className="bg-white w-full max-w-4xl rounded-lg p-6">
+										<div className="bg-white w-full max-w-4xl rounded-lg p-8">
 											<div className="flex items-center justify-between mb-4">
 												<h3 className="text-lg font-semibold">Choisir une formation</h3>
 												<button onClick={() => setIsModalOpen(false)} className="text-gray-600 hover:text-gray-800">✕</button>
 											</div>
-											<div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-96 overflow-y-auto">
+											<ul className="max-h-96 overflow-y-auto space-y-4 px-6 py-4">
 												{formations.length ? formations.map((f) => (
-													<div key={f.id} onClick={() => setSelectedFormation(f)} className={`p-3 border rounded cursor-pointer ${selectedFormation?.id === f.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}`}>
-														<div className="font-semibold">{f.title}</div>
-														{f.description && <div className="text-sm text-gray-600 mt-1">{f.description}</div>}
-													</div>
-												)) : <div className="text-gray-600">Aucune formation trouvée.</div>}
-											</div>
+													<li key={f.id}>
+														<button
+															type="button"
+															onClick={() => setSelectedFormation(f)}
+															className={`w-full text-left px-6 py-4 flex items-center justify-between gap-4 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0C8CE9] ${selectedFormation?.id === f.id ? 'bg-blue-50 border border-blue-500 ring-2 ring-blue-100' : 'bg-white border border-gray-200'} hover:bg-gray-50`}
+															aria-pressed={selectedFormation?.id === f.id}
+														>
+															<div>
+																<div className="font-semibold">{f.title}</div>
+																{f.description && <div className="text-sm text-gray-600 mt-1">{f.description}</div>}
+															</div>
+															<div className="text-sm text-gray-500">{/* placeholder for any meta */}</div>
+														</button>
+													</li>
+												)) : (
+													<li className="p-4 text-gray-600">Aucune formation trouvée.</li>
+												)}
+											</ul>
 											<div className="mt-4 flex justify-end gap-2">
 												<button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-200 rounded">Annuler</button>
-												<button disabled={!selectedFormation} onClick={() => handlePromoteSubmit(selectedFormation)} className="px-4 py-2 rounded text-white bg-[#0C8CE9] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#096bb3]">
-													Propulser
+												<button
+													disabled={!selectedFormation}
+													onClick={() => {
+														if (!selectedFormation) return;
+														// save current selection so the validation page can read it
+														try {
+															const payload = { formationId: selectedFormation.id, formationTitle: selectedFormation.title, budget, days, ts: Date.now() };
+															localStorage.setItem('formini_promotion_demo', JSON.stringify(payload));
+														} catch (e) {}
+														const q = `formationId=${encodeURIComponent(selectedFormation.id)}&budget=${encodeURIComponent(budget)}&days=${encodeURIComponent(days)}`;
+														router.push(`/dash_formation/abonnement/propulseur_valid?${q}`);
+													}}
+													className="px-4 py-2 rounded text-white bg-[#0C8CE9] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#096bb3]"
+												>
+													Continuer
 												</button>
 											</div>
 										</div>

@@ -26,9 +26,10 @@ export default function NewFormation() {
   const [form, setForm] = useState({
     name: '',
     descriptionCourt: '',
+    descriptionLong: '',
     coverImages: [],
     language: 'fr',
-    price: '',
+    niveau: 'debutant',
     categoryKey: (categories && categories.length) ? categories[0].key : '',
     subcategory: ''
   });
@@ -86,6 +87,7 @@ export default function NewFormation() {
     if (form.name.length > 40) return 'Le titre doit contenir au maximum 40 caractères.';
     if (!form.descriptionCourt.trim()) return 'La description courte est requise.';
     if (form.descriptionCourt.length > 70) return 'La description courte doit contenir au maximum 70 caractères.';
+    if ((form.descriptionLong || '').length < 500) return 'La description détaillée doit contenir au moins 500 caractères.';
     if (!form.categoryKey) return 'Veuillez sélectionner une catégorie.';
     return null;
   };
@@ -103,13 +105,14 @@ export default function NewFormation() {
     try {
       const payload = {
         name: form.name,
-        description: form.descriptionCourt,
+        description: form.descriptionLong || form.descriptionCourt,
+        shortDescription: form.descriptionCourt,
         image: form.coverImages[0] || null,
         images: form.coverImages,
         language: form.language,
-        price: form.price || null,
         categoryKey: form.categoryKey,
-        subcategory: form.subcategory || null
+        subcategory: form.subcategory || null,
+        niveau: form.niveau || null
       };
 
       const res = await fetch('http://localhost:5000/api/formations', {
@@ -181,6 +184,12 @@ export default function NewFormation() {
               <textarea name="descriptionCourt" maxLength={70} value={form.descriptionCourt} onChange={handleChange} rows={3} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-shadow shadow-sm resize-none" placeholder="Courte description (70 caractères max)" />
             </div>
 
+            <div className="md:col-span-2">
+              <label className="block text-sm font-semibold mb-2">Description détaillée</label>
+              <textarea name="descriptionLong" value={form.descriptionLong} onChange={handleChange} rows={6} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200" placeholder="Entrez la description complète de la formation..." />
+              <div className={`text-xs mt-1 ${form.descriptionLong.length >= 500 ? 'text-green-600' : 'text-red-600'}`}>{form.descriptionLong.length} caractères (minimum 500)</div>
+            </div>
+
             <div>
               <label className="block text-sm font-semibold mb-2">Images de couverture</label>
               <input id="coverUpload" type="file" accept="image/*" multiple onChange={handleCoverImagesUpload} className="hidden" />
@@ -204,8 +213,12 @@ export default function NewFormation() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-2">Prix</label>
-              <input name="price" value={form.price} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-shadow shadow-sm" placeholder="ex: 899 MRU" />
+              <label className="block text-sm font-semibold mb-2">Niveau</label>
+              <select name="niveau" value={form.niveau} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-shadow shadow-sm">
+                <option value="debutant">Débutant</option>
+                <option value="intermediaire">Intermédiaire</option>
+                <option value="avance">Avancé</option>
+              </select>
             </div>
 
             <div>
