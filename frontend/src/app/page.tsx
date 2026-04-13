@@ -1,7 +1,7 @@
 "use client";
 import CardFormateur from "./pages_common/card_formateur";
 import { useRouter } from "next/navigation";
-import { ROUTES } from "../utils/routes";
+import { ROUTES, buildRouteWithQuery } from "../utils/routes";
 
 import Header from "../composant/layout/header";
 import Sidebar from "../composant/layout/sidebar";
@@ -18,7 +18,11 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-white">
       <Header />
       <div className="mt-28" />
-      <CategorieBar />
+      <CategorieBar
+        onCategoryChange={(categoryKey) => {
+          router.push(buildRouteWithQuery(ROUTES.BROWSE_COURSES, { category: categoryKey }));
+        }}
+      />
       <HomeCommon />
       {/* Deux lignes de cartes normales (4 par ligne, 8 sur desktop, 4 sur mobile) */}
       <div className="flex flex-wrap justify-center gap-6 py-8 md:gap-8 lg:gap-10 xl:gap-12">

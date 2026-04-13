@@ -1,6 +1,6 @@
 
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
     FaFilter, 
     FaTimes, 
@@ -42,6 +42,15 @@ export default function Sidebar({
         language: false,
         promotion: false
     });
+
+    // Date range inputs (start/end)
+    const [dateStart, setDateStart] = useState(filters.dateStart || "");
+    const [dateEnd, setDateEnd] = useState(filters.dateEnd || "");
+
+    useEffect(() => {
+        setDateStart(filters.dateStart || "");
+        setDateEnd(filters.dateEnd || "");
+    }, [filters.dateStart, filters.dateEnd]);
 
     // Styles pour les curseurs personnalisés
     const sliderStyles = `
@@ -216,11 +225,15 @@ export default function Sidebar({
 
     const clearFilters = () => {
         setPriceRange([0, 2000]);
+        setDateStart("");
+        setDateEnd("");
         onFiltersChange({
             categories: [],
             subcategories: [],
             languages: [],
             dateRange: null,
+            dateStart: null,
+            dateEnd: null,
             hasPromotion: false,
             priceRange: [0, 2000]
         });
@@ -250,7 +263,7 @@ export default function Sidebar({
                     </svg>
                 </div>
             </button>
-            {isExpanded && <div className="mt-3">{children}</div>}
+            {isExpanded && <div className="mt-1">{children}</div>}
         </div>
     );
 
@@ -285,11 +298,11 @@ export default function Sidebar({
                     isExpanded={expandedSections.price}
                     onToggle={() => toggleSection('price')}
                 >
-                    <div className="space-y-6">
+                    <div className="space-y-3">
                         {/* Double Range Slider Interactif */}
-                        <div className="price-slider-container relative px-2 py-12 max-w-full">
+                            <div className="price-slider-container relative px-2 py-4 max-w-full">
                             {/* Affichage des valeurs sélectionnées */}
-                            <div className="flex justify-between mb-6 text-sm font-medium">
+                            <div className="flex justify-between mb-4 text-sm font-medium">
                                 <div className="bg-[#0C8CE9] text-white px-3 py-1 rounded-full text-center min-w-[60px]">
                                     {priceRange[0]} MRU
                                 </div>
@@ -417,23 +430,24 @@ export default function Sidebar({
                     isExpanded={expandedSections.date}
                     onToggle={() => toggleSection('date')}
                 >
-                    <div className="space-y-2">
-                        {dateOptions.map((option) => (
-                            <label key={option.id} className="flex items-center gap-3 py-2 hover:bg-gray-50 rounded-lg px-2 cursor-pointer">
-                                <input
-                                    type="radio"
-                                    name="dateRange"
-                                    value={option.id}
-                                    checked={filters.dateRange === option.id}
-                                    onChange={(e) => handleFilterChange('dateRange', e.target.value)}
-                                    className="w-4 h-4 text-[#0C8CE9] border-gray-300 focus:ring-[#0C8CE9]"
-                                />
-                                <div>
-                                    <div className="text-sm font-medium text-gray-700">{option.name}</div>
-                                    <div className="text-xs text-gray-500">{option.period}</div>
-                                </div>
-                            </label>
-                        ))}
+                    <div className="space-y-3">
+                        <div className="flex flex-col">
+                            <label className="text-sm font-medium text-gray-700">Date de début</label>
+                            <input
+                                type="date"
+                                value={dateStart}
+                                onChange={(e) => { setDateStart(e.target.value); handleFilterChange('dateStart', e.target.value || null); }}
+                                className="w-full border border-gray-200 rounded px-3 py-2 text-sm text-black bg-white placeholder-gray-400 focus:outline-none focus:border-[#0C8CE9] focus:ring-2 focus:ring-[#0C8CE9]/20"
+                            />
+
+                            <label className="mt-2 text-sm font-medium text-gray-700">Date de fin</label>
+                            <input
+                                type="date"
+                                value={dateEnd}
+                                onChange={(e) => { setDateEnd(e.target.value); handleFilterChange('dateEnd', e.target.value || null); }}
+                                className="w-full border border-gray-200 rounded px-3 py-2 text-sm text-black bg-white placeholder-gray-400 focus:outline-none focus:border-[#0C8CE9] focus:ring-2 focus:ring-[#0C8CE9]/20"
+                            />
+                        </div>
                     </div>
                 </FilterSection>
 

@@ -1,11 +1,13 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import Card from "../pages_common/card";
 import Header from "../../composant/layout/header";
 import Footer from "../../composant/layout/footer";
 import Sidebar from "../../composant/layout/sidebar";
 import CategorieBar from "../../composant/layout/categorie";
 import { FaPaintBrush, FaCode, FaChartBar, FaCamera, FaMusic, FaGraduationCap, FaFilter } from "react-icons/fa";
+import { ROUTES } from "../../utils/routes";
 
 export default function Catalogue() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -17,11 +19,23 @@ export default function Catalogue() {
         subcategories: [],
         languages: [],
         dateRange: null,
+        dateStart: null,
+        dateEnd: null,
         hasPromotion: false,
         isFree: false,
         isNew: false,
         priceRange: [0, 2000]
     });
+
+    // Read category from query param (e.g. /formations?category=design)
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    useEffect(() => {
+        const cat = searchParams ? searchParams.get("category") : null;
+        if (cat) {
+            setSelectedCategory(cat);
+        }
+    }, [searchParams]);
 
     // Gestion du scroll pour la barre de catégories (même logique que le header)
     useEffect(() => {
@@ -53,7 +67,7 @@ export default function Catalogue() {
             description: "Apprenez React et Next.js de zéro jusqu'au niveau avancé avec des projets réels",
             avatar: "/images/users/profile.jpg",
             author: "Sarah Martin",
-            oldPrice: "1200 MRU",
+            oldPrice: "12000 MRU",
             price: "900 MRU",
             priceNumeric: 900,
             language: "fr",
@@ -74,11 +88,11 @@ export default function Catalogue() {
             description: "Maîtrisez les principes du design et créez des interfaces utilisateur modernes",
             avatar: "/images/users/profile.jpg",
             author: "Ahmed Benali",
-            oldPrice: "800 MRU",
+            oldPrice: "",
             price: "600 MRU",
             priceNumeric: 600,
             language: "fr",
-            hasPromotion: true,
+            hasPromotion: false,
             isFree: false,
             isNew: true,
             dateAdded: "2026-03-25"
@@ -95,11 +109,11 @@ export default function Catalogue() {
             description: "Stratégies complètes pour réussir votre marketing en ligne et sur les réseaux",
             avatar: "/images/users/profile.jpg",
             author: "Fatima Zahra",
-            oldPrice: "600 MRU",
+            oldPrice: "",
             price: "450 MRU",
             priceNumeric: 450,
             language: "fr",
-            hasPromotion: true,
+            hasPromotion: false,
             isFree: false,
             isNew: false,
             dateAdded: "2026-02-10"
@@ -268,8 +282,26 @@ export default function Catalogue() {
         // Filtre par nouveautés
         const matchesNew = !filters.isNew || formation.isNew;
 
-        // Filtre par date
-        const matchesDate = !filters.dateRange || (() => {
+        // Filtre par date — supporte dateStart/dateEnd (prioritaires) et presets en fallback
+        const matchesDate = (() => {
+            // If explicit start/end provided, use interval filtering
+            if (filters.dateStart || filters.dateEnd) {
+                const addedDate = new Date(formation.dateAdded);
+                if (filters.dateStart) {
+                    const start = new Date(filters.dateStart);
+                    start.setHours(0,0,0,0);
+                    if (addedDate < start) return false;
+                }
+                if (filters.dateEnd) {
+                    const end = new Date(filters.dateEnd);
+                    end.setHours(23,59,59,999);
+                    if (addedDate > end) return false;
+                }
+                return true;
+            }
+
+            // Fallback to existing presets (recent/month/quarter/year)
+            if (!filters.dateRange) return true;
             const addedDate = new Date(formation.dateAdded);
             const now = new Date();
             const diffTime = Math.abs(now - addedDate);
@@ -417,11 +449,16 @@ export default function Catalogue() {
                                                 subcategories: [],
                                                 languages: [],
                                                 dateRange: null,
+                                                dateStart: null,
+                                                dateEnd: null,
                                                 hasPromotion: false,
                                                 isFree: false,
                                                 isNew: false,
                                                 priceRange: [0, 2000]
                                             });
+                                            setSelectedCategory("foryou");
+                                            // remove category query param from URL so useSearchParams updates
+                                            router.replace(ROUTES.BROWSE_COURSES);
                                         }}
                                         className="px-6 py-2 bg-[#0C8CE9] text-white rounded-lg hover:bg-[#0A71BC] transition-colors font-medium"
                                     >

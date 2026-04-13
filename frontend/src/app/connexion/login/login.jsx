@@ -39,10 +39,22 @@ export default function Login() {
                 setSuccess('Connexion réussie !');
                 localStorage.setItem('token', result.token);
                 localStorage.setItem('user', JSON.stringify(result.user));
-                
+
+                // Rediriger selon le rôle de l'utilisateur
+                const role = result?.user?.role;
+                let redirectTo = ROUTES.HOME || '/';
+                if (role === 'acheteur') {
+                    redirectTo = '/acheteur';
+                } else if (role === 'formateur') {
+                    // Redirect formateurs to the existing formations list page
+                    redirectTo = ROUTES.TRAINER_FORMATIONS_LIST || ROUTES.TRAINER_DASHBOARD || '/';
+                } else if (role === 'administrateur') {
+                    redirectTo = ROUTES.DASHBOARD || '/';
+                }
+
                 setTimeout(() => {
-                    router.push(ROUTES.HOME || '/');
-                }, 1500);
+                    router.push(redirectTo);
+                }, 1200);
             } else {
                 setError(result.error || result.message || 'Erreur lors de la connexion');
             }
