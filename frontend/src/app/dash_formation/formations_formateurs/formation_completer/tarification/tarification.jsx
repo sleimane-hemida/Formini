@@ -19,6 +19,8 @@ export default function TarificationPage() {
 
   const [price, setPrice] = useState('');
   const [promoPrice, setPromoPrice] = useState('');
+  const [dateDebutPromo, setDateDebutPromo] = useState('');
+  const [dateFinPromo, setDateFinPromo] = useState('');
   const [promoError, setPromoError] = useState('');
   const [desiredNet, setDesiredNet] = useState('');
   const [computeMsg, setComputeMsg] = useState('');
@@ -29,24 +31,56 @@ export default function TarificationPage() {
   const [confirmMode, setConfirmMode] = useState('activate');
 
   useEffect(() => {
-    try {
-      const key = `formation_draft_${fId || 'temp'}`;
-      const raw = localStorage.getItem(key);
-      if (raw) {
-        const draft = JSON.parse(raw);
-        const t = draft.tarification || {};
-        setPrice(t.price ?? '');
-        setPromoPrice(t.promoPrice ?? '');
-        setIsFree(Boolean(t.isFree));
-        // validate loaded values: promo must be strictly less than price
-        const p = Number(String(t.price ?? '').replace(',', '.'));
-        const pp = Number(String(t.promoPrice ?? '').replace(',', '.'));
-        if (Number.isFinite(p) && Number.isFinite(pp) && p > 0 && pp >= p) {
-          setPromoError('Le prix promotionnel doit être strictement inférieur au prix normal.');
-        }
+    if (fId) {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      if (!token) {
+        console.error('❌ No token found');
+        return;
       }
-    } catch (err) {
-      // ignore
+
+      // Load data from backend
+      fetch(`http://localhost:5000/api/formations/${fId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+          return res.json();
+        })
+        .then(data => {
+          console.log('📊 Tarification loaded data:', data);
+          setIsFree(Boolean(data.est_gratuite));
+          // Charger TOUJOURS les prix du backend, peu importe est_gratuite
+          setPrice(data.prix_normal ? String(data.prix_normal) : '');
+          setPromoPrice(data.prix_promo ? String(data.prix_promo) : '');
+          setDateDebutPromo(data.date_debut_promo ? data.date_debut_promo.split('T')[0] : '');
+          setDateFinPromo(data.date_fin_promo ? data.date_fin_promo.split('T')[0] : '');
+        })
+        .catch(err => console.error('❌ Erreur lors du chargement:', err));
+    } else {
+      // Load from localStorage for new formations
+      try {
+        const key = `formation_draft_${fId || 'temp'}`;
+        const raw = localStorage.getItem(key);
+        if (raw) {
+          const draft = JSON.parse(raw);
+          const t = draft.tarification || {};
+          setPrice(t.price ?? '');
+          setPromoPrice(t.promoPrice ?? '');
+          setDateDebutPromo(t.dateDebutPromo ?? '');
+          setDateFinPromo(t.dateFinPromo ?? '');
+          setIsFree(Boolean(t.isFree));
+          // validate loaded values: promo must be strictly less than price
+          const p = Number(String(t.price ?? '').replace(',', '.'));
+          const pp = Number(String(t.promoPrice ?? '').replace(',', '.'));
+          if (Number.isFinite(p) && Number.isFinite(pp) && p > 0 && pp >= p) {
+            setPromoError('Le prix promotionnel doit être strictement inférieur au prix normal.');
+          }
+        }
+      } catch (err) {
+        // ignore
+      }
     }
   }, [fId]);
 
@@ -64,24 +98,83 @@ export default function TarificationPage() {
 
   const handleSave = async (e) => {
     e && e.preventDefault && e.preventDefault();
-    // final validation
-    if (!isFree) {
+    
+    // Validation: si pas gratuit, le prix normal est OBLIGATOIRE
+    if (!isFree && !price) {
+      setPromoError('❌ Le prix normal est obligatoire pour une formation payante.');
+      return;
+    }
+    
+    // Validation: if promo price is set, validate it and optionally require dates
+    if (!isFree && promoPrice) {
       const p = toNumber(price);
       const pp = toNumber(promoPrice);
       if (p > 0 && pp >= p) {
         setPromoError('Le prix promotionnel doit être strictement inférieur au prix normal.');
         return;
       }
+      // Note: Backend will validate dates if prix_promo is set, so we don't need to check here
     }
+    
     setSaving(true);
     setMessage(null);
     try {
-      const payload = { price: price, promoPrice: promoPrice, isFree };
-      saveDraft(payload);
-      await new Promise(res => setTimeout(res, 400));
-      setMessage('Tarification sauvegardée (local).');
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      if (!token) {
+        setMessage('Vous devez être connecté.');
+        setSaving(false);
+        return;
+      }
+
+      const payload = {
+        est_gratuite: isFree,
+        prix_normal: isFree ? null : (price ? toNumber(price) : null),
+        prix_promo: isFree || !promoPrice ? null : toNumber(promoPrice),
+        date_debut_promo: (isFree || !promoPrice) ? null : (dateDebutPromo ? dateDebutPromo : null),
+        date_fin_promo: (isFree || !promoPrice) ? null : (dateFinPromo ? dateFinPromo : null)
+      };
+
+      console.log('📤 Saving Tarification payload:', payload);
+
+      const res = await fetch(`http://localhost:5000/api/formations/${fId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        console.error('❌ Backend error:', text);
+        try {
+          const json = JSON.parse(text);
+          if (json.errors && Array.isArray(json.errors)) {
+            setMessage(`Erreur: ${json.errors.join(', ')}`);
+          } else {
+            setMessage(json.error || 'Erreur lors de l\'enregistrement.');
+          }
+        } catch {
+          setMessage('Erreur lors de l\'enregistrement.');
+        }
+        setSaving(false);
+        return;
+      }
+
+      setMessage('✅ Tarification enregistrée avec succès!');
+      
+      // Save draft locally for reference
+      const draftPayload = { price: price, promoPrice: promoPrice, isFree };
+      saveDraft(draftPayload);
+      
+      // Redirect to formations list after 1.5 seconds
+      setTimeout(() => {
+        router.push(`/dash_formation/formations_formateurs/formations_liste`);
+      }, 1500);
     } catch (err) {
-      setMessage('Erreur lors de la sauvegarde.');
+      console.error('❌ Error:', err);
+      setMessage('Erreur réseau lors de l\'enregistrement.');
     } finally {
       setSaving(false);
     }
@@ -155,11 +248,13 @@ export default function TarificationPage() {
                           <input type="number" step="0.01" min="0" placeholder="0.00" value={price} onChange={(e) => {
                             const v = e.target.value;
                             setPrice(v);
-                            // if promo exists and is >= new price, show persistent error
+                            // Effacer l'erreur quand l'utilisateur tape
+                            if (v !== '') {
+                              setPromoError('');
+                            }
+                            // Vérifier conflit promo vs prix
                             if (v !== '' && promoPrice !== '' && toNumber(promoPrice) >= toNumber(v)) {
                               setPromoError('Le prix promotionnel doit être strictement inférieur au prix normal.');
-                            } else {
-                              setPromoError('');
                             }
                           }} disabled={isFree} className="w-full pr-12 px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
                           <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">MRU</span>
@@ -186,6 +281,29 @@ export default function TarificationPage() {
                         {promoError && <div className="text-xs text-red-600 mt-2">{promoError}</div>}
                       </div>
                     </div>
+
+                    {promoPrice && !isFree && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                        <div>
+                          <label className="block text-sm font-semibold mb-2">Date début promo</label>
+                          <input 
+                            type="date" 
+                            value={dateDebutPromo} 
+                            onChange={(e) => setDateDebutPromo(e.target.value)}
+                            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200" 
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-semibold mb-2">Date fin promo</label>
+                          <input 
+                            type="date" 
+                            value={dateFinPromo} 
+                            onChange={(e) => setDateFinPromo(e.target.value)}
+                            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200" 
+                          />
+                        </div>
+                      </div>
+                    )}
 
                     <div className="mt-6 flex items-center justify-between">
                       <div>

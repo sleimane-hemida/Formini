@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Sidebar from '../../../sidebar/sidebar';
 import PageHeader from '../../../dash_principale/PageHeader';
 import Footer from '../../../../../composant/layout/footer';
-import { categories } from '../../../../../composant/layout/categorie';
 import ProgressStepper from '../../../../../composant/common/ProgressStepper';
 
 const Header = dynamic(
@@ -17,6 +16,9 @@ export default function GeneralForma() {
 	const router = useRouter();
 	const params = useSearchParams();
 	const fId = params ? params.get('fId') : null;
+	
+	const [categories, setCategories] = useState([]);
+	const [subcategories, setSubcategories] = useState([]);
 
 	const [form, setForm] = useState({
 		name: '',
@@ -24,18 +26,82 @@ export default function GeneralForma() {
 		descriptionLong: '',
 		language: 'fr',
 		niveau: 'debutant',
-		categoryKey: (categories && categories.length) ? categories[0].key : '',
-		subcategory: '',
+		categoryId: '',
+		subcategoryId: '',
 		coverImages: []
 	});
 	const [saving, setSaving] = useState(false);
 	const [message, setMessage] = useState(null);
 	const [errors, setErrors] = useState({});
 
+	// Récupérer les catégories et sous-catégories au montage
+	useEffect(() => {
+		Promise.all([
+			fetch('http://localhost:5000/api/categories').then(res => res.json()),
+			fetch('http://localhost:5000/api/subcategories').then(res => res.json())
+		])
+			.then(([cats, subcats]) => {
+				setCategories(cats || []);
+				setSubcategories(subcats || []);
+			})
+			.catch(err => console.error('Erreur lors du chargement des catégories:', err));
+	}, []);
+
 	useEffect(() => {
 		if (fId) {
-			// Placeholder: fetch real data from backend here
-			setForm(prev => ({ ...prev, name: `Formation ${fId}`, descriptionCourt: 'Description courte (à remplacer)' }));
+			const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+			if (!token) {
+				console.error('❌ No token found');
+				return;
+			}
+
+			// Récupérer les données de la formation depuis le backend
+			fetch(`http://localhost:5000/api/formations/${fId}`, {
+				headers: {
+					'Authorization': `Bearer ${token}`
+				}
+			})
+				.then(res => {
+					if (!res.ok) {
+						throw new Error(`HTTP error! status: ${res.status}`);
+					}
+					return res.json();
+				})
+				.then(data => {
+					console.log('🔍 Formation raw data:', {
+						categoryId: data.categoryId,
+						subcategoryId: data.subcategoryId,
+						Category: data.Category,
+						Subcategory: data.subcategory,
+						description_longue: data.description_longue,
+						niveau: data.niveau
+					});
+					
+					// Gérer les images: si cover_images existe et est un array, l'utiliser; sinon utiliser image
+					const images = data.cover_images && Array.isArray(data.cover_images) && data.cover_images.length > 0
+						? data.cover_images
+						: (data.image ? [data.image] : []);
+					
+					setForm(prev => ({
+						...prev,
+						name: data.name || '',
+						descriptionCourt: data.description || '',
+						descriptionLong: data.description_longue || '',
+						language: data.language || 'fr',
+						niveau: data.niveau || 'debutant',
+						categoryId: data.categoryId || (data.Category?.id || ''),
+						subcategoryId: data.subcategoryId || (data.subcategory?.id || ''),
+						coverImages: images
+					}));
+					
+					console.log('✅ Form updated:', {
+						description_longue: data.description_longue,
+						niveau: data.niveau,
+						categoryId: data.categoryId || data.Category?.id,
+						subcategoryId: data.subcategoryId || data.subcategory?.id
+					});
+				})
+				.catch(err => console.error('❌ Erreur lors du chargement:', err));
 		}
 	}, [fId]);
 
@@ -45,10 +111,11 @@ export default function GeneralForma() {
 	};
 
 	const handleCategoryChange = (e) => {
-		const key = e.target.value;
-		const cat = categories.find(c => c.key === key);
-		const defaultSub = cat?.subcategories?.length ? cat.subcategories[0] : '';
-		setForm(prev => ({ ...prev, categoryKey: key, subcategory: defaultSub }));
+		const categoryId = e.target.value;
+		// Récupérer les sous-catégories de la catégorie sélectionnée
+		const selectedSubs = subcategories.filter(s => s.categoryId === categoryId);
+		const defaultSubId = selectedSubs.length > 0 ? selectedSubs[0].id : '';
+		setForm(prev => ({ ...prev, categoryId, subcategoryId: defaultSubId }));
 	};
 
 	const validateForm = () => {
@@ -73,11 +140,59 @@ export default function GeneralForma() {
 		setSaving(true);
 		setMessage(null);
 		try {
-			// TODO: persist to backend
-			await new Promise(res => setTimeout(res, 600));
-			setMessage('Modifications enregistrées (local).');
+			const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+			if (!token) {
+				setMessage('Vous devez être connecté.');
+				return;
+			}
+
+			// Séparer les images existantes (URLs) des nouvelles (base64)
+			const existingImages = form.coverImages.filter(img => !img.startsWith('data:'));
+			const newImages = form.coverImages.filter(img => img.startsWith('data:'));
+			
+			// Pour l'instant, on envoie juste les URLs existantes
+			const payload = {
+				description: form.descriptionCourt,
+				description_longue: form.descriptionLong,
+				niveau: form.niveau,
+				language: form.language,
+				categoryId: form.categoryId,
+				subcategoryId: form.subcategoryId,
+				cover_images: existingImages.length > 0 ? existingImages : undefined
+			};
+
+			console.log('📤 Sending payload:', payload);
+
+			const res = await fetch(`http://localhost:5000/api/formations/${fId}`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`
+				},
+				body: JSON.stringify(payload)
+			});
+
+			if (!res.ok) {
+				const text = await res.text();
+				console.error('❌ Backend error response:', text);
+				try {
+					const data = JSON.parse(text);
+					setMessage(data?.error || 'Erreur lors de l\'enregistrement.');
+				} catch (e) {
+					setMessage('Erreur serveur - vérifiez la console backend');
+				}
+				return;
+			}
+
+			setMessage('✅ Modifications enregistrées avec succès!');
+			
+			// Redirect to next step after 1 second
+			setTimeout(() => {
+				router.push(`/dash_formation/formations_formateurs/formation_completer/detail_forma?fId=${fId}`);
+			}, 1000);
 		} catch (err) {
-			setMessage('Erreur lors de l’enregistrement.');
+			console.error('❌ Error:', err);
+			setMessage('Erreur réseau lors de l\'enregistrement.');
 		} finally {
 			setSaving(false);
 		}
@@ -85,16 +200,15 @@ export default function GeneralForma() {
 
 	useEffect(() => {
 		// Ensure a default subcategory exists for the selected category
-		const cat = categories.find(c => c.key === form.categoryKey);
-		const subs = cat?.subcategories || [];
-		if (subs.length && !form.subcategory) {
-			setForm(prev => ({ ...prev, subcategory: subs[0] }));
-		} else if (!subs.length && form.subcategory) {
-			setForm(prev => ({ ...prev, subcategory: '' }));
+		if (form.categoryId && subcategories.length > 0 && !form.subcategoryId) {
+			const subs = subcategories.filter(s => s.categoryId === form.categoryId);
+			if (subs.length > 0) {
+				setForm(prev => ({ ...prev, subcategoryId: subs[0].id }));
+			}
 		}
-	}, [form.categoryKey, form.subcategory]);
+	}, [form.categoryId, subcategories]);
 
-	const currentSubcategories = categories.find(c => c.key === form.categoryKey)?.subcategories || [];
+	const currentSubcategories = subcategories.filter(s => s.categoryId === form.categoryId);
 
 	const handleCoverImagesUpload = async (e) => {
 		const files = Array.from(e.target.files || []);
@@ -107,6 +221,7 @@ export default function GeneralForma() {
 				reader.readAsDataURL(file);
 			}));
 			const images = await Promise.all(promises);
+			// Garder les images existantes et ajouter les nouvelles
 			setForm(prev => ({ ...prev, coverImages: [...prev.coverImages, ...images].slice(0,5) }));
 		} catch (err) {
 			console.error('Image read error', err);
@@ -197,17 +312,19 @@ export default function GeneralForma() {
 
 											<div>
 												<label className="block text-sm font-semibold mb-2">Catégorie</label>
-												<select name="categoryKey" value={form.categoryKey} onChange={handleCategoryChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
-													{categories.map(c => <option key={c.key} value={c.key}>{c.label}</option>)}
+												<select name="categoryId" value={form.categoryId} onChange={handleCategoryChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
+													<option value="">Sélectionner une catégorie</option>
+													{categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
 												</select>
 											</div>
 
 											<div>
 												<label className="block text-sm font-semibold mb-2">Sous-catégorie</label>
 												{currentSubcategories.length ? (
-													<select name="subcategory" value={form.subcategory} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
-														{currentSubcategories.map((s, i) => (
-															<option key={i} value={s}>{s}</option>
+													<select name="subcategoryId" value={form.subcategoryId} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
+														<option value="">Sélectionner une sous-catégorie</option>
+														{currentSubcategories.map((s) => (
+															<option key={s.id} value={s.id}>{s.name}</option>
 														))}
 													</select>
 												) : (

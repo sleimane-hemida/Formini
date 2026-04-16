@@ -46,12 +46,41 @@ export default function LeconPage() {
 		if (editingLessonId === deleteTargetId) setEditingLessonId(null);
 	};
 
-	const addLesson = () => {
-		const nextId = lessons.length ? Math.max(...lessons.map(l => l.id)) + 1 : 1;
-		const next = [...lessons, { id: nextId, title: `Leçon ${nextId}` }];
-		setLessons(next);
-		saveLessonsDraft(next);
-		setEditingLessonId(nextId);
+	const addLesson = async () => {
+		const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+		if (!token) {
+			alert('Vous devez être connecté.');
+			return;
+		}
+
+		try {
+			const nextOrder = lessons.length + 1;
+			const response = await fetch('http://localhost:5000/api/lessons', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`
+				},
+				body: JSON.stringify({
+					moduleId: moduleId,
+					titre: `Leçon ${nextOrder}`,
+					ordre: nextOrder
+				})
+			});
+
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+
+			const newLesson = await response.json();
+			console.log('✅ Lesson created:', newLesson);
+			
+			setLessons(prev => [...prev, newLesson]);
+			setEditingLessonId(newLesson.id);
+		} catch (err) {
+			console.error('❌ Error creating lesson:', err);
+			alert('Erreur lors de la création de la leçon');
+		}
 	};
 
 	const saveLessonsDraft = (updatedLessons) => {
@@ -73,48 +102,115 @@ export default function LeconPage() {
 		}
 	};
 
-	const handlePhotoChange = (e, id) => {
+	const handlePhotoChange = (e, lessonId) => {
 		const file = e.target.files && e.target.files[0];
 		if (!file) return;
+		
+		const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+		if (!token) {
+			alert('Vous devez être connecté.');
+			return;
+		}
+
 		const reader = new FileReader();
-		reader.onload = () => {
+		reader.onload = async () => {
 			const dataUrl = reader.result;
+			
+			// Show preview immediately
 			setLessons(prev => {
-				const next = prev.map(x => x.id === id ? { ...x, bg: dataUrl } : x);
-				saveLessonsDraft(next);
+				const next = prev.map(x => x.id === lessonId ? { ...x, bg: dataUrl } : x);
 				return next;
 			});
+			
+			// Upload to backend
+			try {
+				const formData = new FormData();
+				formData.append('file', file);
+				formData.append('lessonId', lessonId);
+				
+				const response = await fetch('http://localhost:5000/api/lesson-cover', {
+					method: 'POST',
+					headers: {
+						'Authorization': `Bearer ${token}`
+					},
+					body: formData
+				});
+				
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+				
+				const result = await response.json();
+				console.log('✅ Photo saved:', result);
+				
+				// Update with actual server URL
+				setLessons(prev => {
+					const next = prev.map(x => x.id === lessonId ? { ...x, bg: `http://localhost:5000${result.url}` } : x);
+					return next;
+				});
+			} catch (err) {
+				console.error('❌ Error uploading photo:', err);
+				alert('Erreur lors de l\'upload de la photo');
+			}
 		};
 		reader.readAsDataURL(file);
 		e.target.value = '';
 	};
 
 	useEffect(() => {
-		try {
-			const key = `formation_draft_${fId || 'temp'}`;
-			const raw = localStorage.getItem(key);
-			if (raw) {
-				const draft = JSON.parse(raw);
-				const mId = Number(moduleId) || 1;
-				const mod = (draft.modules && draft.modules.find && draft.modules.find(x => Number(x.id) === Number(mId))) || (draft.modules && draft.modules[0]);
-				const lessonsArr = (mod && mod.lessons && mod.lessons.length) ? mod.lessons : [
-					{ id: 1, title: 'Leçon 1' },
-					{ id: 2, title: 'Leçon 2' },
-					{ id: 3, title: 'Leçon 3' },
-				];
-				setLessons(lessonsArr);
-				setModuleTitle((mod && mod.title) ? mod.title : `Module ${mId}`);
-				return;
-			}
-		} catch (err) {
-			// ignore
+		if (!moduleId) return;
+
+		const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+		if (!token) {
+			console.error('❌ No token found');
+			return;
 		}
 
-		setLessons([
-			{ id: 1, title: 'Leçon 1' },
-			{ id: 2, title: 'Leçon 2' },
-		]);
-		setModuleTitle(`Module ${moduleId || 1}`);
+		console.log('📥 Loading lessons for module:', moduleId);
+
+		// Load lessons from backend
+		fetch(`http://localhost:5000/api/modules/${encodeURIComponent(moduleId)}/lessons`, {
+			headers: {
+				'Authorization': `Bearer ${token}`
+			}
+		})
+			.then(res => {
+				if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+				return res.json();
+			})
+			.then(data => {
+				console.log('✅ Lessons loaded:', data);
+				const lessonsArr = Array.isArray(data) ? data : [];
+				
+				// Map lessons and set cover images from backend
+				const mappedLessons = lessonsArr.map(lesson => ({
+					...lesson,
+					bg: lesson.image_couverture ? `http://localhost:5000${lesson.image_couverture}` : undefined
+				}));
+				
+				setLessons(mappedLessons);
+				
+				// Try to get module title
+				if (fId) {
+					fetch(`http://localhost:5000/api/formations/${encodeURIComponent(fId)}`, {
+						headers: {
+							'Authorization': `Bearer ${token}`
+						}
+					})
+						.then(res => res.ok ? res.json() : null)
+						.then(data => {
+							if (data && data.Modules && Array.isArray(data.Modules)) {
+								const mod = data.Modules.find(m => String(m.id) === String(moduleId));
+								if (mod) setModuleTitle(mod.title || `Module ${moduleId}`);
+							}
+						})
+						.catch(err => console.error('Error loading module title:', err));
+				}
+			})
+			.catch(err => {
+				console.error('❌ Error loading lessons:', err);
+				setLessons([]);
+			});
 	}, [fId, moduleId]);
 
 	return (
@@ -165,7 +261,7 @@ export default function LeconPage() {
 																className={`w-full text-sm font-semibold focus:outline-none truncate bg-transparent ${l.bg ? 'text-white' : 'text-gray-900'}`}
 																/>
 														) : (
-															<div className={`text-sm font-semibold truncate ${l.bg ? 'text-white' : 'text-gray-900'}`} title={l.title || `Leçon ${l.id}`}>{l.title || `Leçon ${l.id}`}</div>
+															<div className={`text-sm font-semibold truncate ${l.bg ? 'text-white' : 'text-gray-900'}`} title={l.titre || `Leçon ${lessons.indexOf(l) + 1}`}>{l.titre || `Leçon ${lessons.indexOf(l) + 1}`}</div>
 														)}
 														{l.duration && <div className={`${l.bg ? 'text-white/90' : 'text-xs text-gray-500'} mt-3`}>{l.duration} min</div>}
 													</div>
@@ -197,10 +293,10 @@ export default function LeconPage() {
 
 										<div className="mt-6 flex items-center justify-between">
 											<div>
-												<button type="button" onClick={() => router.back()} className="px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-800 transition">Retour</button>
+												<button type="button" onClick={() => router.back()} className="px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-800 transition">Retour aux modules</button>
 											</div>
 											<div>
-												<button onClick={() => router.push(`/dash_formation/formations_formateurs/formation_completer/tarification?page=1${fId?`&fId=${fId}`:''}`)} className="bg-[#0C8CE9] hover:bg-[#096bb3] text-white px-5 py-2 rounded-lg">Enregistrer</button>
+												<button onClick={() => router.back()} className="bg-[#0C8CE9] hover:bg-[#096bb3] text-white px-5 py-2 rounded-lg">Enregistrer</button>
 											</div>
 										</div>
 									</div>

@@ -1,3 +1,15 @@
+// Supprimer une catégorie
+exports.deleteCategory = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const category = await Category.findByPk(id);
+    if (!category) return res.status(404).json({ error: 'Catégorie non trouvée' });
+    await category.destroy();
+    res.json({ message: 'Catégorie supprimée' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 const { Category } = require('../models');
 
 exports.createCategory = async (req, res, next) => {

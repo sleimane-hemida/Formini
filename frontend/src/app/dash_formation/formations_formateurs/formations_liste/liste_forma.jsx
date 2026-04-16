@@ -24,13 +24,8 @@ import PageHeader from '../../dash_principale/PageHeader';
 export default function ListeForma() {
   const router = useRouter();
 
-  const initialRows = [
-    { id: 'ph1', name: 'Exemple — Initiation React', description: 'Introduction aux composants, props et états', price: 'Gratuit', status: 'Publié', active: true, image: 'https://picsum.photos/seed/ph1/320/180', promotionStatus: 'pending' },
-    { id: 'ph2', name: 'Exemple — CSS Avancé', description: 'Flexbox, Grid et animations pratiques', price: '50 €', status: 'Brouillon', active: false, image: 'https://picsum.photos/seed/ph2/320/180' },
-    { id: 'ph3', name: 'Exemple — Productivité Dev', description: 'Outils et méthodes pour développeurs', price: '20 €', status: 'Publié', active: true, image: 'https://picsum.photos/seed/ph3/320/180', promotionStatus: 'approved' }
-  ];
-
-  const [formations, setFormations] = useState(initialRows);
+  const [formations, setFormations] = useState([]);
+  const [loadingFormations, setLoadingFormations] = useState(true);
   const [menuOpen, setMenuOpen] = useState(null);
   const [draggedIndex, setDraggedIndex] = useState(null);
   const [dragOverIndex, setDragOverIndex] = useState(null);
@@ -41,6 +36,62 @@ export default function ListeForma() {
   const ghostListenerRef = useRef(null);
   const containerRef = useRef(null);
   const containerRectRef = useRef(null);
+
+  // Récupérer les formations du backend
+  useEffect(() => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    if (!token) {
+      console.error('❌ No token found - user not authenticated');
+      setLoadingFormations(false);
+      return;
+    }
+
+    console.log('🔄 Fetching formations for current user...');
+
+    fetch('http://localhost:5000/api/formations', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+      .then(res => {
+        console.log('📊 Response status:', res.status);
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then(data => {
+        console.log('✅ Formations fetched:', data);
+        // Mapper les données du backend à la structure du composant
+        const mappedFormations = (Array.isArray(data) ? data : []).map(formation => {
+          let priceDisplay = 'À définir';
+          if (formation.est_gratuite) {
+            priceDisplay = 'Gratuit';
+          } else if (formation.prix_normal) {
+            priceDisplay = `${Number(formation.prix_normal).toFixed(2)} MRU`;
+          }
+          
+          return {
+            id: formation.id,
+            name: formation.name,
+            description: formation.description || 'Pas de description',
+            price: priceDisplay,
+            status: formation.statut || 'brouillon',
+            active: formation.statut === 'en_ligne' || formation.isActive,
+            image: formation.cover_images && formation.cover_images.length > 0 
+              ? formation.cover_images[0] 
+              : '/images/users/formation.png'
+          };
+        });
+        console.log('💾 Mapped formations:', mappedFormations);
+        setFormations(mappedFormations);
+        setLoadingFormations(false);
+      })
+      .catch(err => {
+        console.error('❌ Erreur lors du chargement des formations:', err.message);
+        setLoadingFormations(false);
+      });
+  }, []);
 
   useEffect(() => {
     const onDocClick = (e) => {
@@ -53,9 +104,77 @@ export default function ListeForma() {
     return () => document.removeEventListener('mousedown', onDocClick);
   }, [menuOpen]);
 
-  const toggleActive = (id) => {
+  const toggleActive = async (id) => {
+    const formation = formations.find(f => f.id === id);
+    if (!formation) return;
+
+    // Optimistic update
     setFormations(prev => prev.map(f => f.id === id ? { ...f, active: !f.active } : f));
-    // TODO: call backend to persist activation state
+    
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    if (!token) {
+      alert('Vous devez être connecté.');
+      // Revert
+      setFormations(prev => prev.map(f => f.id === id ? { ...f, active: !f.active } : f));
+      return;
+    }
+
+    try {
+      // formation.active is current state (before toggle), so we need opposite
+      const endpoint = formation.active ? '/disable' : '/enable';
+      
+      const res = await fetch(`http://localhost:5000/api/formations/${id}${endpoint}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) {
+        alert('Erreur lors de la mise à jour de l\'activation.');
+        // Revert optimistic update
+        setFormations(prev => prev.map(f => f.id === id ? { ...f, active: !f.active } : f));
+      }
+    } catch (err) {
+      console.error('Erreur:', err);
+      alert('Erreur réseau lors de la mise à jour.');
+      // Revert optimistic update
+      setFormations(prev => prev.map(f => f.id === id ? { ...f, active: !f.active } : f));
+    }
+  };
+
+  const handleDeleteFormation = async (formationId) => {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette formation ?')) {
+      return;
+    }
+
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    if (!token) {
+      alert('Vous devez être connecté pour supprimer une formation.');
+      return;
+    }
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/formations/${formationId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data?.error || data?.message || 'Erreur lors de la suppression.');
+        return;
+      }
+
+      // Retirer la formation de l'état local
+      setFormations(prev => prev.filter(f => f.id !== formationId));
+      setMenuOpen(null);
+    } catch (err) {
+      console.error('Erreur lors de la suppression:', err);
+      alert('Erreur réseau lors de la suppression.');
+    }
   };
 
   const handleDragStart = (e, index) => {
@@ -194,7 +313,12 @@ export default function ListeForma() {
                   />
 
                   <div className="space-y-4">
-                    {formations.map((f, idx) => (
+                    {loadingFormations ? (
+                      <div className="text-center py-8 text-gray-500">Chargement de vos formations...</div>
+                    ) : formations.length === 0 ? (
+                      <div className="text-center py-8 text-gray-500">Aucune formation trouvée</div>
+                    ) : (
+                      formations.map((f, idx) => (
                       <article
                         key={f.id || idx}
                         role="button"
@@ -230,7 +354,6 @@ export default function ListeForma() {
                             <BsGripVertical className="w-6 h-6" />
                           </button>
                           <img src={f.image} alt={f.name} className="w-20 h-12 object-cover rounded-md" />
-                          <div className="text-sm text-gray-500 w-20">{f.id}</div>
                           <div className="min-w-0">
                             <div className="font-medium truncate text-gray-900">{f.name}</div>
                             <div className="text-xs text-gray-500 mt-1 truncate">{f.description}</div>
@@ -276,7 +399,7 @@ export default function ListeForma() {
                                   <FiExternalLink className="w-4 h-4 text-gray-500" />
                                   <span>Voir en ligne</span>
                                 </button>
-                                <button onClick={(e) => { e.stopPropagation(); if (confirm('Supprimer cette formation ?')) setFormations(prev => prev.filter(x => x.id !== f.id)); setMenuOpen(null); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-red-50 text-red-600">
+                                <button onClick={(e) => { e.stopPropagation(); handleDeleteFormation(f.id); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-red-50 text-red-600">
                                   <FiTrash2 className="w-4 h-4 text-red-600" />
                                   <span className="text-red-600">Supprimer</span>
                                 </button>
@@ -285,7 +408,8 @@ export default function ListeForma() {
                           </div>
                         </div>
                       </article>
-                    ))}
+                      ))
+                    )}
                   </div>
                 </div>
               </main>

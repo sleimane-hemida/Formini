@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { categories } from '../../../../composant/layout/categorie';
 
 // Dynamic Header import with fallback (match pattern used in profile.jsx / liste_forma.jsx)
 const Header = dynamic(
@@ -23,31 +22,59 @@ import Footer from '../../../../composant/layout/footer';
 
 export default function NewFormation() {
   const router = useRouter();
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  
   const [form, setForm] = useState({
     name: '',
     descriptionCourt: '',
     descriptionLong: '',
+    niveau: 'debutant',
     coverImages: [],
     language: 'fr',
-    niveau: 'debutant',
-    categoryKey: (categories && categories.length) ? categories[0].key : '',
-    subcategory: ''
+    price: '',
+    categoryId: '',
+    subcategoryId: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
+  // Récupérer les catégories au montage du composant
   useEffect(() => {
-    if (!form.categoryKey) return;
-    const cat = categories.find(c => c.key === form.categoryKey);
-    const subs = cat?.subcategories || [];
-    if (subs.length && !subs.includes(form.subcategory)) {
-      setForm(prev => ({ ...prev, subcategory: subs[0] }));
+    fetch('http://localhost:5000/api/categories')
+      .then(res => res.json())
+      .then(data => {
+        setCategories(data);
+        // Pré-sélectionner la première catégorie
+        if (data.length > 0) {
+          setForm(prev => ({ ...prev, categoryId: data[0].id }));
+        }
+        setLoadingCategories(false);
+      })
+      .catch(err => {
+        console.error('Erreur lors du chargement des catégories:', err);
+        setLoadingCategories(false);
+      });
+  }, []);
+
+  // Récupérer les sous-catégories quand la catégorie change
+  useEffect(() => {
+    if (!form.categoryId) {
+      setSubcategories([]);
+      return;
     }
-    if (!subs.length && form.subcategory) {
-      setForm(prev => ({ ...prev, subcategory: '' }));
-    }
-  }, [form.categoryKey]);
+    
+    fetch(`http://localhost:5000/api/subcategories?categoryId=${form.categoryId}`)
+      .then(res => res.json())
+      .then(data => {
+        setSubcategories(data);
+        // Réinitialiser la sous-catégorie
+        setForm(prev => ({ ...prev, subcategoryId: '' }));
+      })
+      .catch(err => console.error('Erreur lors du chargement des sous-catégories:', err));
+  }, [form.categoryId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -55,10 +82,8 @@ export default function NewFormation() {
   };
 
   const handleCategoryChange = (e) => {
-    const key = e.target.value;
-    const cat = categories.find(c => c.key === key);
-    const defaultSub = cat?.subcategories?.length ? cat.subcategories[0] : '';
-    setForm(prev => ({ ...prev, categoryKey: key, subcategory: defaultSub }));
+    const categoryId = e.target.value;
+    setForm(prev => ({ ...prev, categoryId, subcategoryId: '' }));
   };
 
   const handleCoverImagesUpload = async (e) => {
@@ -87,8 +112,7 @@ export default function NewFormation() {
     if (form.name.length > 40) return 'Le titre doit contenir au maximum 40 caractères.';
     if (!form.descriptionCourt.trim()) return 'La description courte est requise.';
     if (form.descriptionCourt.length > 70) return 'La description courte doit contenir au maximum 70 caractères.';
-    if ((form.descriptionLong || '').length < 500) return 'La description détaillée doit contenir au moins 500 caractères.';
-    if (!form.categoryKey) return 'Veuillez sélectionner une catégorie.';
+    if (!form.categoryId) return 'Veuillez sélectionner une catégorie.';
     return null;
   };
 
@@ -105,14 +129,14 @@ export default function NewFormation() {
     try {
       const payload = {
         name: form.name,
-        description: form.descriptionLong || form.descriptionCourt,
-        shortDescription: form.descriptionCourt,
+        description: form.descriptionCourt,
+        description_longue: form.descriptionLong,
+        niveau: form.niveau,
         image: form.coverImages[0] || null,
-        images: form.coverImages,
+        categoryId: form.categoryId,
+        subcategoryId: form.subcategoryId || null,
         language: form.language,
-        categoryKey: form.categoryKey,
-        subcategory: form.subcategory || null,
-        niveau: form.niveau || null
+        price: form.price || null
       };
 
       const res = await fetch('http://localhost:5000/api/formations', {
@@ -132,8 +156,25 @@ export default function NewFormation() {
         return;
       }
 
+      // Get the newly created formation ID
+      const newFormationId = data.formation?.id || data.id;
+      console.log('📊 Backend response:', data);
+      console.log('✅ Formation créée avec ID:', newFormationId);
+
+      if (!newFormationId) {
+        setError('Erreur : ID de formation non reçu du serveur');
+        setIsSubmitting(false);
+        return;
+      }
+
       setSuccess(true);
-      setTimeout(() => router.push('/dash_formation/formations_formateurs/formations_liste'), 900);
+      
+      // Redirect to step 1 (general_forma) to complete the formation
+      setTimeout(() => {
+        const redirectUrl = `/dash_formation/formations_formateurs/formation_completer/general_forma?fId=${encodeURIComponent(newFormationId)}`;
+        console.log('🔄 Redirection vers:', redirectUrl);
+        router.push(redirectUrl);
+      }, 900);
     } catch (err) {
       console.error(err);
       setError('Erreur réseau.');
@@ -142,7 +183,7 @@ export default function NewFormation() {
     }
   };
 
-  const currentSubcategories = categories.find(c => c.key === form.categoryKey)?.subcategories || [];
+
 
   return (
     <>
@@ -223,19 +264,23 @@ export default function NewFormation() {
 
             <div>
               <label className="block text-sm font-semibold mb-2">Catégorie</label>
-              <select value={form.categoryKey} onChange={handleCategoryChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-shadow shadow-sm">
-                {categories.map(cat => (
-                  <option key={cat.key} value={cat.key}>{cat.label}</option>
-                ))}
+              <select value={form.categoryId} onChange={handleCategoryChange} disabled={loadingCategories} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-shadow shadow-sm disabled:bg-gray-100 disabled:cursor-not-allowed">
+                {loadingCategories ? (
+                  <option>Chargement...</option>
+                ) : (
+                  categories.map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))
+                )}
               </select>
             </div>
 
             <div>
               <label className="block text-sm font-semibold mb-2">Sous-catégorie</label>
-              <select name="subcategory" value={form.subcategory} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-shadow shadow-sm">
+              <select name="subcategoryId" value={form.subcategoryId} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-shadow shadow-sm">
                 <option value="">-- Aucune --</option>
-                {currentSubcategories.map((s, i) => (
-                  <option key={i} value={s}>{s}</option>
+                {subcategories.map(sub => (
+                  <option key={sub.id} value={sub.id}>{sub.name}</option>
                 ))}
               </select>
             </div>

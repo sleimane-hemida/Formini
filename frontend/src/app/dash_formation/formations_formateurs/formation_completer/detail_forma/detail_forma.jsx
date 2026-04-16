@@ -44,10 +44,35 @@ export default function DetailForma() {
 
   useEffect(() => {
     if (fId) {
-      // placeholder: load existing data for fId
-      setForm(prev => ({ ...prev, minutes: prev.minutes || '' }));
-      // if saved audiences exist, load them here (placeholder)
-      // setSelectedAudiences(savedAudiences || []);
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      if (!token) {
+        console.error('❌ No token found');
+        return;
+      }
+
+      // Load existing data from backend
+      fetch(`http://localhost:5000/api/formations/${fId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+          return res.json();
+        })
+        .then(data => {
+          console.log('📊 DetailForma loaded data:', data);
+          setForm(prev => ({
+            ...prev,
+            minutes: data.duree_totale_minutes || '',
+            outcomes: data.ce_que_vous_apprendrez || '',
+            prerequisites: data.prerequis || ''
+          }));
+          if (data.public_cible && Array.isArray(data.public_cible)) {
+            setSelectedAudiences(data.public_cible);
+          }
+        })
+        .catch(err => console.error('❌ Erreur lors du chargement:', err));
     }
   }, [fId]);
 
@@ -74,19 +99,48 @@ export default function DetailForma() {
     setSaving(true);
     setMessage(null);
     try {
-      // TODO: persist to backend
-      const payload = { ...form, targetAudiences: selectedAudiences };
-      // Save draft locally so other steps (module_lecon) can read it. Use fId when available.
-      try {
-        const key = `formation_draft_${fId || 'temp'}`;
-        localStorage.setItem(key, JSON.stringify(payload));
-      } catch (err) {
-        // ignore localStorage errors
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      if (!token) {
+        setMessage('Vous devez être connecté.');
+        setSaving(false);
+        return;
       }
-      await new Promise(res => setTimeout(res, 500));
-      setMessage('Détails enregistrés (local).');
+
+      const payload = {
+        duree_totale_minutes: Number(form.minutes),
+        ce_que_vous_apprendrez: form.outcomes,
+        prerequis: form.prerequisites,
+        public_cible: selectedAudiences
+      };
+
+      console.log('📤 Saving DetailForma payload:', payload);
+
+      const res = await fetch(`http://localhost:5000/api/formations/${fId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        console.error('❌ Backend error:', text);
+        setMessage('Erreur lors de l\'enregistrement.');
+        setSaving(false);
+        return;
+      }
+
+      setMessage('✅ Détails enregistrés avec succès!');
+      
+      // Redirect to next step after 1 second
+      setTimeout(() => {
+        router.push(`/dash_formation/formations_formateurs/formation_completer/module?fId=${fId}`);
+      }, 1000);
     } catch (err) {
-      setMessage('Erreur lors de l’enregistrement.');
+      console.error('❌ Error:', err);
+      setMessage('Erreur réseau lors de l\'enregistrement.');
     } finally {
       setSaving(false);
     }
