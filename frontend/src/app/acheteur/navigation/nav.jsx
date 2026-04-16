@@ -8,7 +8,7 @@ const NAV_ITEMS = [
 	{ label: "Accueil", href: "/acheteur/acceuilAcheteur" },
 	{ label: "Profil", href: "/acheteur/profile" },
 	{ label: "Formation", href: "/acheteur/formation/listeFormation", activePrefix: "/acheteur/formation" },
-	{ label: "Facture", href: "/acheteur/facture" },
+	{ label: "Facture", href: "/acheteur/facture/factureApercu" },
 	{ label: "Abonnement", href: "/acheteur/abonnement" },
 ];
 

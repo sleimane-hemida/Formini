@@ -279,7 +279,7 @@ export default function ModuleLecon({ formationId }) {
                                         ? <FaStar key={i} className="w-3.5 h-3.5 text-amber-400" />
                                         : <FaRegStar key={i} className="w-3.5 h-3.5 text-white/40" />
                                 )}
-                                <span className="text-white/70 text-xs ml-1.5">{formation.students.toLocaleString()} étudiants</span>
+                                <span className="text-white/70 text-xs ml-1.5">{formation.students.toLocaleString()} Ventes</span>
                             </div>
                         </div>
                     </div>
@@ -304,7 +304,7 @@ export default function ModuleLecon({ formationId }) {
                                         { icon: <FiBookOpen size={15} className="text-[#0C8CE9]" />, label: "Modules", value: formation.modules.length },
                                         { icon: <FaPlayCircle size={15} className="text-[#0C8CE9]" />, label: "Leçons", value: totalLecons },
                                         { icon: <FaRegClock size={15} className="text-[#0C8CE9]" />, label: "Durée", value: formation.duration },
-                                        { icon: <FaUsers size={15} className="text-[#0C8CE9]" />, label: "Étudiants", value: formation.students.toLocaleString() },
+                                        { icon: <FaUsers size={15} className="text-[#0C8CE9]" />, label: "Ventes", value: formation.students.toLocaleString() },
                                     ].map((s, i) => (
                                         <div key={i} className="bg-[#F5F8FF] rounded-lg p-3 flex items-center gap-3">
                                             {s.icon}

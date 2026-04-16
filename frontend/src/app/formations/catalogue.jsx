@@ -6,16 +6,17 @@ import Header from "../../composant/layout/header";
 import Footer from "../../composant/layout/footer";
 import Sidebar from "../../composant/layout/sidebar";
 import CategorieBar from "../../composant/layout/categorie";
-import { FaPaintBrush, FaCode, FaChartBar, FaCamera, FaMusic, FaGraduationCap, FaFilter } from "react-icons/fa";
+import { FaPaintBrush, FaCode, FaChartBar, FaCamera, FaMusic, FaGraduationCap, FaFilter, FaUsers, FaShoppingCart } from "react-icons/fa";
 import { ROUTES } from "../../utils/routes";
 
 export default function Catalogue() {
+    const [selectedFormation, setSelectedFormation] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState("foryou");
     const [scrolled, setScrolled] = useState(false);
     const [filters, setFilters] = useState({
-        categories: [],
         subcategories: [],
         languages: [],
         dateRange: null,
@@ -26,6 +27,16 @@ export default function Catalogue() {
         isNew: false,
         priceRange: [0, 2000]
     });
+
+    const openModal = (formation) => {
+        setSelectedFormation(formation);
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setTimeout(() => setSelectedFormation(null), 300); // Wait for transition
+    };
 
     // Read category from query param (e.g. /formations?category=design)
     const searchParams = useSearchParams();
@@ -59,10 +70,10 @@ export default function Catalogue() {
             id: 1,
             image: "/images/users/formation.png",
             category: "Développement Web",
-            categoryId: "web",
-            subcategoryId: "frontend",
+            categoryId: "devtech",
+            subcategoryId: "Développement web",
             categoryIcon: <FaCode size={16} className="text-[#B1B5C3]" />,
-            duration: "4 Mois",
+            duration: "6 Heures",
             title: "Formation React & Next.js Complète",
             description: "Apprenez React et Next.js de zéro jusqu'au niveau avancé avec des projets réels",
             avatar: "/images/users/profile.jpg",
@@ -71,6 +82,8 @@ export default function Catalogue() {
             price: "900 MRU",
             priceNumeric: 900,
             language: "fr",
+            modulesCount: 4,
+            lessonsCount: 15,
             hasPromotion: true,
             isFree: false,
             isNew: false,
@@ -81,7 +94,7 @@ export default function Catalogue() {
             image: "/images/users/formation.png",
             category: "Design",
             categoryId: "design",
-            subcategoryId: "ui-ux",
+            subcategoryId: "UI/UX Design",
             categoryIcon: <FaPaintBrush size={16} className="text-[#B1B5C3]" />,
             duration: "3 Mois",
             title: "UI/UX Design Masterclass",
@@ -92,6 +105,8 @@ export default function Catalogue() {
             price: "600 MRU",
             priceNumeric: 600,
             language: "fr",
+            modulesCount: 8,
+            lessonsCount: 32,
             hasPromotion: false,
             isFree: false,
             isNew: true,
@@ -102,7 +117,7 @@ export default function Catalogue() {
             image: "/images/users/formation.png",
             category: "Marketing",
             categoryId: "marketing",
-            subcategoryId: "digital",
+            subcategoryId: "Marketing digital",
             categoryIcon: <FaChartBar size={16} className="text-[#B1B5C3]" />,
             duration: "2 Mois",
             title: "Marketing Digital & Réseaux Sociaux",
@@ -113,6 +128,8 @@ export default function Catalogue() {
             price: "450 MRU",
             priceNumeric: 450,
             language: "fr",
+            modulesCount: 10,
+            lessonsCount: 38,
             hasPromotion: false,
             isFree: false,
             isNew: false,
@@ -122,8 +139,8 @@ export default function Catalogue() {
             id: 4,
             image: "/images/users/formation.png",
             category: "Photographie",
-            categoryId: "photography",
-            subcategoryId: "portrait",
+            categoryId: "design",
+            subcategoryId: "Photographie & Retouche",
             categoryIcon: <FaCamera size={16} className="text-[#B1B5C3]" />,
             duration: "6 Semaines",
             title: "Photographie Professionnelle",
@@ -134,6 +151,8 @@ export default function Catalogue() {
             price: "350 MRU",
             priceNumeric: 350,
             language: "ar",
+            modulesCount: 6,
+            lessonsCount: 24,
             hasPromotion: true,
             isFree: false,
             isNew: false,
@@ -143,8 +162,8 @@ export default function Catalogue() {
             id: 5,
             image: "/images/users/formation.png",
             category: "Musique",
-            categoryId: "music",
-            subcategoryId: "production",
+            categoryId: "media",
+            subcategoryId: "Podcasting",
             categoryIcon: <FaMusic size={16} className="text-[#B1B5C3]" />,
             duration: "8 Semaines",
             title: "Production Musicale & Mix",
@@ -155,6 +174,8 @@ export default function Catalogue() {
             price: "550 MRU",
             priceNumeric: 550,
             language: "en",
+            modulesCount: 9,
+            lessonsCount: 29,
             hasPromotion: true,
             isFree: false,
             isNew: false,
@@ -165,7 +186,7 @@ export default function Catalogue() {
             image: "/images/users/formation.png",
             category: "Business",
             categoryId: "business",
-            subcategoryId: "entrepreneurship",
+            subcategoryId: "Leadership & Management",
             categoryIcon: <FaGraduationCap size={16} className="text-[#B1B5C3]" />,
             duration: "5 Mois",
             title: "Entrepreneuriat & Création d'Entreprise",
@@ -176,6 +197,8 @@ export default function Catalogue() {
             price: "750 MRU",
             priceNumeric: 750,
             language: "fr",
+            modulesCount: 15,
+            lessonsCount: 62,
             hasPromotion: true,
             isFree: false,
             isNew: true,
@@ -185,8 +208,8 @@ export default function Catalogue() {
             id: 7,
             image: "/images/users/formation.png",
             category: "Développement Web",
-            categoryId: "web",
-            subcategoryId: "backend",
+            categoryId: "devtech",
+            subcategoryId: "Bases de données",
             categoryIcon: <FaCode size={16} className="text-[#B1B5C3]" />,
             duration: "3 Mois",
             title: "Python & Django pour Débutants",
@@ -197,6 +220,8 @@ export default function Catalogue() {
             price: "0 MRU",
             priceNumeric: 0,
             language: "en",
+            modulesCount: 5,
+            lessonsCount: 18,
             hasPromotion: false,
             isFree: true,
             isNew: true,
@@ -207,7 +232,7 @@ export default function Catalogue() {
             image: "/images/users/formation.png",
             category: "Design",
             categoryId: "design",
-            subcategoryId: "graphic",
+            subcategoryId: "Graphic Design",
             categoryIcon: <FaPaintBrush size={16} className="text-[#B1B5C3]" />,
             duration: "4 Semaines",
             title: "Illustrator & Photoshop Avancé",
@@ -218,6 +243,8 @@ export default function Catalogue() {
             price: "400 MRU",
             priceNumeric: 400,
             language: "ar",
+            modulesCount: 7,
+            lessonsCount: 28,
             hasPromotion: true,
             isFree: false,
             isNew: false,
@@ -234,31 +261,14 @@ export default function Catalogue() {
             formation.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
             formation.description.toLowerCase().includes(searchTerm.toLowerCase());
 
-        // Filtre par catégories (barre horizontale)
+        // Filtre par catégories (barre horizontale pilotant le sidebar)
         const matchesCategory = (() => {
-            // Si "Pour vous" est sélectionné, on affiche toutes les formations
             if (selectedCategory === "foryou") {
                 return true;
             }
-            // Sinon, on filtre selon la catégorie sélectionnée dans la barre horizontale
-            // Mapping des catégories de la barre vers les IDs des formations
-            const categoryMapping = {
-                "devtech": ["web"],
-                "design": ["design"],
-                "business": ["business"],
-                "marketing": ["marketing"],
-                "finance": ["finance"],
-                "langues": ["languages"],
-                "devperso": ["development"],
-                "education": ["education"],
-                "sante": ["health"],
-                "pratique": ["practical"],
-                "droit": ["law"],
-                "media": ["media"]
-            };
-            
-            const mappedCategories = categoryMapping[selectedCategory] || [];
-            return mappedCategories.includes(formation.categoryId);
+
+            // Les clés matchent maintenant directement (ex: "devtech", "design", etc.)
+            return selectedCategory === formation.categoryId;
         })();
 
         // Filtre par sous-catégories
@@ -332,7 +342,10 @@ export default function Catalogue() {
             <div className={`fixed left-0 right-0 z-30 bg-white border-b border-gray-200 transition-all duration-700 ease-in-out ${scrolled ? 'top-12 py-1 shadow-md' : 'top-20 sm:top-22 py-3 pb-6 shadow-sm'}`}>
                 <CategorieBar 
                     selectedCategory={selectedCategory}
-                    onCategoryChange={setSelectedCategory}
+                    onCategoryChange={(newCat) => {
+                        setSelectedCategory(newCat);
+                        setFilters(prev => ({ ...prev, subcategories: [] }));
+                    }}
                     scrolled={scrolled}
                 />
             </div>
@@ -346,8 +359,8 @@ export default function Catalogue() {
             )}
 
             {/* Section principale avec sidebar et contenu */}
-            <div className={`container mx-auto px-4 py-8 transition-all duration-700 ease-in-out ${scrolled ? 'mt-[4.5rem]' : 'mt-40 sm:mt-44'}`}>
-                <div className="flex gap-6 lg:items-start">
+            <div className={`max-w-[1600px] mx-auto px-6 sm:px-10 py-8 transition-all duration-700 ease-in-out ${scrolled ? 'mt-[4.5rem]' : 'mt-40 sm:mt-44'}`}>
+                <div className="flex gap-10 lg:items-start lg:-ml-12 transition-all duration-500">
                     {/* Sidebar unique - responsive */}
                     <div className={`lg:sticky ${scrolled ? 'lg:top-24' : 'lg:top-36'} transition-all duration-700 ease-in-out`}>
                         <Sidebar 
@@ -357,6 +370,7 @@ export default function Catalogue() {
                             onFiltersChange={setFilters}
                             onSearchReset={() => setSearchTerm("")}
                             onCategoryReset={() => setSelectedCategory("foryou")}
+                            activeCategory={selectedCategory}
                         />
                     </div>
 
@@ -371,7 +385,7 @@ export default function Catalogue() {
                                     </h2>
                                 </div>
                             </div>
-                            {(selectedCategory !== "foryou" || filters.categories.length > 0 || filters.hasPromotion || filters.isFree || filters.isNew || filters.languages.length > 0) && (
+                            {(selectedCategory !== "foryou" || filters.hasPromotion || filters.isFree || filters.isNew || filters.languages.length > 0 || filters.subcategories.length > 0) && (
                                 <div className="flex items-center gap-2 text-sm">
                                     <div className="flex items-center gap-1 text-gray-600">
                                         <FaFilter size={14} />
@@ -383,11 +397,6 @@ export default function Catalogue() {
                                                 {selectedCategory}
                                             </span>
                                         )}
-                                        {filters.categories.map(cat => (
-                                            <span key={cat} className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
-                                                {cat}
-                                            </span>
-                                        ))}
                                         {filters.languages.map(lang => (
                                             <span key={lang} className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
                                                 {lang}
@@ -409,21 +418,26 @@ export default function Catalogue() {
 
                         {/* Grille des formations */}
                         {filteredFormations.length > 0 ? (
-                            <div className="flex flex-wrap gap-6 justify-center lg:justify-start">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-20">
                                 {filteredFormations.map((formation) => (
-                                    <Card
-                                        key={formation.id}
-                                        image={formation.image}
-                                        category={formation.category}
-                                        categoryIcon={formation.categoryIcon}
-                                        duration={formation.duration}
-                                        title={formation.title}
-                                        description={formation.description}
-                                        avatar={formation.avatar}
-                                        author={formation.author}
-                                        oldPrice={formation.oldPrice}
-                                        price={formation.price}
-                                    />
+                                    <div key={formation.id} className="flex justify-center lg:justify-start">
+                                        <Card
+                                            image={formation.image}
+                                            category={formation.category}
+                                            categoryIcon={formation.categoryIcon}
+                                            duration={formation.duration}
+                                            title={formation.title}
+                                            description={formation.description}
+                                            avatar={formation.avatar}
+                                            author={formation.author}
+                                            oldPrice={formation.oldPrice}
+                                            price={formation.price}
+                                            hasPromotion={formation.hasPromotion}
+                                            isFree={formation.isFree}
+                                            isNew={formation.isNew}
+                                            onClick={() => openModal(formation)}
+                                        />
+                                    </div>
                                 ))}
                             </div>
                         ) : (
@@ -470,6 +484,201 @@ export default function Catalogue() {
                     </div>
                 </div>
             </div>
+
+            {/* ── Modal Détail Formation (Inspiré de moduleLecon) ── */}
+            {selectedFormation && (
+                <div 
+                    className={`fixed inset-0 z-[100] flex items-center justify-center p-4 transition-all duration-300 ${isModalOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                >
+                    {/* Backdrop */}
+                    <div 
+                        className="absolute inset-0 bg-black/60 backdrop-blur-md"
+                        onClick={closeModal}
+                    />
+
+                    {/* Modal Content */}
+                    <div 
+                        className={`bg-white w-full max-w-5xl h-[90vh] rounded-3xl overflow-hidden relative shadow-2xl transition-all duration-500 transform ${isModalOpen ? 'scale-100 translate-y-0' : 'scale-95 translate-y-8'}`}
+                    >
+                        {/* Bouton Fermer */}
+                        <button 
+                            onClick={closeModal}
+                            className="absolute top-6 right-6 z-50 w-10 h-10 bg-black/20 hover:bg-black/40 text-white rounded-full flex items-center justify-center backdrop-blur-md transition-colors"
+                        >
+                            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+
+                        <div className="h-full overflow-y-auto custom-scrollbar pb-10">
+                            {/* 1. Hero Image Section */}
+                            <div className="relative w-full h-[320px] bg-slate-100">
+                                <img 
+                                    src={selectedFormation.image} 
+                                    alt={selectedFormation.title}
+                                    className="w-full h-full object-cover"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                                
+                                <div className="absolute bottom-0 left-0 right-0 p-8 space-y-4">
+                                    <div className="flex flex-wrap items-center gap-3">
+                                        <span className="px-3 py-1 bg-[#0C8CE9] text-white text-[10px] font-bold uppercase tracking-widest rounded-full">
+                                            {selectedFormation.category}
+                                        </span>
+                                        {selectedFormation.isNew && (
+                                            <span className="px-3 py-1 bg-emerald-500 text-white text-[10px] font-bold uppercase tracking-widest rounded-full">
+                                                Nouveau
+                                            </span>
+                                        )}
+                                        {selectedFormation.hasPromotion && (
+                                            <span className="px-3 py-1 bg-amber-500 text-white text-[10px] font-bold uppercase tracking-widest rounded-full">
+                                                Promotion
+                                            </span>
+                                        )}
+                                    </div>
+                                    <h2 className="text-3xl md:text-4xl font-serif font-bold text-white leading-tight">
+                                        {selectedFormation.title}
+                                    </h2>
+                                    <div className="flex items-center gap-4 text-white/80 text-sm">
+                                        <div className="flex items-center gap-1.5">
+                                            <FaUsers className="text-[#0C8CE9]" />
+                                            <span>1 250 apprenants</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5">
+                                            <FaFilter className="text-amber-400" />
+                                            <span className="font-semibold text-amber-400">4.9/5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* 2. Content Grid */}
+                            <div className="px-8 py-10 grid grid-cols-1 lg:grid-cols-3 gap-10">
+                                {/* Main Column */}
+                                <div className="lg:col-span-2 space-y-10">
+                                    <section>
+                                        <h3 className="text-lg font-bold text-[#1e293b] mb-4 flex items-center gap-3 uppercase tracking-wider">
+                                            <span className="w-1 h-6 bg-[#0C8CE9] rounded-full"></span>
+                                            À propos de cette formation
+                                        </h3>
+                                        <p className="text-slate-600 leading-relaxed text-base italic">
+                                            {selectedFormation.description}. Ce cours complet a été conçu pour vous faire passer d'un niveau débutant à un niveau professionnel en maîtrisant les outils et les méthodes les plus récents du marché Ce cours complet a été conçu pour vous faire passer d'un niveau débutant à un niveau professionnel en maîtrisant les outils et les méthodes les plus récents du marché. Ce cours complet a été conçu pour vous faire passer d'un niveau débutant à un niveau professionnel en maîtrisant les outils et les méthodes les plus récents du marché Ce cours complet a été conçu pour vous faire passer d'un niveau débutant à un niveau professionnel en maîtrisant les outils et les méthodes les plus récents du marché Ce cours complet a été conçu pour vous faire passer d'un niveau débutant à un niveau professionnel en maîtrisant les outils et les méthodes les plus récents du marché Ce cours complet a été conçu pour vous faire passer d'un niveau débutant à un niveau professionnel en maîtrisant les outils et les méthodes les plus récents du marché
+                                        </p>
+                                    </section>
+
+                                    {/* Quick Stats Grid */}
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100/50 space-y-1">
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Durée</p>
+                                            <p className="font-bold text-[#1e293b]">{selectedFormation.duration}</p>
+                                        </div>
+                                        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100/50 space-y-1">
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Modules</p>
+                                            <p className="font-bold text-[#1e293b]">4</p>
+                                        </div>
+                                        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100/50 space-y-1">
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Leçons</p>
+                                            <p className="font-bold text-[#1e293b]">15</p>
+                                        </div>
+                                        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100/50 space-y-1">
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Langue</p>
+                                            <p className="font-bold text-[#1e293b]">Français</p>
+                                        </div>
+                                        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100/50 space-y-1">
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Niveau</p>
+                                            <p className="font-bold text-[#1e293b]">Intermédiaire</p>
+                                        </div>
+                                        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100/50 space-y-1">
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Accès</p>
+                                            <p className="font-bold text-[#1e293b]">3 mois</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Objectives */}
+                                    <section>
+                                        <h3 className="text-lg font-bold text-[#1e293b] mb-4 uppercase tracking-wider">Ce que vous allez apprendre</h3>
+                                        <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {[
+                                                "Maîtriser les fondamentaux théoriques",
+                                                "Pratiquer sur des projets réels",
+                                                "Obtenir une certification reconnue",
+                                                "Rejoindre une communauté active"
+                                            ].map((item, i) => (
+                                                <li key={i} className="flex items-start gap-3 text-slate-600 text-sm">
+                                                    <div className="mt-1 w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+                                                        <svg className="w-3 h-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                                        </svg>
+                                                    </div>
+                                                    {item}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </section>
+                                </div>
+
+                                {/* Sidebar Column */}
+                                <div className="space-y-6">
+                                    {/* Price Card */}
+                                    <div className="bg-[#f8fafc] border border-slate-100 p-8 rounded-3xl shadow-sm">
+                                        <div className="space-y-2">
+                                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Tarif Premium</p>
+                                            <div className="flex items-center justify-center gap-3">
+                                                <span className="text-4xl font-black text-[#1e293b]">{selectedFormation.price}</span>
+                                                {selectedFormation.oldPrice && (
+                                                    <span className="text-lg text-slate-400 line-through font-medium">{selectedFormation.oldPrice}</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <button 
+                                            onClick={() => router.push(`/acheteur/formation/moduleLecon?id=${selectedFormation.id}`)}
+                                            className="w-full mt-8 bg-[#0C8CE9] hover:bg-[#0A71BC] text-white py-4 rounded-xl font-bold shadow-lg shadow-blue-500/30 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3"
+                                        >
+                                            Acheter
+                                            <FaShoppingCart className="w-5 h-5" />
+                                        </button>
+                                    </div>
+
+                                    {/* Author Card */}
+                                    <div className="bg-white border border-slate-100 p-6 rounded-3xl shadow-sm space-y-5">
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Instructeur</p>
+                                        <div className="flex items-center gap-4">
+                                            <img 
+                                                src={selectedFormation.avatar} 
+                                                alt={selectedFormation.author}
+                                                className="w-14 h-14 rounded-2xl object-cover ring-4 ring-slate-50"
+                                            />
+                                            <div>
+                                                <p className="font-bold text-[#1e293b]">{selectedFormation.author}</p>
+                                                <p className="text-xs text-[#0C8CE9] font-medium">Expert {selectedFormation.category}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center justify-between text-xs py-3 border-y border-slate-50 font-medium">
+                                            <div className="flex flex-col items-center">
+                                                <span className="text-lg font-black text-[#1e293b]">5</span>
+                                                <span className="text-slate-400">formations</span>
+                                            </div>
+                                            <div className="w-px h-8 bg-slate-100"></div>
+                                            <div className="flex flex-col items-center">
+                                                <span className="text-lg font-black text-[#1e293b]">4.9</span>
+                                                <span className="text-slate-400">Notes</span>
+                                            </div>
+                                            <div className="w-px h-8 bg-slate-100"></div>
+                                            <div className="flex flex-col items-center">
+                                                <span className="text-lg font-black text-[#1e293b]">12k</span>
+                                                <span className="text-slate-400">Vues</span>
+                                            </div>
+                                        </div>
+                                        <button className="w-full py-3 text-[#0C8CE9] text-xs font-bold uppercase tracking-widest hover:bg-[#0C8CE9]/5 rounded-xl transition-colors">
+                                            Voir le profil
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <Footer />
         </div>
