@@ -55,6 +55,11 @@ export default function Footer() {
             <li><a href="#" className="hover:underline text-white/90 text-sm">Politique de confidentialité</a></li>
             <li><a href="#" className="hover:underline text-white/90 text-sm">Politique de remboursement</a></li>
             <li><a href="#" className="hover:underline text-white/90 text-sm">Mentions légales</a></li>
+            <li>
+              <Link href="/admin/dashboard" className="hover:underline text-[#FFD700] font-bold text-sm">
+                Espace Administration
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
