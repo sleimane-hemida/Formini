@@ -23,6 +23,8 @@ export default function ModuleLecon() {
   const [editingId, setEditingId] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [moduleToDelete, setModuleToDelete] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState(null);
 
   const requestDeleteModule = (id) => {
     setModuleToDelete(id);
@@ -65,34 +67,47 @@ export default function ModuleLecon() {
   };
 
   useEffect(() => {
-    // try to load draft from localStorage
-    try {
-      const key = `formation_draft_${fId || 'temp'}`;
-      const raw = localStorage.getItem(key);
-      if (raw) {
-        const draft = JSON.parse(raw);
-        // set formation name if present
-        if (draft.name) setFormationName(draft.name);
-        // build modules from draft but keep only one by default
-        const count = Number(draft.modulesCount) || (draft.modules ? draft.modules.length : 0) || 1;
-        setModulesCount(count);
-        const arrFull = Array.from({ length: Math.max(1, count) }, (_, i) => ({ id: i + 1, title: draft.modules && draft.modules[i] ? draft.modules[i].title : `Module ${i + 1}` }));
-        const arr = arrFull.slice(0, 1); // keep only one module as requested
-        setModules(arr);
-        // ensure saved draft modules exist
-        saveDraft(arr);
+    if (fId) {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      if (!token) {
+        console.error('❌ No token found');
         return;
       }
-    } catch (err) {
-      // ignore
-    }
 
-    // fallback: try query param
-    // fallback: start with a single module by default
-    const arr = [{ id: 1, title: 'Module 1' }];
-    setModulesCount(1);
-    setModules(arr);
-    saveDraft(arr);
+      // Load formation name
+      fetch(`http://localhost:5000/api/formations/${fId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          if (data) setFormationName(data.name || '');
+        })
+        .catch(err => console.error('❌ Error loading formation:', err));
+
+      // Load modules from backend
+      fetch(`http://localhost:5000/api/formations/${fId}/modules`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+          return res.json();
+        })
+        .then(data => {
+          console.log('📊 Modules loaded from backend:', data);
+          const moduleList = Array.isArray(data) ? data : [];
+          setModules(moduleList);
+          setModulesCount(moduleList.length);
+        })
+        .catch(err => {
+          console.error('❌ Error loading modules:', err);
+          setModules([]);
+          setModulesCount(0);
+        });
+    }
   }, [fId]);
 
   const handleTitleChange = (id, value) => {
@@ -111,21 +126,47 @@ export default function ModuleLecon() {
     });
   };
 
-  const addModule = () => {
-    const nextId = modules.length ? Math.max(...modules.map(m => m.id)) + 1 : 1;
-    const next = [...modules, { id: nextId, title: `Module ${nextId}` }];
-    setModules(next);
-    saveDraft(next);
-    setEditingId(nextId);
+  const addModule = async () => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    if (!token) {
+      setMessage('Vous devez être connecté.');
+      return;
+    }
+
+    try {
+      const moduleIndex = modules.length + 1;
+      const response = await fetch('http://localhost:5000/api/modules', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          formationId: fId,
+          titre: `Module ${moduleIndex}`,
+          ordre: moduleIndex
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const newModule = await response.json();
+      console.log('✅ Module created:', newModule);
+      
+      const next = [...modules, newModule];
+      setModules(next);
+      setModulesCount(next.length);
+      setEditingId(newModule.id);
+    } catch (err) {
+      console.error('❌ Error creating module:', err);
+      setMessage('Erreur lors de la création du module');
+    }
   };
 
-  const goToLessons = (moduleId) => {
-    const base = '/dash_formation/formations_formateurs/formation_completer/lecon';
-    const parts = [];
-    if (fId) parts.push(`fId=${encodeURIComponent(fId)}`);
-    if (moduleId != null) parts.push(`moduleId=${encodeURIComponent(moduleId)}`);
-    const url = parts.length ? `${base}?${parts.join('&')}` : base;
-    router.push(url);
+  const goBackToModules = () => {
+    window.location.href = window.location.pathname;
   };
 
   return (
@@ -142,7 +183,7 @@ export default function ModuleLecon() {
               <main>
                 <div className="container mx-auto px-4 py-8 pt-6 max-w-4xl">
                   <ProgressStepper current={3} fId={fId} />
-                  <PageHeader title={formationName || ` (${modules.name})`} />
+                  <PageHeader title={formationName || 'Modules & Leçons'} />
                   <div className="bg-white p-6 rounded-2xl w-full text-black shadow-sm">
                     <div className="flex items-center justify-between mb-4">
                       <button type="button" onClick={addModule} className="inline-flex items-center gap-2 px-3 py-2 border rounded text-sm bg-white hover:bg-gray-50">+ Ajouter un module</button>
@@ -153,25 +194,40 @@ export default function ModuleLecon() {
                       <div className="text-sm text-gray-600">Aucun module défini. Cliquez sur "Ajouter un module" pour commencer.</div>
                     ) : (
                       <ol className="divide-y divide-gray-100">
-                        {modules.map(m => (
+                        {modules.map((m, index) => (
                           <li key={m.id} className="py-3">
-                            <div onClick={() => goToLessons(m.id)} className={`border-2 rounded-lg p-3 transition-shadow flex items-center gap-4 ${editingId === m.id ? 'border-blue-300 shadow-md' : 'border-gray-200 hover:border-blue-300'}`} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter') goToLessons(m.id); }}>
-                              <div className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-700 font-medium">{m.id}</div>
-                              {editingId === m.id ? (
-                                <input
-                                  autoFocus
-                                  value={m.title}
-                                  onClick={(e) => e.stopPropagation()}
-                                  onFocus={(e) => e.stopPropagation()}
-                                  onChange={(e) => handleTitleChange(m.id, e.target.value)}
-                                  onBlur={() => setEditingId(null)}
-                                  onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
-                                  className="flex-1 text-lg font-medium focus:outline-none"
-                                />
-                              ) : (
-                                <div className="flex-1 text-lg font-medium">{m.title || `Module ${m.id}`}</div>
-                              )}
+                            <div className={`border-2 rounded-lg p-4 transition-shadow flex items-center justify-between ${editingId === m.id ? 'border-blue-300 shadow-md' : 'border-gray-200 hover:border-blue-300'}`}>
+                              <div className="flex items-center gap-4 flex-1">
+                                <div className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white font-medium">{index + 1}</div>
+                                {editingId === m.id ? (
+                                  <input
+                                    autoFocus
+                                    value={m.title}
+                                    onClick={(e) => e.stopPropagation()}
+                                    onFocus={(e) => e.stopPropagation()}
+                                    onChange={(e) => handleTitleChange(m.id, e.target.value)}
+                                    onBlur={() => setEditingId(null)}
+                                    onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
+                                    className="flex-1 text-lg font-medium focus:outline-none"
+                                  />
+                                ) : (
+                                  <div className="flex-1">
+                                    <div className="text-lg font-medium">{m.title || `Module ${index + 1}`}</div>
+                                    <div className="text-sm text-gray-500">{m.description || 'Pas de description'}</div>
+                                  </div>
+                                )}
+                              </div>
                               <div className="flex-shrink-0 flex items-center gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const modulePath = `/dash_formation/formations_formateurs/formation_completer/lecon?fId=${encodeURIComponent(fId)}&moduleId=${encodeURIComponent(m.id)}`;
+                                    router.push(modulePath);
+                                  }}
+                                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded text-sm"
+                                >
+                                  Voir les leçons
+                                </button>
                                 <button
                                   type="button"
                                   onClick={(e) => { e.stopPropagation(); setEditingId(m.id); }}
@@ -200,8 +256,93 @@ export default function ModuleLecon() {
                       <div>
                         <button type="button" onClick={() => router.back()} className="px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-800 transition">Retour</button>
                       </div>
-                      <div>
-                        <button onClick={() => router.push(`/dash_formation/formations_formateurs/formation_completer/tarification?page=1${fId?`&fId=${fId}`:''}`)} className="bg-[#0C8CE9] hover:bg-[#096bb3] text-white px-5 py-2 rounded-lg">Enregistrer</button>
+                      <div className="flex flex-col items-end gap-3">
+                        {message && <div className="text-sm text-center w-full">{message}</div>}
+                        <div className="flex gap-3">
+                          <button 
+                            type="button"
+                            disabled={saving}
+                            onClick={async () => {
+                              setSaving(true);
+                              setMessage(null);
+                              try {
+                                const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+                                if (!token) {
+                                  setMessage('Vous devez être connecté.');
+                                  setSaving(false);
+                                  return;
+                                }
+
+                                console.log('📤 Saving modules:', modules);
+
+                                // Save each module to backend
+                                for (const mod of modules) {
+                                  if (!mod.id) {
+                                    // Create new module
+                                    const res = await fetch('http://localhost:5000/api/modules', {
+                                      method: 'POST',
+                                      headers: {
+                                        'Content-Type': 'application/json',
+                                        'Authorization': `Bearer ${token}`
+                                      },
+                                      body: JSON.stringify({
+                                        formationId: fId,
+                                        title: mod.title,
+                                        description: mod.description
+                                      })
+                                    });
+                                    if (!res.ok) {
+                                      console.error('❌ Error creating module:', await res.text());
+                                    }
+                                  } else if (typeof mod.id === 'string' && mod.id.includes('api')) {
+                                    // Already exists via API, skip
+                                    console.log('✅ Module already saved:', mod.id);
+                                  } else if (typeof mod.id === 'number' || typeof mod.id === 'string') {
+                                    // Update existing module
+                                    const res = await fetch(`http://localhost:5000/api/modules/${mod.id}`, {
+                                      method: 'PUT',
+                                      headers: {
+                                        'Content-Type': 'application/json',
+                                        'Authorization': `Bearer ${token}`
+                                      },
+                                      body: JSON.stringify({
+                                        titre: mod.title || mod.titre,
+                                        ordre: modules.indexOf(mod) + 1
+                                      })
+                                    });
+                                    if (!res.ok) {
+                                      console.error('❌ Error updating module:', await res.text());
+                                    }
+                                  }
+                                }
+
+                                console.log('✅ Modules saved successfully');
+                                setMessage('✅ Modules enregistrés avec succès! Continuez à ajouter des leçons ou cliquez "J\'ai terminé" pour continuer.');
+                                // Do NOT redirect - stay on page for user to add lessons
+                              } catch (err) {
+                                console.error('❌ Error:', err);
+                                setMessage('❌ Erreur lors de l\'enregistrement');
+                              } finally {
+                                setSaving(false);
+                              }
+                            }}
+                            className="bg-gray-600 hover:bg-gray-700 text-white px-5 py-2 rounded-lg disabled:opacity-50"
+                          >
+                            {saving ? 'Enregistrement...' : 'Enregistrer'}
+                          </button>
+
+                          <button 
+                            type="button"
+                            onClick={() => {
+                              if (confirm('Êtes-vous sûr d\'avoir terminé l\'ajout de modules et de leçons?')) {
+                                router.push(`/dash_formation/formations_formateurs/formation_completer/tarification?page=1${fId?`&fId=${fId}`:''}`);
+                              }
+                            }}
+                            className="bg-[#0C8CE9] hover:bg-[#096bb3] text-white px-5 py-2 rounded-lg"
+                          >
+                            J'ai terminé
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>

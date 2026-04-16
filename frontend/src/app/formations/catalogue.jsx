@@ -14,6 +14,8 @@ export default function Catalogue() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState("foryou");
     const [scrolled, setScrolled] = useState(false);
+    const [formations, setFormations] = useState([]);
+    const [loadingFormations, setLoadingFormations] = useState(true);
     const [filters, setFilters] = useState({
         categories: [],
         subcategories: [],
@@ -53,177 +55,41 @@ export default function Catalogue() {
         };
     }, []);
 
-    // Données d'exemple des formations
-    const formations = [
-        {
-            id: 1,
-            image: "/images/users/formation.png",
-            category: "Développement Web",
-            categoryId: "web",
-            subcategoryId: "frontend",
-            categoryIcon: <FaCode size={16} className="text-[#B1B5C3]" />,
-            duration: "4 Mois",
-            title: "Formation React & Next.js Complète",
-            description: "Apprenez React et Next.js de zéro jusqu'au niveau avancé avec des projets réels",
-            avatar: "/images/users/profile.jpg",
-            author: "Sarah Martin",
-            oldPrice: "12000 MRU",
-            price: "900 MRU",
-            priceNumeric: 900,
-            language: "fr",
-            hasPromotion: true,
-            isFree: false,
-            isNew: false,
-            dateAdded: "2026-03-15"
-        },
-        {
-            id: 2,
-            image: "/images/users/formation.png",
-            category: "Design",
-            categoryId: "design",
-            subcategoryId: "ui-ux",
-            categoryIcon: <FaPaintBrush size={16} className="text-[#B1B5C3]" />,
-            duration: "3 Mois",
-            title: "UI/UX Design Masterclass",
-            description: "Maîtrisez les principes du design et créez des interfaces utilisateur modernes",
-            avatar: "/images/users/profile.jpg",
-            author: "Ahmed Benali",
-            oldPrice: "",
-            price: "600 MRU",
-            priceNumeric: 600,
-            language: "fr",
-            hasPromotion: false,
-            isFree: false,
-            isNew: true,
-            dateAdded: "2026-03-25"
-        },
-        {
-            id: 3,
-            image: "/images/users/formation.png",
-            category: "Marketing",
-            categoryId: "marketing",
-            subcategoryId: "digital",
-            categoryIcon: <FaChartBar size={16} className="text-[#B1B5C3]" />,
-            duration: "2 Mois",
-            title: "Marketing Digital & Réseaux Sociaux",
-            description: "Stratégies complètes pour réussir votre marketing en ligne et sur les réseaux",
-            avatar: "/images/users/profile.jpg",
-            author: "Fatima Zahra",
-            oldPrice: "",
-            price: "450 MRU",
-            priceNumeric: 450,
-            language: "fr",
-            hasPromotion: false,
-            isFree: false,
-            isNew: false,
-            dateAdded: "2026-02-10"
-        },
-        {
-            id: 4,
-            image: "/images/users/formation.png",
-            category: "Photographie",
-            categoryId: "photography",
-            subcategoryId: "portrait",
-            categoryIcon: <FaCamera size={16} className="text-[#B1B5C3]" />,
-            duration: "6 Semaines",
-            title: "Photographie Professionnelle",
-            description: "Techniques avancées de photographie pour devenir un photographe professionnel",
-            avatar: "/images/users/profile.jpg",
-            author: "Mohamed Alami",
-            oldPrice: "500 MRU",
-            price: "350 MRU",
-            priceNumeric: 350,
-            language: "ar",
-            hasPromotion: true,
-            isFree: false,
-            isNew: false,
-            dateAdded: "2026-01-20"
-        },
-        {
-            id: 5,
-            image: "/images/users/formation.png",
-            category: "Musique",
-            categoryId: "music",
-            subcategoryId: "production",
-            categoryIcon: <FaMusic size={16} className="text-[#B1B5C3]" />,
-            duration: "8 Semaines",
-            title: "Production Musicale & Mix",
-            description: "Apprenez à composer, enregistrer et mixer votre propre musique",
-            avatar: "/images/users/profile.jpg",
-            author: "Karim Elmansar",
-            oldPrice: "700 MRU",
-            price: "550 MRU",
-            priceNumeric: 550,
-            language: "en",
-            hasPromotion: true,
-            isFree: false,
-            isNew: false,
-            dateAdded: "2026-03-01"
-        },
-        {
-            id: 6,
-            image: "/images/users/formation.png",
-            category: "Business",
-            categoryId: "business",
-            subcategoryId: "entrepreneurship",
-            categoryIcon: <FaGraduationCap size={16} className="text-[#B1B5C3]" />,
-            duration: "5 Mois",
-            title: "Entrepreneuriat & Création d'Entreprise",
-            description: "Guide complet pour créer et développer votre propre entreprise",
-            avatar: "/images/users/profile.jpg",
-            author: "Laila Bennani",
-            oldPrice: "1000 MRU",
-            price: "750 MRU",
-            priceNumeric: 750,
-            language: "fr",
-            hasPromotion: true,
-            isFree: false,
-            isNew: true,
-            dateAdded: "2026-03-20"
-        },
-        {
-            id: 7,
-            image: "/images/users/formation.png",
-            category: "Développement Web",
-            categoryId: "web",
-            subcategoryId: "backend",
-            categoryIcon: <FaCode size={16} className="text-[#B1B5C3]" />,
-            duration: "3 Mois",
-            title: "Python & Django pour Débutants",
-            description: "Maîtrisez Python et créez des applications web avec Django",
-            avatar: "/images/users/profile.jpg",
-            author: "Youssef Taha",
-            oldPrice: "",
-            price: "0 MRU",
-            priceNumeric: 0,
-            language: "en",
-            hasPromotion: false,
-            isFree: true,
-            isNew: true,
-            dateAdded: "2026-03-28"
-        },
-        {
-            id: 8,
-            image: "/images/users/formation.png",
-            category: "Design",
-            categoryId: "design",
-            subcategoryId: "graphic",
-            categoryIcon: <FaPaintBrush size={16} className="text-[#B1B5C3]" />,
-            duration: "4 Semaines",
-            title: "Illustrator & Photoshop Avancé",
-            description: "Devenez expert en design graphique avec les outils Adobe",
-            avatar: "/images/users/profile.jpg",
-            author: "Nadia Senhaji",
-            oldPrice: "600 MRU",
-            price: "400 MRU",
-            priceNumeric: 400,
-            language: "ar",
-            hasPromotion: true,
-            isFree: false,
-            isNew: false,
-            dateAdded: "2026-02-28"
-        }
-    ];
+    // Récupérer les formations du backend
+    useEffect(() => {
+        setLoadingFormations(true);
+        fetch('http://localhost:5000/api/formations')
+            .then(res => res.json())
+            .then(data => {
+                // Mapper les données du backend au format du frontend
+                const mappedFormations = data.map(formation => ({
+                    id: formation.id,
+                    image: "/images/users/formation.png",
+                    category: formation.Category?.name || "Autre",
+                    categoryId: formation.Category?.id || "other",
+                    subcategoryId: formation.Subcategory?.id || "other",
+                    duration: formation.duree_totale_minutes ? `${Math.round(formation.duree_totale_minutes / 60)} heures` : "Durée non spécifiée",
+                    title: formation.name,
+                    description: formation.description || formation.description_longue || "Description non disponible",
+                    avatar: "/images/users/profile.jpg",
+                    author: formation.Trainer?.name || "Formateur inconnu",
+                    oldPrice: formation.prix_original ? `${formation.prix_original} MRU` : "",
+                    price: formation.prix_vente ? `${formation.prix_vente} MRU` : "Gratuit",
+                    priceNumeric: formation.prix_vente || 0,
+                    language: formation.language || "fr",
+                    hasPromotion: formation.prix_original && formation.prix_vente < formation.prix_original,
+                    isFree: !formation.prix_vente || formation.prix_vente === 0,
+                    isNew: new Date(formation.createdAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+                    dateAdded: formation.createdAt
+                }));
+                setFormations(mappedFormations);
+            })
+            .catch(err => {
+                console.error('Erreur lors du chargement des formations:', err);
+                setFormations([]);
+            })
+            .finally(() => setLoadingFormations(false));
+    }, []);
 
     // Filtrage des formations basé sur la recherche et les filtres
     const filteredFormations = formations.filter(formation => {
@@ -415,7 +281,6 @@ export default function Catalogue() {
                                         key={formation.id}
                                         image={formation.image}
                                         category={formation.category}
-                                        categoryIcon={formation.categoryIcon}
                                         duration={formation.duration}
                                         title={formation.title}
                                         description={formation.description}

@@ -1,0 +1,281 @@
+{
+  "client": "Thunder Client",
+  "collectionName": "Formini - Module/Lesson/Resource",
+  "dateExported": "2026-04-11",
+  "version": "1.1",
+  "requests": [
+    {
+      "id": "1",
+      "name": "1. CREATE MODULE",
+      "method": "POST",
+      "url": "http://localhost:5000/api/modules",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Authorization",
+          "value": "Bearer YOUR_FORMATEUR_JWT_TOKEN"
+        }
+      ],
+      "body": {
+        "raw": "{\n  \"formationId\": \"INSERT_FORMATION_ID\",\n  \"titre\": \"Module 1: Intro aux Concepts Fondamentaux\",\n  \"ordre\": 1\n}"
+      },
+      "notes": "Créer un module. Remplacez:\n- YOUR_FORMATEUR_JWT_TOKEN: Token JWT d'un utilisateur formateur\n- INSERT_FORMATION_ID: ID de la formation (ex: depuis /api/formations)"
+    },
+    {
+      "id": "2",
+      "name": "2. GET MODULES BY FORMATION",
+      "method": "GET",
+      "url": "http://localhost:5000/api/formations/INSERT_FORMATION_ID/modules",
+      "headers": [],
+      "notes": "Récupérer tous les modules d'une formation. Remplacez INSERT_FORMATION_ID par l'ID de la formation."
+    },
+    {
+      "id": "3",
+      "name": "3. GET MODULE BY ID",
+      "method": "GET",
+      "url": "http://localhost:5000/api/modules/INSERT_MODULE_ID",
+      "headers": [],
+      "notes": "Récupérer un module spécifique par son ID"
+    },
+    {
+      "id": "4",
+      "name": "4. UPDATE MODULE",
+      "method": "PUT",
+      "url": "http://localhost:5000/api/modules/INSERT_MODULE_ID",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Authorization",
+          "value": "Bearer YOUR_FORMATEUR_JWT_TOKEN"
+        }
+      ],
+      "body": {
+        "raw": "{\n  \"titre\": \"Module 1: Intro aux Concepts Fondamentaux (Mis à Jour)\",\n  \"ordre\": 2\n}"
+      },
+      "notes": "Mettre à jour un module existant"
+    },
+    {
+      "id": "5",
+      "name": "5. CREATE LESSON",
+      "method": "POST",
+      "url": "http://localhost:5000/api/lessons",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Authorization",
+          "value": "Bearer YOUR_FORMATEUR_JWT_TOKEN"
+        }
+      ],
+      "body": {
+        "raw": "{\n  \"moduleId\": \"INSERT_MODULE_ID\",\n  \"titre\": \"Leçon 1: Les Variables\",\n  \"ordre\": 1,\n  \"image_couverture\": \"https://example.com/image.jpg\"\n}"
+      },
+      "notes": "Créer une leçon. Remplacez INSERT_MODULE_ID par l'ID du module créé précédemment"
+    },
+    {
+      "id": "6",
+      "name": "6. GET LESSONS BY MODULE",
+      "method": "GET",
+      "url": "http://localhost:5000/api/modules/INSERT_MODULE_ID/lessons",
+      "headers": [],
+      "notes": "Récupérer toutes les leçons d'un module"
+    },
+    {
+      "id": "7",
+      "name": "7. GET LESSON BY ID",
+      "method": "GET",
+      "url": "http://localhost:5000/api/lessons/INSERT_LESSON_ID",
+      "headers": [],
+      "notes": "Récupérer une leçon spécifique par son ID"
+    },
+    {
+      "id": "8",
+      "name": "8. UPDATE LESSON",
+      "method": "PUT",
+      "url": "http://localhost:5000/api/lessons/INSERT_LESSON_ID",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Authorization",
+          "value": "Bearer YOUR_FORMATEUR_JWT_TOKEN"
+        }
+      ],
+      "body": {
+        "raw": "{\n  \"titre\": \"Leçon 1: Les Variables et Types (Mis à Jour)\",\n  \"ordre\": 2,\n  \"image_couverture\": \"https://example.com/new-image.jpg\"\n}"
+      },
+      "notes": "Mettre à jour une leçon existante"
+    },
+    {
+      "id": "9",
+      "name": "9. CREATE RESOURCE (VIDEO)",
+      "method": "POST",
+      "url": "http://localhost:5000/api/resources",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Authorization",
+          "value": "Bearer YOUR_FORMATEUR_JWT_TOKEN"
+        }
+      ],
+      "body": {
+        "raw": "{\n  \"lessonId\": \"INSERT_LESSON_ID\",\n  \"type\": \"video\",\n  \"url\": \"https://youtube.com/watch?v=abc123\",\n  \"titre\": \"Tutoriel Variables - Part 1\",\n  \"duree_minutes\": 15\n}"
+      },
+      "notes": "Créer une ressource vidéo. Remplacez INSERT_LESSON_ID par l'ID de la leçon"
+    },
+    {
+      "id": "10",
+      "name": "10. CREATE RESOURCE (PDF)",
+      "method": "POST",
+      "url": "http://localhost:5000/api/resources",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Authorization",
+          "value": "Bearer YOUR_FORMATEUR_JWT_TOKEN"
+        }
+      ],
+      "body": {
+        "raw": "{\n  \"lessonId\": \"INSERT_LESSON_ID\",\n  \"type\": \"pdf\",\n  \"url\": \"https://example.com/document.pdf\",\n  \"titre\": \"Support de cours - Variables\",\n  \"duree_minutes\": null\n}"
+      },
+      "notes": "Créer une ressource PDF"
+    },
+    {
+      "id": "11",
+      "name": "11. GET RESOURCES BY LESSON",
+      "method": "GET",
+      "url": "http://localhost:5000/api/lessons/INSERT_LESSON_ID/resources",
+      "headers": [],
+      "notes": "Récupérer toutes les ressources d'une leçon"
+    },
+    {
+      "id": "12",
+      "name": "12. GET RESOURCE BY ID",
+      "method": "GET",
+      "url": "http://localhost:5000/api/resources/INSERT_RESOURCE_ID",
+      "headers": [],
+      "notes": "Récupérer une ressource spécifique par son ID"
+    },
+    {
+      "id": "13",
+      "name": "13. UPDATE RESOURCE",
+      "method": "PUT",
+      "url": "http://localhost:5000/api/resources/INSERT_RESOURCE_ID",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Authorization",
+          "value": "Bearer YOUR_FORMATEUR_JWT_TOKEN"
+        }
+      ],
+      "body": {
+        "raw": "{\n  \"type\": \"video\",\n  \"url\": \"https://youtube.com/watch?v=xyz789\",\n  \"titre\": \"Tutoriel Variables - Part 1 (Édition Révisée)\",\n  \"duree_minutes\": 18\n}"
+      },
+      "notes": "Mettre à jour une ressource existante"
+    },
+    {
+      "id": "14",
+      "name": "14. DELETE RESOURCE",
+      "method": "DELETE",
+      "url": "http://localhost:5000/api/resources/INSERT_RESOURCE_ID",
+      "headers": [
+        {
+          "key": "Authorization",
+          "value": "Bearer YOUR_FORMATEUR_JWT_TOKEN"
+        }
+      ],
+      "notes": "Supprimer une ressource"
+    },
+    {
+      "id": "15",
+      "name": "15. DELETE LESSON",
+      "method": "DELETE",
+      "url": "http://localhost:5000/api/lessons/INSERT_LESSON_ID",
+      "headers": [
+        {
+          "key": "Authorization",
+          "value": "Bearer YOUR_FORMATEUR_JWT_TOKEN"
+        }
+      ],
+      "notes": "Supprimer une leçon (supprimera aussi ses ressources)"
+    },
+    {
+      "id": "16",
+      "name": "16. DELETE MODULE",
+      "method": "DELETE",
+      "url": "http://localhost:5000/api/modules/INSERT_MODULE_ID",
+      "headers": [
+        {
+          "key": "Authorization",
+          "value": "Bearer YOUR_FORMATEUR_JWT_TOKEN"
+        }
+      ],
+      "notes": "Supprimer un module (supprimera aussi ses leçons et ressources)"
+    }
+  ],
+  "testScenarios": [
+    {
+      "name": "SCENARIO 1: Création complète - Module → Leçon → Ressources",
+      "steps": [
+        "1. Récupérez d'abord une formation existante (GET /api/formations)",
+        "2. Exécutez #1 (CREATE MODULE) avec le formationId",
+        "3. Copiez le module ID du résultat",
+        "4. Exécutez #5 (CREATE LESSON) avec le moduleId",
+        "5. Copiez le lesson ID du résultat",
+        "6. Exécutez #9 (CREATE RESOURCE VIDEO) avec le lessonId",
+        "7. Exécutez #10 (CREATE RESOURCE PDF) avec le lessonId",
+        "8. Vérifiez avec #11 (GET RESOURCES BY LESSON) - vous devez voir 2 ressources"
+      ]
+    },
+    {
+      "name": "SCENARIO 2: Vérification de la hiérarchie complète",
+      "steps": [
+        "1. Exécutez #2 (GET MODULES BY FORMATION) avec un formationId",
+        "2. Prenez le premier moduleId",
+        "3. Exécutez #6 (GET LESSONS BY MODULE) avec ce moduleId",
+        "4. Prenez le premier lessonId",
+        "5. Exécutez #11 (GET RESOURCES BY LESSON) avec ce lessonId",
+        "6. Vous devriez voir la hiérarchie: Formation → Modules → Lessons → Resources"
+      ]
+    },
+    {
+      "name": "SCENARIO 3: Cascade DELETE",
+      "steps": [
+        "1. Créez une hiérarchie complète (Scenario 1)",
+        "2. Exécutez #16 (DELETE MODULE)",
+        "3. Vérifiez que les leçons et ressources ont été supprimées",
+        "4. Essayez #7 (GET LESSON BY ID) avec un lesson ID supprimé",
+        "5. Vous devriez obtenir une erreur 404"
+      ]
+    }
+  ],
+  "setup": {
+    "baseUrl": "http://localhost:5000/api",
+    "authToken": "Récupérez un JWT token depuis POST /api/auth/login avec un utilisateur de type 'formateur'",
+    "database": "foumini_db - PostgreSQL sur localhost:5432",
+    "defaultFormateur": {
+      "email": "formateur@test.com",
+      "password": "password",
+      "role": "formateur"
+    }
+  }
+}

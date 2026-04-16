@@ -1,0 +1,330 @@
+{
+  "client": "Thunder Client",
+  "collectionName": "Formini - Créer Formation Complète (A→Z)",
+  "dateExported": "2026-04-12",
+  "version": "1.1",
+  "TOKEN": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ5N2E5ODdmLTE4YmEtNDFiMS04MmQ4LTgwZjAzMjcxMmUwYSIsImVtYWlsIjoiZm9ybWF0ZXVyQGdtYWlsLmNvbSIsInJvbGUiOiJmb3JtYXRldXIiLCJpYXQiOjE3NzU5NTI5MTQsImV4cCI6MTc3NjU1NzcxNH0.9hw4LFS3s7ec2p0PXAx4YbrH1oNOo3BhGTBAfDbB2vw",
+  "USER_ID": "d97a987f-18ba-41b1-82d8-80f032712e0a",
+  "NOTES": "Copier le token dans Authorization header pour chaque requête",
+  "requests": [
+    {
+      "id": "001",
+      "name": "ÉTAPE 1: Récupérer les Catégories",
+      "method": "GET",
+      "url": "http://localhost:5000/api/categories",
+      "headers": [],
+      "notes": "Récupérez une categoryId (ex: React, Python, etc.)"
+    },
+    {
+      "id": "002",
+      "name": "ÉTAPE 2: Récupérer les Sous-Catégories",
+      "method": "GET",
+      "url": "http://localhost:5000/api/subcategories?categoryId=CATEGORY_ID_FROM_STEP1",
+      "headers": [],
+      "notes": "Remplacez CATEGORY_ID_FROM_STEP1 par l'ID reçu à l'étape 1. Récupérez un subcategoryId"
+    },
+    {
+      "id": "003",
+      "name": "ÉTAPE 3: Créer la Formation (STEP 1 - Infos de base)",
+      "method": "POST",
+      "url": "http://localhost:5000/api/formations",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Authorization",
+          "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ5N2E5ODdmLTE4YmEtNDFiMS04MmQ4LTgwZjAzMjcxMmUwYSIsImVtYWlsIjoiZm9ybWF0ZXVyQGdtYWlsLmNvbSIsInJvbGUiOiJmb3JtYXRldXIiLCJpYXQiOjE3NzU5NTI5MTQsImV4cCI6MTc3NjU1NzcxNH0.9hw4LFS3s7ec2p0PXAx4YbrH1oNOo3BhGTBAfDbB2vw"
+        }
+      ],
+      "body": {
+        "raw": "{\n  \"name\": \"Maîtriser React.js en 30 Jours\",\n  \"description\": \"Apprenez React from scratch\",\n  \"description_longue\": \"Une formation complète pour maîtriser React.js, couvrant les hooks, le state management, Redux, et les meilleures pratiques. Idéale pour les développeurs qui veulent passer au niveau supérieur.\",\n  \"image\": \"https://via.placeholder.com/500x300?text=React+Formation\",\n  \"niveau\": \"intermediaire\",\n  \"language\": \"fr\",\n  \"categoryId\": \"REMPLACER_PAR_CATEGORY_ID\",\n  \"subcategoryId\": \"REMPLACER_PAR_SUBCATEGORY_ID\",\n  \"trainerId\": \"d97a987f-18ba-41b1-82d8-80f032712e0a\"\n}"
+      },
+      "notes": "Créer la formation avec infos de base. Remplacez CATEGORY_ID et SUBCATEGORY_ID. Récupérez le formationId du résultat"
+    },
+    {
+      "id": "004",
+      "name": "ÉTAPE 4: Mettre à jour la Formation (STEP 2 - Contenu)",
+      "method": "PUT",
+      "url": "http://localhost:5000/api/formations/FORMATION_ID_FROM_STEP3",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Authorization",
+          "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ5N2E5ODdmLTE4YmEtNDFiMS04MmQ4LTgwZjAzMjcxMmUwYSIsImVtYWlsIjoiZm9ybWF0ZXVyQGdtYWlsLmNvbSIsInJvbGUiOiJmb3JtYXRldXIiLCJpYXQiOjE3NzU5NTI5MTQsImV4cCI6MTc3NjU1NzcxNH0.9hw4LFS3s7ec2p0PXAx4YbrH1oNOo3BhGTBAfDbB2vw"
+        }
+      ],
+      "body": {
+        "raw": "{\n  \"duree_totale_minutes\": 1800,\n  \"ce_que_vous_apprendrez\": [\"JSX\", \"Hooks\", \"State Management\", \"Redux\", \"Context API\", \"Performance Optimization\"],\n  \"prerequis\": \"Connaissances basiques en JavaScript ES6\",\n  \"public_cible\": \"Développeurs JavaScript qui veulent maîtriser React\"\n}"
+      },
+      "notes": "Ajouter les infos de contenu (durée, apprentissages, prérequis, public)"
+    },
+    {
+      "id": "005",
+      "name": "ÉTAPE 5: Créer le Module 1",
+      "method": "POST",
+      "url": "http://localhost:5000/api/modules",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Authorization",
+          "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ5N2E5ODdmLTE4YmEtNDFiMS04MmQ4LTgwZjAzMjcxMmUwYSIsImVtYWlsIjoiZm9ybWF0ZXVyQGdtYWlsLmNvbSIsInJvbGUiOiJmb3JtYXRldXIiLCJpYXQiOjE3NzU5NTI5MTQsImV4cCI6MTc3NjU1NzcxNH0.9hw4LFS3s7ec2p0PXAx4YbrH1oNOo3BhGTBAfDbB2vw"
+        }
+      ],
+      "body": {
+        "raw": "{\n  \"formationId\": \"FORMATION_ID_FROM_STEP3\",\n  \"titre\": \"Module 1: Fondamentaux de React\",\n  \"ordre\": 1\n}"
+      },
+      "notes": "Créer le premier module. Récupérez le moduleId"
+    },
+    {
+      "id": "006",
+      "name": "ÉTAPE 6: Créer le Module 2",
+      "method": "POST",
+      "url": "http://localhost:5000/api/modules",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Authorization",
+          "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ5N2E5ODdmLTE4YmEtNDFiMS04MmQ4LTgwZjAzMjcxMmUwYSIsImVtYWlsIjoiZm9ybWF0ZXVyQGdtYWlsLmNvbSIsInJvbGUiOiJmb3JtYXRldXIiLCJpYXQiOjE3NzU5NTI5MTQsImV4cCI6MTc3NjU1NzcxNH0.9hw4LFS3s7ec2p0PXAx4YbrH1oNOo3BhGTBAfDbB2vw"
+        }
+      ],
+      "body": {
+        "raw": "{\n  \"formationId\": \"FORMATION_ID_FROM_STEP3\",\n  \"titre\": \"Module 2: État et Props\",\n  \"ordre\": 2\n}"
+      },
+      "notes": "Créer le deuxième module. Récupérez le moduleId"
+    },
+    {
+      "id": "007",
+      "name": "ÉTAPE 7: Créer Leçon 1.1 (dans Module 1)",
+      "method": "POST",
+      "url": "http://localhost:5000/api/lessons",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Authorization",
+          "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ5N2E5ODdmLTE4YmEtNDFiMS04MmQ4LTgwZjAzMjcxMmUwYSIsImVtYWlsIjoiZm9ybWF0ZXVyQGdtYWlsLmNvbSIsInJvbGUiOiJmb3JtYXRldXIiLCJpYXQiOjE3NzU5NTI5MTQsImV4cCI6MTc3NjU1NzcxNH0.9hw4LFS3s7ec2p0PXAx4YbrH1oNOo3BhGTBAfDbB2vw"
+        }
+      ],
+      "body": {
+        "raw": "{\n  \"moduleId\": \"MODULE_1_ID_FROM_STEP5\",\n  \"titre\": \"Leçon 1.1: Qu'est-ce que React?\",\n  \"ordre\": 1,\n  \"image_couverture\": \"https://via.placeholder.com/300x200?text=React+Intro\"\n}"
+      },
+      "notes": "Créer la première leçon du module 1. Récupérez le lessonId"
+    },
+    {
+      "id": "008",
+      "name": "ÉTAPE 8: Créer Leçon 1.2 (dans Module 1)",
+      "method": "POST",
+      "url": "http://localhost:5000/api/lessons",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Authorization",
+          "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ5N2E5ODdmLTE4YmEtNDFiMS04MmQ4LTgwZjAzMjcxMmUwYSIsImVtYWlsIjoiZm9ybWF0ZXVyQGdtYWlsLmNvbSIsInJvbGUiOiJmb3JtYXRldXIiLCJpYXQiOjE3NzU5NTI5MTQsImV4cCI6MTc3NjU1NzcxNH0.9hw4LFS3s7ec2p0PXAx4YbrH1oNOo3BhGTBAfDbB2vw"
+        }
+      ],
+      "body": {
+        "raw": "{\n  \"moduleId\": \"MODULE_1_ID_FROM_STEP5\",\n  \"titre\": \"Leçon 1.2: Composants et JSX\",\n  \"ordre\": 2,\n  \"image_couverture\": \"https://via.placeholder.com/300x200?text=JSX+Basics\"\n}"
+      },
+      "notes": "Créer la deuxième leçon du module 1. Récupérez le lessonId"
+    },
+    {
+      "id": "009",
+      "name": "ÉTAPE 9: Créer Leçon 2.1 (dans Module 2)",
+      "method": "POST",
+      "url": "http://localhost:5000/api/lessons",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Authorization",
+          "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ5N2E5ODdmLTE4YmEtNDFiMS04MmQ4LTgwZjAzMjcxMmUwYSIsImVtYWlsIjoiZm9ybWF0ZXVyQGdtYWlsLmNvbSIsInJvbGUiOiJmb3JtYXRldXIiLCJpYXQiOjE3NzU5NTI5MTQsImV4cCI6MTc3NjU1NzcxNH0.9hw4LFS3s7ec2p0PXAx4YbrH1oNOo3BhGTBAfDbB2vw"
+        }
+      ],
+      "body": {
+        "raw": "{\n  \"moduleId\": \"MODULE_2_ID_FROM_STEP6\",\n  \"titre\": \"Leçon 2.1: State Basics\",\n  \"ordre\": 1,\n  \"image_couverture\": \"https://via.placeholder.com/300x200?text=State\"\n}"
+      },
+      "notes": "Créer la première leçon du module 2. Récupérez le lessonId"
+    },
+    {
+      "id": "010",
+      "name": "ÉTAPE 10: Ajouter Ressource VIDÉO à Leçon 1.1",
+      "method": "POST",
+      "url": "http://localhost:5000/api/resources",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Authorization",
+          "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ5N2E5ODdmLTE4YmEtNDFiMS04MmQ4LTgwZjAzMjcxMmUwYSIsImVtYWlsIjoiZm9ybWF0ZXVyQGdtYWlsLmNvbSIsInJvbGUiOiJmb3JtYXRldXIiLCJpYXQiOjE3NzU5NTI5MTQsImV4cCI6MTc3NjU1NzcxNH0.9hw4LFS3s7ec2p0PXAx4YbrH1oNOo3BhGTBAfDbB2vw"
+        }
+      ],
+      "body": {
+        "raw": "{\n  \"lessonId\": \"LESSON_1_1_ID_FROM_STEP7\",\n  \"type\": \"video\",\n  \"url\": \"https://youtube.com/watch?v=dQw4w9WgXcQ\",\n  \"titre\": \"Vidéo: Qu'est-ce que React?\",\n  \"duree_minutes\": 12\n}"
+      },
+      "notes": "Ajouter une ressource vidéo à la leçon 1.1"
+    },
+    {
+      "id": "011",
+      "name": "ÉTAPE 11: Ajouter Ressource PDF à Leçon 1.1",
+      "method": "POST",
+      "url": "http://localhost:5000/api/resources",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Authorization",
+          "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ5N2E5ODdmLTE4YmEtNDFiMS04MmQ4LTgwZjAzMjcxMmUwYSIsImVtYWlsIjoiZm9ybWF0ZXVyQGdtYWlsLmNvbSIsInJvbGUiOiJmb3JtYXRldXIiLCJpYXQiOjE3NzU5NTI5MTQsImV4cCI6MTc3NjU1NzcxNH0.9hw4LFS3s7ec2p0PXAx4YbrH1oNOo3BhGTBAfDbB2vw"
+        }
+      ],
+      "body": {
+        "raw": "{\n  \"lessonId\": \"LESSON_1_1_ID_FROM_STEP7\",\n  \"type\": \"pdf\",\n  \"url\": \"https://example.com/Introduction_to_React.pdf\",\n  \"titre\": \"Support: Introduction à React\",\n  \"duree_minutes\": null\n}"
+      },
+      "notes": "Ajouter une ressource PDF à la leçon 1.1"
+    },
+    {
+      "id": "012",
+      "name": "ÉTAPE 12: Ajouter Ressources à Leçon 1.2",
+      "method": "POST",
+      "url": "http://localhost:5000/api/resources",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Authorization",
+          "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ5N2E5ODdmLTE4YmEtNDFiMS04MmQ4LTgwZjAzMjcxMmUwYSIsImVtYWlsIjoiZm9ybWF0ZXVyQGdtYWlsLmNvbSIsInJvbGUiOiJmb3JtYXRldXIiLCJpYXQiOjE3NzU5NTI5MTQsImV4cCI6MTc3NjU1NzcxNH0.9hw4LFS3s7ec2p0PXAx4YbrH1oNOo3BhGTBAfDbB2vw"
+        }
+      ],
+      "body": {
+        "raw": "{\n  \"lessonId\": \"LESSON_1_2_ID_FROM_STEP8\",\n  \"type\": \"video\",\n  \"url\": \"https://youtube.com/watch?v=iLhxKH2F76w\",\n  \"titre\": \"Tutoriel JSX\",\n  \"duree_minutes\": 18\n}"
+      },
+      "notes": "Ajouter une ressource vidéo à la leçon 1.2"
+    },
+    {
+      "id": "013",
+      "name": "ÉTAPE 13: Ajouter Ressources à Leçon 2.1",
+      "method": "POST",
+      "url": "http://localhost:5000/api/resources",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Authorization",
+          "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ5N2E5ODdmLTE4YmEtNDFiMS04MmQ4LTgwZjAzMjcxMmUwYSIsImVtYWlsIjoiZm9ybWF0ZXVyQGdtYWlsLmNvbSIsInJvbGUiOiJmb3JtYXRldXIiLCJpYXQiOjE3NzU5NTI5MTQsImV4cCI6MTc3NjU1NzcxNH0.9hw4LFS3s7ec2p0PXAx4YbrH1oNOo3BhGTBAfDbB2vw"
+        }
+      ],
+      "body": {
+        "raw": "{\n  \"lessonId\": \"LESSON_2_1_ID_FROM_STEP9\",\n  \"type\": \"video\",\n  \"url\": \"https://youtube.com/watch?v=sI3IWe1Q-R8\",\n  \"titre\": \"Comprendre le State en React\",\n  \"duree_minutes\": 20\n}"
+      },
+      "notes": "Ajouter une ressource vidéo à la leçon 2.1"
+    },
+    {
+      "id": "014",
+      "name": "ÉTAPE 14: Finaliser la Formation (STEP 5 - Tarification)",
+      "method": "PUT",
+      "url": "http://localhost:5000/api/formations/FORMATION_ID_FROM_STEP3",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Authorization",
+          "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ5N2E5ODdmLTE4YmEtNDFiMS04MmQ4LTgwZjAzMjcxMmUwYSIsImVtYWlsIjoiZm9ybWF0ZXVyQGdtYWlsLmNvbSIsInJvbGUiOiJmb3JtYXRldXIiLCJpYXQiOjE3NzU5NTI5MTQsImV4cCI6MTc3NjU1NzcxNH0.9hw4LFS3s7ec2p0PXAx4YbrH1oNOo3BhGTBAfDbB2vw"
+        }
+      ],
+      "body": {
+        "raw": "{\n  \"prix_normal\": 99.99,\n  \"prix_promo\": 49.99,\n  \"date_debut_promo\": \"2026-04-12\",\n  \"date_fin_promo\": \"2026-04-30\",\n  \"est_gratuite\": false,\n  \"pourcentage_commission\": 10,\n  \"statut\": \"en_attente_validation\"\n}"
+      },
+      "notes": "Finaliser la formation avec tarification et soumettre pour validation"
+    },
+    {
+      "id": "015",
+      "name": "VÉRIFICATION: Récupérer la Formation Créée",
+      "method": "GET",
+      "url": "http://localhost:5000/api/formations/FORMATION_ID_FROM_STEP3",
+      "headers": [],
+      "notes": "Vérifier que la formation a été créée avec tous les champs"
+    },
+    {
+      "id": "016",
+      "name": "VÉRIFICATION: Lister tous les Modules",
+      "method": "GET",
+      "url": "http://localhost:5000/api/formations/FORMATION_ID_FROM_STEP3/modules",
+      "headers": [],
+      "notes": "Vérifier que les 2 modules sont créés"
+    },
+    {
+      "id": "017",
+      "name": "VÉRIFICATION: Lister toutes les Leçons du Module 1",
+      "method": "GET",
+      "url": "http://localhost:5000/api/modules/MODULE_1_ID_FROM_STEP5/lessons",
+      "headers": [],
+      "notes": "Vérifier que les 2 leçons du module 1 sont créées"
+    },
+    {
+      "id": "018",
+      "name": "VÉRIFICATION: Lister les Ressources de Leçon 1.1",
+      "method": "GET",
+      "url": "http://localhost:5000/api/lessons/LESSON_1_1_ID_FROM_STEP7/resources",
+      "headers": [],
+      "notes": "Vérifier que 2 ressources (vidéo + PDF) sont créées"
+    }
+  ],
+  "summary": {
+    "title": "Workflow Complet: Créer une Formation de A à Z",
+    "totalSteps": 18,
+    "structure": {
+      "formation": "Maîtriser React.js en 30 Jours",
+      "modules": [
+        {
+          "titre": "Module 1: Fondamentaux de React",
+          "lessons": [
+            {
+              "titre": "Leçon 1.1: Qu'est-ce que React?",
+              "resources": ["Vidéo (12 min)", "PDF"]
+            },
+            {
+              "titre": "Leçon 1.2: Composants et JSX",
+              "resources": ["Vidéo (18 min)"]
+            }
+          ]
+        },
+        {
+          "titre": "Module 2: État et Props",
+          "lessons": [
+            {
+              "titre": "Leçon 2.1: State Basics",
+              "resources": ["Vidéo (20 min)"]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
