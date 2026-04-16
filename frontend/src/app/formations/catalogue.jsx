@@ -16,8 +16,6 @@ export default function Catalogue() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState("foryou");
     const [scrolled, setScrolled] = useState(false);
-    const [formations, setFormations] = useState([]);
-    const [loadingFormations, setLoadingFormations] = useState(true);
     const [filters, setFilters] = useState({
         subcategories: [],
         languages: [],
