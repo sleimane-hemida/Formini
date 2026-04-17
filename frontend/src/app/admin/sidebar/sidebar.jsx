@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { 
   FaTachometerAlt, 
   FaUsers, 
-  FaBuilding, 
+  FaShoppingCart, 
   FaHandshake, 
   FaTasks, 
   FaChartBar, 
@@ -18,7 +18,7 @@ import {
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: FaTachometerAlt, path: '/admin/dashboard' },
   { id: 'users', label: 'Utilisateurs', icon: FaUsers, path: '/admin/users' },
-  { id: 'companies', label: 'Companies', icon: FaBuilding, path: '/admin/companies' },
+  { id: 'purchases', label: 'Achat', icon: FaShoppingCart, path: '/admin/achat' },
   { id: 'deals', label: 'Deals', icon: FaHandshake, path: '/admin/deals' },
   { id: 'tasks', label: 'Tasks', icon: FaTasks, path: '/admin/tasks' },
   { id: 'reports', label: 'Reports', icon: FaChartBar, path: '/admin/reports' },
