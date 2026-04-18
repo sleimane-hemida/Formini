@@ -10,12 +10,15 @@ export function CardLarge({
     		author = "Lina",
     		oldPrice = "",
     		price = "800 MRU",
-    		rating = 4
+    		rating = 4,
+    		onClick
     	}) {
 		return (
-			<div className="bg-[#F5F8FF] rounded-2xl shadow-sm p-5 w-full max-w-[520px] flex flex-col gap-4 cursor-pointer transition hover:shadow-lg mx-auto">
+			<div 
+				onClick={onClick}
+				className="bg-[#F5F8FF] rounded-2xl shadow-sm p-5 w-full max-w-[520px] flex flex-col gap-4 cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 mx-auto"
+			>
 				{/* Image large en haut */}
-				   {/* Image large en haut */}
 				   <div className="rounded-xl overflow-hidden h-[200px] w-full mb-2">
 					   <Image src={image} alt={title} width={520} height={200} className="object-cover w-full h-full" style={{height: 'auto'}} />
 				   </div>
@@ -75,10 +78,14 @@ export default function Card({
 	price = "800 MRU",
 	rating = 4,
 	className = "",
-	style = {}
+	style = {},
+	onClick
 }) {
 	return (
-		 <div className={`bg-[#F5F8FF] rounded-2xl shadow-sm p-3 w-[270px] max-w-full flex flex-col gap-2 cursor-pointer transition hover:shadow-lg ${className}`} style={style}>
+		 <div 
+		 	onClick={onClick}
+		 	className={`bg-[#F5F8FF] rounded-2xl shadow-sm p-3 w-[270px] max-w-full flex flex-col gap-2 cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${className}`} style={style}
+		 >
 			   <div className="rounded-xl overflow-hidden h-[90px] w-full mb-2">
 				   <Image src={image} alt={title} width={250} height={90} className="object-cover w-full h-full" style={{height: 'auto'}} />
 			   </div>

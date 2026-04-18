@@ -24,6 +24,7 @@ import {
     FaFlagUsa,
     FaFlag
 } from "react-icons/fa";
+import { categories as topBarCategories } from "./categorie";
 
 export default function Sidebar({ 
     isOpen, 
@@ -31,13 +32,14 @@ export default function Sidebar({
     filters, 
     onFiltersChange, 
     onSearchReset, 
-    onCategoryReset 
+    onCategoryReset,
+    activeCategory
 }) {
     const [priceRange, setPriceRange] = useState(filters.priceRange || [0, 2000]);
     const [isDragging, setIsDragging] = useState({ min: false, max: false });
     const [expandedSections, setExpandedSections] = useState({
         price: true,
-        subcategory: false,
+        subcategory: true,
         date: false,
         language: false,
         promotion: false
@@ -95,41 +97,6 @@ export default function Sidebar({
             }
         }
     `;
-
-    const subcategories = {
-        web: [
-            { id: "frontend", name: "Frontend", icon: <FaLaptopCode className="text-gray-500" /> },
-            { id: "backend", name: "Backend", icon: <FaDatabase className="text-gray-500" /> },
-            { id: "mobile", name: "Mobile", icon: <FaMobile className="text-gray-500" /> },
-            { id: "ai", name: "IA & Machine Learning", icon: <FaRobot className="text-gray-500" /> }
-        ],
-        design: [
-            { id: "ui-ux", name: "UI/UX", icon: <FaPaintBrush className="text-gray-500" /> },
-            { id: "graphic", name: "Design Graphique", icon: <FaPaintBrush className="text-gray-500" /> },
-            { id: "web-design", name: "Web Design", icon: <FaLaptopCode className="text-gray-500" /> }
-        ],
-        marketing: [
-            { id: "digital", name: "Marketing Digital", icon: <FaChartBar className="text-gray-500" /> },
-            { id: "social", name: "Réseaux Sociaux", icon: <FaChartBar className="text-gray-500" /> },
-            { id: "ecommerce", name: "E-commerce", icon: <FaShoppingCart className="text-gray-500" /> },
-            { id: "seo", name: "SEO", icon: <FaChartBar className="text-gray-500" /> }
-        ],
-        photography: [
-            { id: "portrait", name: "Portrait", icon: <FaCamera className="text-gray-500" /> },
-            { id: "landscape", name: "Paysage", icon: <FaCamera className="text-gray-500" /> },
-            { id: "commercial", name: "Commercial", icon: <FaCamera className="text-gray-500" /> }
-        ],
-        music: [
-            { id: "production", name: "Production", icon: <FaMusic className="text-gray-500" /> },
-            { id: "mixing", name: "Mix & Mastering", icon: <FaMusic className="text-gray-500" /> },
-            { id: "composition", name: "Composition", icon: <FaMusic className="text-gray-500" /> }
-        ],
-        business: [
-            { id: "entrepreneurship", name: "Entrepreneuriat", icon: <FaBriefcase className="text-gray-500" /> },
-            { id: "management", name: "Management", icon: <FaBriefcase className="text-gray-500" /> },
-            { id: "finance", name: "Finance", icon: <FaBriefcase className="text-gray-500" /> }
-        ]
-    };
 
     const languages = [
         { id: "fr", name: "Français", icon: <FaFlag className="text-gray-500" />, count: 145 },
@@ -228,7 +195,6 @@ export default function Sidebar({
         setDateStart("");
         setDateEnd("");
         onFiltersChange({
-            categories: [],
             subcategories: [],
             languages: [],
             dateRange: null,
@@ -391,34 +357,32 @@ export default function Sidebar({
                     </div>
                 </FilterSection>
 
+
                 {/* Sous-catégories */}
-                {filters.categories?.length > 0 && (
+                {activeCategory && activeCategory !== "foryou" && (
                     <FilterSection
                         title="Sous-catégories"
                         icon={<FaCode className="text-gray-600" />}
                         isExpanded={expandedSections.subcategory}
                         onToggle={() => toggleSection('subcategory')}
                     >
-                        <div className="space-y-2">
-                            {filters.categories?.map(categoryId => 
-                                subcategories[categoryId]?.map((sub) => (
-                                    <label key={sub.id} className="flex items-center gap-3 py-2 hover:bg-gray-50 rounded-lg px-2 cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={filters.subcategories?.includes(sub.id) || false}
-                                            onChange={(e) => {
-                                                const newSubcategories = e.target.checked
-                                                    ? [...(filters.subcategories || []), sub.id]
-                                                    : (filters.subcategories || []).filter(id => id !== sub.id);
-                                                handleFilterChange('subcategories', newSubcategories);
-                                            }}
-                                            className="w-4 h-4 text-[#0C8CE9] border-gray-300 rounded focus:ring-[#0C8CE9]"
-                                        />
-                                        {sub.icon}
-                                        <span className="text-sm text-gray-700">{sub.name}</span>
-                                    </label>
-                                ))
-                            )}
+                        <div className="space-y-1 bg-[#F8FAFF] p-3 rounded-xl border border-[#E9EFFF] mt-2 mb-2 max-h-[400px] overflow-y-auto custom-scrollbar">
+                            {topBarCategories.find(c => c.key === activeCategory)?.subcategories?.map((subName) => (
+                                <label key={subName} className="flex items-center gap-3 py-2 hover:bg-white rounded-lg px-2 cursor-pointer transition-all hover:shadow-sm">
+                                    <input
+                                        type="checkbox"
+                                        checked={filters.subcategories?.includes(subName) || false}
+                                        onChange={(e) => {
+                                            const newSubcategories = e.target.checked
+                                                ? [...(filters.subcategories || []), subName]
+                                                : (filters.subcategories || []).filter(name => name !== subName);
+                                            handleFilterChange('subcategories', newSubcategories);
+                                        }}
+                                        className="w-4 h-4 text-[#0C8CE9] border-gray-300 rounded focus:ring-[#0C8CE9]"
+                                    />
+                                    <span className="text-xs text-gray-600 hover:text-[#0C8CE9] transition-colors">{subName}</span>
+                                </label>
+                            ))}
                         </div>
                     </FilterSection>
                 )}
