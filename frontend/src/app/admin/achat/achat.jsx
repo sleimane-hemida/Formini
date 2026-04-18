@@ -2,22 +2,140 @@
 import React, { useState } from 'react';
 import { AdminSidebarPage } from '../sidebar/sidebar';
 import { AdminHeaderPage } from '../headerAdmin/headerAdmin';
-import { FaEllipsisV, FaCheckCircle, FaExclamationCircle, FaTimesCircle, FaImage, FaClock, FaMinusCircle, FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
+import { 
+  FaEllipsisV, FaCheckCircle, FaExclamationCircle, FaTimesCircle, FaImage, 
+  FaClock, FaMinusCircle, FaSort, FaSortUp, FaSortDown,
+  FaPlayCircle, FaUsers, FaStar, FaRegClock, FaRegStar, 
+  FaBookOpen, FaGlobeAfrica, FaChevronDown, FaChevronUp, FaFileAlt
+} from 'react-icons/fa';
+import { FiBookOpen, FiBarChart2, FiCalendar } from 'react-icons/fi';
 
 const mockAchats = [
-  { id: 1, user: 'Amadou Diallo', trainer: 'Sidi Mohamed', course: 'Mastering React 2024', image: '/images/hero/dev-formation.png', status: 'validé', date: '12 Mars 2024', amount: '45,000 MRU', method: 'Virement bancaire', ref: 'TRX-99201' },
+  { id: 1, user: 'Amadou Diallo', trainer: 'Sidi Mohamed', course: 'Masterclass UX/UI Design — De zéro à Pro', image: '/images/hero/design-formation.png', status: 'validé', date: '12 Mars 2024', amount: '45,000 MRU', method: 'Virement bancaire', ref: 'TRX-99201' },
   { id: 2, user: 'Fatouma Sy', trainer: 'Oumar Kane', course: 'UI/UX Design Fundamentals', image: '/images/hero/design-formation.png', status: 'en attente', date: '13 Mars 2024', amount: '35,000 MRU', method: 'Cash', ref: 'TRX-99202' },
-  { id: 3, user: 'Sidi Mohamed', trainer: 'Amadou Diallo', course: 'Node.js Backend Mastery', image: '/images/hero/data-formation.png', status: 'capture_reçue', date: '14 Mars 2024', amount: '50,000 MRU', method: 'Capture reçue', ref: 'TRX-99203' },
+  { id: 3, user: 'Sidi Mohamed', trainer: 'Amadou Diallo', course: 'Développement Web Fullstack React/Node', image: '/images/hero/dev-formation.png', status: 'capture_reçue', date: '14 Mars 2024', amount: '50,000 MRU', method: 'Capture reçue', ref: 'TRX-99203' },
   { id: 4, user: 'Mouloud Ameine', trainer: 'Fatouma Sy', course: 'SEO pour Débutants', image: '/images/hero/data-formation.png', status: 'expiré', date: '11 Mars 2024', amount: '25,000 MRU', method: 'Bank Transfer', ref: 'TRX-99204' },
   { id: 5, user: 'Aminata Sow', trainer: 'Sidi Mohamed', course: 'Digital Marketing Essentials', image: '/images/hero/design-formation.png', status: 'rejeté', date: '15 Mars 2024', amount: '40,000 MRU', method: 'Credit Card', ref: 'TRX-99205' },
   { id: 6, user: 'Oumar Kane', trainer: 'Amadou Diallo', course: 'DevOps & Docker', image: '/images/hero/dev-formation.png', status: 'annulé', date: '10 Mars 2024', amount: '60,000 MRU', method: 'PayPal', ref: 'TRX-99206' },
 ];
+
+const mockFormationsData = {
+  "Masterclass UX/UI Design — De zéro à Pro": {
+    title: "Masterclass UX/UI Design — De zéro à Pro",
+    category: "Design",
+    price: "600 MRU",
+    students: 1284,
+    rating: 5,
+    image: "/images/hero/design-formation.png",
+    duration: "3 Mois",
+    level: "Débutant → Avancé",
+    language: "Français",
+    lastUpdated: "Avril 2026",
+    description: "Apprenez à concevoir des interfaces modernes et engageantes avec Figma. Ce cours couvre tout le processus de conception, des wireframes aux prototypes interactifs.",
+    whatYouWillLearn: [
+      "Maîtriser les fondamentaux de l'UX Design",
+      "Concevoir des interfaces UI professionnelles avec Figma",
+      "Créer des prototypes interactifs et animés",
+      "Mener des tests utilisateurs et itérer sur vos designs"
+    ],
+    modules: [
+      {
+        id: 1,
+        title: "Introduction au Design UX/UI",
+        duration: "45 min",
+        lecons: [
+          { id: 1, title: "Qu'est-ce que le UX Design ?", duration: "8 min", type: "video" },
+          { id: 2, title: "Différence entre UX et UI", duration: "6 min", type: "video" },
+        ],
+      }
+    ]
+  },
+  "Développement Web Fullstack React/Node": {
+    title: "Développement Web Fullstack React/Node",
+    category: "Développement",
+    price: "1200 MRU",
+    students: 850,
+    rating: 4.8,
+    image: "/images/hero/dev-formation.png",
+    duration: "6 Mois",
+    level: "Intermédiaire",
+    language: "Français",
+    lastUpdated: "Mars 2024",
+    description: "Devenez un développeur complet en maîtrisant le frontend avec React et le backend avec Node.js.",
+    whatYouWillLearn: [
+      "Maîtriser React.js et Redux",
+      "Développer des API avec Node.js",
+    ],
+    modules: [
+      {
+        id: 1,
+        title: "Architecture Frontend Moderne",
+        duration: "1h 30 min",
+        lecons: [
+          { id: 1, title: "Introduction à React", duration: "15 min", type: "video" },
+        ],
+      }
+    ]
+  }
+};
+
+function ModuleAccordion({ module, index, isOpen, onToggle }) {
+  return (
+    <div className="border border-gray-100 rounded-2xl overflow-hidden mb-3">
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center justify-between px-6 py-5 bg-white hover:bg-gray-50/50 transition-colors text-left"
+      >
+        <div className="flex items-center gap-4 min-w-0">
+          <span className="text-[10px] font-black text-gray-300 shrink-0 w-6">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+          <div className="min-w-0">
+            <p className="font-black text-gray-800 text-sm truncate">{module.title}</p>
+            <p className="text-[10px] text-gray-400 mt-1 font-bold uppercase tracking-widest">
+              {module.lecons.length} leçons · {module.duration}
+            </p>
+          </div>
+        </div>
+        <span className="text-gray-300 shrink-0 ml-4">
+          {isOpen ? <FaChevronUp size={12} /> : <FaChevronDown size={12} />}
+        </span>
+      </button>
+
+      {isOpen && (
+        <div className="border-t border-gray-50 bg-gray-50/30 divide-y divide-gray-50">
+          {module.lecons.map((lecon) => (
+            <div
+              key={lecon.id}
+              className="flex items-center gap-4 px-8 py-4 text-xs hover:bg-white transition-colors cursor-default"
+            >
+              <div className="w-12 h-8 rounded-lg bg-gray-100 flex items-center justify-center shrink-0 overflow-hidden border border-gray-100">
+                <FaPlayCircle className="text-gray-300" size={14} />
+              </div>
+              <span className="flex-1 font-bold text-gray-600 truncate">
+                {lecon.title}
+              </span>
+              {lecon.duration && (
+                <span className="text-[10px] text-gray-400 font-bold shrink-0 flex items-center gap-1.5">
+                  <FaRegClock size={10} />
+                  {lecon.duration}
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function AdminAchatPage() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [activeMenuId, setActiveMenuId] = useState(null);
   const [confirmAction, setConfirmAction] = useState(null); // { achatId, newStatus }
   const [selectedAchat, setSelectedAchat] = useState(null); // Pour la modale de détails
+  const [selectedFormation, setSelectedFormation] = useState(null);
+  const [openModules, setOpenModules] = useState([0]);
 
   // États pour le tri, le filtrage et la pagination
   const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'desc' });
@@ -185,15 +303,25 @@ export function AdminAchatPage() {
                   {paginatedAchats.map((achat) => (
                     <tr 
                       key={achat.id} 
-                      onClick={() => setSelectedAchat(achat)}
+                      onClick={() => {
+                        const detailed = mockFormationsData[achat.course] || {
+                          title: achat.course,
+                          category: "Formation",
+                          price: achat.amount,
+                          image: achat.image,
+                          description: "Aperçu de la formation achetée.",
+                          modules: []
+                        };
+                        setSelectedFormation(detailed);
+                      }}
                       className="hover:bg-gray-50 transition-colors group relative cursor-pointer"
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-16 h-10 rounded-lg bg-gray-100 flex-shrink-0 flex items-center justify-center overflow-hidden border border-gray-100">
+                          <div className="w-16 h-10 rounded-lg bg-gray-100 flex-shrink-0 flex items-center justify-center overflow-hidden border border-gray-100 group-hover:border-[#0C8CE9] transition-all">
                             <img src={achat.image} alt={achat.course} className="w-full h-full object-cover" />
                           </div>
-                          <p className="text-sm font-bold text-gray-800 leading-tight">{achat.course}</p>
+                          <p className="text-sm font-bold text-gray-800 leading-tight group-hover:text-[#0C8CE9] transition-all">{achat.course}</p>
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -411,6 +539,111 @@ export function AdminAchatPage() {
           </div>
         </div>
       )}
+
+      {/* APPEL DE LA MODALE DE DÉTAILS DE FORMATION */}
+      <FormationDetailModal 
+        selectedFormation={selectedFormation} 
+        onClose={() => setSelectedFormation(null)}
+        openModules={openModules}
+        toggleModule={(i) => setOpenModules(prev => prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i])}
+      />
     </div>
   );
 }
+
+{/* MODALE DE DÉTAILS DE LA FORMATION (Intégrée dans Achat) */}
+function FormationDetailModal({ selectedFormation, onClose, openModules, toggleModule }) {
+  if (!selectedFormation) return null;
+  return (
+    <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 md:p-8 bg-gray-900/50 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white rounded-[40px] w-full max-w-6xl h-[90vh] overflow-hidden shadow-2xl relative flex flex-col animate-in zoom-in-95 duration-200">
+        <div className="p-6 md:p-8 flex items-center justify-between border-b border-gray-50 shrink-0 bg-white">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-[#0C8CE9]">
+              <FaBookOpen size={20} />
+            </div>
+            <div>
+              <h2 className="text-xl font-black text-gray-800 tracking-tight leading-none">Détails du Cours</h2>
+              <p className="text-gray-400 text-xs mt-1">Programme et contenu de la formation.</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-3 hover:bg-gray-100 rounded-2xl transition-all text-gray-400 hover:text-gray-800">
+            <FaTimesCircle size={20} />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-8 bg-gray-50/20">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            <div className="lg:col-span-2 space-y-10">
+              <div className="relative h-64 rounded-[32px] overflow-hidden border border-gray-100 shadow-sm">
+                <img src={selectedFormation.image} alt="" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-10">
+                  <span className="px-3 py-1 bg-[#0C8CE9] text-white rounded-full text-[10px] font-black uppercase tracking-widest w-fit mb-2">
+                    {selectedFormation.category}
+                  </span>
+                  <h3 className="text-2xl font-black text-white tracking-tight">{selectedFormation.title}</h3>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0C8CE9]">Description</h4>
+                <p className="text-gray-500 text-sm leading-relaxed font-medium">{selectedFormation.description || "Aucune description disponible."}</p>
+              </div>
+
+              {selectedFormation.whatYouWillLearn && (
+                <div className="space-y-5">
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0C8CE9]">Au programme</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {selectedFormation.whatYouWillLearn.map((item, i) => (
+                      <div key={i} className="flex items-start gap-3">
+                        <div className="mt-1 w-4 h-4 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 border border-emerald-100">
+                          <FaCheckCircle size={8} />
+                        </div>
+                        <p className="text-xs font-bold text-gray-600">{item}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-6">
+                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0C8CE9]">Modules</h4>
+                <div className="space-y-3">
+                  {(selectedFormation.modules || []).map((module, index) => (
+                    <ModuleAccordion
+                      key={module.id}
+                      module={module}
+                      index={index}
+                      isOpen={openModules.includes(index)}
+                      onToggle={() => toggleModule(index)}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div className="bg-white rounded-[32px] p-8 border border-gray-100 shadow-sm space-y-6">
+                <div>
+                  <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-2">Prix</p>
+                  <p className="text-3xl font-black text-[#0C8CE9] tracking-tight">{selectedFormation.price}</p>
+                </div>
+                <div className="space-y-4 pt-6 border-t border-gray-100">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-400 font-bold uppercase tracking-widest text-[9px]">Niveau</span>
+                    <span className="font-black text-gray-700">{selectedFormation.level || "Tous niveaux"}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-400 font-bold uppercase tracking-widest text-[9px]">Langue</span>
+                    <span className="font-black text-gray-700">{selectedFormation.language || "Français"}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+

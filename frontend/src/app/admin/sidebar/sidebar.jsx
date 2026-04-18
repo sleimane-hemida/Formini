@@ -17,13 +17,13 @@ import {
 
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: FaTachometerAlt, path: '/admin/dashboard' },
-  { id: 'users', label: 'Utilisateurs', icon: FaUsers, path: '/admin/users' },
+  { id: 'users', label: 'Apprenants', icon: FaUsers, path: '/admin/users' },
+  { id: 'formateur', label: 'Formateur', icon: FaUsers, path: '/admin/formateur' },
   { id: 'purchases', label: 'Achat', icon: FaShoppingCart, path: '/admin/achat' },
-  { id: 'deals', label: 'Deals', icon: FaHandshake, path: '/admin/deals' },
-  { id: 'tasks', label: 'Tasks', icon: FaTasks, path: '/admin/tasks' },
-  { id: 'reports', label: 'Reports', icon: FaChartBar, path: '/admin/reports' },
-  { id: 'billing', label: 'Billing', icon: FaCreditCard, path: '/admin/billing' },
-  { id: 'settings', label: 'Settings', icon: FaCog, path: '/admin/settings' },
+  { id: 'tasks', label: 'Tasks', icon: FaTasks, path: '#' },
+  { id: 'deals', label: 'Deals', icon: FaHandshake, path: '#' },
+  { id: 'billing', label: 'Billing', icon: FaCreditCard, path: '#'}, 
+  { id: 'settings', label: 'Settings', icon: FaCog, path: '#' },
 ];
 
 export function AdminSidebarPage({ isCollapsed, onToggle }) {
