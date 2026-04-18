@@ -92,6 +92,8 @@ router.delete('/users/:id', verifyToken, authorize(['administrateur']), userCont
 router.patch('/users/:id/toggle-active', verifyToken, authorize(['administrateur']), userController.toggleUserActive);
 
 router.delete('/categories/:id', verifyToken, authorize(['administrateur']), categoryController.deleteCategory);
+router.get('/categories', categoryController.getAllCategories);
+router.get('/subcategories', subcategoryController.getAllSubcategories);
 
 // Formation routes (public - list)
 router.get('/formations/options', formationController.getFormationOptions);
