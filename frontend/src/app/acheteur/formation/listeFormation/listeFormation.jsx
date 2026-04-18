@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Header from "../../../../composant/layout/header";
 import Nav from "../../navigation/nav";
@@ -11,7 +11,7 @@ import { CardLarge } from "../../../pages_common/card";
 import { FiFilter, FiTag, FiStar, FiGift } from "react-icons/fi";
 import { FaLaptopCode, FaBullhorn, FaCamera, FaBriefcase, FaPaintBrush } from "react-icons/fa";
 
-// Les données mockées
+// Données des formations mockées
 const formationsList = [
     {
         id: 1,

@@ -13,12 +13,17 @@ const subcategoryController = require('../controllers/subcategoryController');
 const moduleController = require('../controllers/moduleController');
 const lessonController = require('../controllers/lessonController');
 const resourceController = require('../controllers/resourceController');
+const userController = require('../controllers/userController');
 
 // Configure multer for file uploads (temporary location)
 const upload = multer({ 
   dest: path.join(__dirname, '../../uploads/temp'),
   limits: { fileSize: 500 * 1024 * 1024 } // 500MB per file
 });
+
+// Auth routes (no verification needed)
+router.post('/auth/register', authController.register);
+router.post('/auth/login', authController.login);
 
 // Serve uploaded files via API route
 router.get('/file/:formationId/:moduleId/:lessonId/:filename', (req, res) => {
@@ -74,22 +79,18 @@ router.get('/file-cover/:filename', (req, res) => {
   }
 });
 
-// Sous-catégorie routes
-router.get('/subcategories', subcategoryController.getAllSubcategories);
-router.get('/subcategories/:id', subcategoryController.getSubcategoryById);
-router.post('/subcategories', verifyToken, authorize(['administrateur']), subcategoryController.createSubcategory);
-router.put('/subcategories/:id', verifyToken, authorize(['administrateur']), subcategoryController.updateSubcategory);
-router.delete('/subcategories/:id', verifyToken, authorize(['administrateur']), subcategoryController.deleteSubcategory);
+// Serve user avatars
+router.get('/avatar/:filename', userController.getAvatar);
 
-// Auth routes
-router.post('/auth/register', authController.register);
-router.post('/auth/login', authController.login);
-router.get('/auth/profile', verifyToken, authController.getProfile);
+// User routes (profile management)
+router.get('/user/profile', verifyToken, userController.getProfile);
+router.put('/user/profile', verifyToken, userController.updateProfile);
+router.post('/user/avatar', verifyToken, upload.single('avatar'), userController.uploadAvatar);
+router.get('/users/:id', verifyToken, userController.getUserById);
+router.get('/users', verifyToken, authorize(['administrateur']), userController.getAllUsers);
+router.delete('/users/:id', verifyToken, authorize(['administrateur']), userController.deleteUser);
+router.patch('/users/:id/toggle-active', verifyToken, authorize(['administrateur']), userController.toggleUserActive);
 
-// Category routes (public)
-router.get('/categories', categoryController.getAllCategories);
-router.get('/categories/:id', categoryController.getCategoryById);
-router.post('/categories', verifyToken, authorize(['administrateur']), categoryController.createCategory);
 router.delete('/categories/:id', verifyToken, authorize(['administrateur']), categoryController.deleteCategory);
 
 // Formation routes (public - list)

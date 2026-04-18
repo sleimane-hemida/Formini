@@ -27,43 +27,84 @@ export default function Profile() {
 	const [isEditing, setIsEditing] = useState(false);
 	const [profileImage, setProfileImage] = useState(null);
 	const [formData, setFormData] = useState({
-		firstName: '',
-		lastName: '',
+		prenom: '',
+		nom_de_famille: '',
 		email: '',
-		phone: '',
-		bio: '',
-		birthDate: '',
-		location: ''
+		telephone: '',
+		biographie: '',
+		date_naissance: '',
+		localisation: '',
+		statut_actuel: '',
+		loisirs_centres_interet: ''
 	});
 
 	useEffect(() => {
-		if (typeof window !== 'undefined') {
-			const userData = localStorage.getItem('user');
-			if (userData) {
-				const parsedUser = JSON.parse(userData);
-				setUser(parsedUser);
-				setProfileImage(parsedUser.profileImage || null);
-				setFormData({
-					firstName: parsedUser.firstName || '',
-					lastName: parsedUser.lastName || '',
-					email: parsedUser.email || '',
-					phone: parsedUser.phone || '',
-					bio: parsedUser.bio || '',
-					birthDate: parsedUser.birthDate || '',
-					location: parsedUser.location || ''
+		const loadProfile = async () => {
+			try {
+				const token = localStorage.getItem('token');
+				if (!token) return;
+
+				const response = await fetch('http://localhost:5000/api/user/profile', {
+					headers: { 'Authorization': `Bearer ${token}` }
 				});
+
+				if (!response.ok) throw new Error('Erreur chargement profil');
+
+				const userData = await response.json();
+				setUser(userData);
+
+				if (userData.avatar) {
+					setProfileImage(`http://localhost:5000${userData.avatar}`);
+				}
+
+				setFormData({
+					prenom: userData.prenom || '',
+					nom_de_famille: userData.nom_de_famille || '',
+					email: userData.email || '',
+					telephone: userData.telephone || '',
+					biographie: userData.biographie || '',
+					date_naissance: userData.date_naissance ? userData.date_naissance.split('T')[0] : '',
+					localisation: userData.localisation || '',
+					statut_actuel: userData.statut_actuel || '',
+					loisirs_centres_interet: userData.loisirs_centres_interet || ''
+				});
+			} catch (err) {
+				console.error('❌ Erreur chargement profil:', err);
 			}
-		}
+		};
+
+		loadProfile();
 	}, []);
 
-	const handleImageUpload = (e) => {
+	const handleImageUpload = async (e) => {
 		const file = e.target.files[0];
 		if (file) {
+			// Afficher preview local
 			const reader = new FileReader();
 			reader.onload = (event) => {
 				setProfileImage(event.target.result);
 			};
 			reader.readAsDataURL(file);
+
+			// Envoyer au backend
+			try {
+				const token = localStorage.getItem('token');
+				const formDataUpload = new FormData();
+				formDataUpload.append('avatar', file);
+
+				const response = await fetch('http://localhost:5000/api/user/avatar', {
+					method: 'POST',
+					headers: { 'Authorization': `Bearer ${token}` },
+					body: formDataUpload
+				});
+
+				if (!response.ok) throw new Error('Erreur upload');
+
+				const result = await response.json();
+				setProfileImage(`http://localhost:5000${result.avatar}`);
+			} catch (err) {
+				console.error('❌ Erreur upload avatar:', err);
+			}
 		}
 	};
 
@@ -72,11 +113,33 @@ export default function Profile() {
 		setFormData(prev => ({ ...prev, [name]: value }));
 	};
 
-	const handleSave = () => {
-		// TODO: persist to backend or localStorage
-		console.log('Données à sauvegarder:', formData);
-		setIsEditing(false);
-		setUser({ ...user, ...formData });
+	const handleSave = async () => {
+		try {
+			const token = localStorage.getItem('token');
+			if (!token) throw new Error('Non authentifié');
+
+			const response = await fetch('http://localhost:5000/api/user/profile', {
+				method: 'PUT',
+				headers: {
+					'Authorization': `Bearer ${token}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(formData)
+			});
+
+			if (!response.ok) {
+				const error = await response.json();
+				throw new Error(error.error || 'Erreur lors de la sauvegarde');
+			}
+
+			const updated = await response.json();
+			setUser(updated.user);
+			console.log('✅ Profil mis à jour:', updated);
+			setIsEditing(false);
+		} catch (err) {
+			console.error('❌ Erreur sauvegarde:', err);
+			alert('Erreur: ' + err.message);
+		}
 	};
 
 	const handleCancel = () => {
@@ -137,7 +200,7 @@ export default function Profile() {
 													<p className="text-white/80 mb-3">{user?.email}</p>
 													<div className="flex flex-wrap gap-2 justify-center md:justify-start">
 														<span className="px-3 py-1 bg-white/20 rounded-full text-sm">{user?.role === 'formateur' ? 'Formateur' : (user?.role === 'administrateur' ? 'Administrateur' : 'Apprenant')}</span>
-														{user?.location && (<span className="px-3 py-1 bg-white/20 rounded-full text-sm">📍 {user.location}</span>)}
+											{user?.localisation && (<span className="px-3 py-1 bg-white/20 rounded-full text-sm">📍 {user.localisation}</span>)}
 													</div>
 												</div>
 
@@ -171,9 +234,9 @@ export default function Profile() {
 												<div>
 													<label className="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
 													{isEditing ? (
-														<input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#0C8CE9] focus:border-transparent outline-none transition-all placeholder-gray-500 text-gray-800" placeholder="Votre prénom" />
+														<input type="text" name="prenom" value={formData.prenom} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#0C8CE9] focus:border-transparent outline-none transition-all placeholder-gray-500 text-gray-800" placeholder="Votre prénom" />
 													) : (
-														<div className="w-full px-4 py-3 bg-gray-50 rounded-lg text-gray-800">{formData.firstName || 'Non renseigné'}</div>
+														<div className="w-full px-4 py-3 bg-gray-50 rounded-lg text-gray-800">{formData.prenom || 'Non renseigné'}</div>
 													)}
 												</div>
 
@@ -181,9 +244,9 @@ export default function Profile() {
 												<div>
 													<label className="block text-sm font-medium text-gray-700 mb-2">Nom de famille</label>
 													{isEditing ? (
-														<input type="text" name="lastName" value={formData.lastName} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#0C8CE9] focus:border-transparent outline-none transition-all placeholder-gray-500 text-gray-800" placeholder="Votre nom" />
+														<input type="text" name="nom_de_famille" value={formData.nom_de_famille} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#0C8CE9] focus:border-transparent outline-none transition-all placeholder-gray-500 text-gray-800" placeholder="Votre nom" />
 													) : (
-														<div className="w-full px-4 py-3 bg-gray-50 rounded-lg text-gray-800">{formData.lastName || 'Non renseigné'}</div>
+														<div className="w-full px-4 py-3 bg-gray-50 rounded-lg text-gray-800">{formData.nom_de_famille || 'Non renseigné'}</div>
 													)}
 												</div>
 
@@ -201,9 +264,9 @@ export default function Profile() {
 												<div>
 													<label className="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
 													{isEditing ? (
-														<input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#0C8CE9] focus:border-transparent outline-none transition-all placeholder-gray-500 text-gray-800" placeholder="+33 1 23 45 67 89" />
+														<input type="tel" name="telephone" value={formData.telephone} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#0C8CE9] focus:border-transparent outline-none transition-all placeholder-gray-500 text-gray-800" placeholder="+33 1 23 45 67 89" />
 													) : (
-														<div className="w-full px-4 py-3 bg-gray-50 rounded-lg text-gray-800">{formData.phone || 'Non renseigné'}</div>
+														<div className="w-full px-4 py-3 bg-gray-50 rounded-lg text-gray-800">{formData.telephone || 'Non renseigné'}</div>
 													)}
 												</div>
 
@@ -211,9 +274,9 @@ export default function Profile() {
 												<div>
 													<label className="block text-sm font-medium text-gray-700 mb-2">Date de naissance</label>
 													{isEditing ? (
-														<input type="date" name="birthDate" value={formData.birthDate} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#0C8CE9] focus:border-transparent outline-none transition-all placeholder-gray-500 text-gray-800" />
+														<input type="date" name="date_naissance" value={formData.date_naissance} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#0C8CE9] focus:border-transparent outline-none transition-all placeholder-gray-500 text-gray-800" />
 													) : (
-														<div className="w-full px-4 py-3 bg-gray-50 rounded-lg text-gray-800">{formData.birthDate ? new Date(formData.birthDate).toLocaleDateString('fr-FR') : 'Non renseigné'}</div>
+														<div className="w-full px-4 py-3 bg-gray-50 rounded-lg text-gray-800">{formData.date_naissance ? new Date(formData.date_naissance).toLocaleDateString('fr-FR') : 'Non renseigné'}</div>
 													)}
 												</div>
 
@@ -221,9 +284,9 @@ export default function Profile() {
 												<div>
 													<label className="block text-sm font-medium text-gray-700 mb-2">Localisation</label>
 													{isEditing ? (
-														<input type="text" name="location" value={formData.location} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#0C8CE9] focus:border-transparent outline-none transition-all placeholder-gray-500 text-gray-800" placeholder="Paris, France" />
+														<input type="text" name="localisation" value={formData.localisation} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#0C8CE9] focus:border-transparent outline-none transition-all placeholder-gray-500 text-gray-800" placeholder="Paris, France" />
 													) : (
-														<div className="w-full px-4 py-3 bg-gray-50 rounded-lg text-gray-800">{formData.location || 'Non renseigné'}</div>
+														<div className="w-full px-4 py-3 bg-gray-50 rounded-lg text-gray-800">{formData.localisation || 'Non renseigné'}</div>
 													)}
 												</div>
 											</div>
@@ -232,9 +295,9 @@ export default function Profile() {
 											<div className="mt-6">
 												<label className="block text-sm font-medium text-gray-700 mb-2">Biographie</label>
 												{isEditing ? (
-													<textarea name="bio" value={formData.bio} onChange={handleInputChange} rows={4} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#0C8CE9] focus:border-transparent outline-none transition-all resize-none placeholder-gray-500 text-gray-800" placeholder="Parlez-nous de vous, vos compétences, vos passions..." />
+													<textarea name="biographie" value={formData.biographie} onChange={handleInputChange} rows={4} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#0C8CE9] focus:border-transparent outline-none transition-all resize-none placeholder-gray-500 text-gray-800" placeholder="Parlez-nous de vous, vos compétences, vos passions..." />
 												) : (
-													<div className="w-full px-4 py-3 bg-gray-50 rounded-lg text-gray-800 min-h-[100px]">{formData.bio || 'Aucune biographie renseignée'}</div>
+													<div className="w-full px-4 py-3 bg-gray-50 rounded-lg text-gray-800 min-h-[100px]">{formData.biographie || 'Aucune biographie renseignée'}</div>
 												)}
 											</div>
 										</div>

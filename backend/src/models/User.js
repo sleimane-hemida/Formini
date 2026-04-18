@@ -13,6 +13,16 @@ const User = sequelize.define('User', {
     allowNull: false,
     trim: true
   },
+  prenom: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    trim: true
+  },
+  nom_de_famille: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    trim: true
+  },
   email: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -24,10 +34,41 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: false
   },
+  telephone: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    trim: true
+  },
+  date_naissance: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  localisation: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    trim: true
+  },
+  biographie: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
   role: {
     type: DataTypes.ENUM('administrateur', 'formateur', 'acheteur'),
     defaultValue: 'acheteur',
     allowNull: false
+  },
+  statut_actuel: {
+    type: DataTypes.ENUM('Étudiant(e)', 'Employé(e)', 'Indépendant(e)', 'En recherche d\'emploi', 'Autre'),
+    allowNull: true
+  },
+  loisirs_centres_interet: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  avatar: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    defaultValue: null
   },
   isActive: {
     type: DataTypes.BOOLEAN,
