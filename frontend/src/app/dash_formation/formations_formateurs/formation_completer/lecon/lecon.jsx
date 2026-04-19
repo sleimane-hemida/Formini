@@ -1,5 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
+import { FiSave } from 'react-icons/fi';
+import { useAutoSave } from '../../../../../hooks/useAutoSave';
 import dynamic from 'next/dynamic';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Sidebar from '../../../sidebar/sidebar';
@@ -24,6 +26,10 @@ export default function LeconPage() {
 	const [editingLessonId, setEditingLessonId] = useState(null);
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
 	const [deleteTargetId, setDeleteTargetId] = useState(null);
+	const [hasChanges, setHasChanges] = useState(false);
+	const [saving, setSaving] = useState(false);
+
+	const autoSaveTimer = useAutoSave(hasChanges, () => handleSave(), 30);
 
 	const openDeleteModal = (id) => {
 		setDeleteTargetId(id);
@@ -41,6 +47,7 @@ export default function LeconPage() {
 			saveLessonsDraft(next);
 			return next;
 		});
+		setHasChanges(true);
 		setShowDeleteModal(false);
 		setDeleteTargetId(null);
 		if (editingLessonId === deleteTargetId) setEditingLessonId(null);
@@ -157,6 +164,30 @@ export default function LeconPage() {
 		e.target.value = '';
 	};
 
+	const handleSave = async (e) => {
+		if (e && e.preventDefault) e.preventDefault();
+		setSaving(true);
+		try {
+			const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+			if (token) {
+				for (const l of lessons) {
+					if (l.title || l.titre) {
+						await fetch(`http://localhost:5000/api/lessons/${l.id}`, {
+							method: 'PUT',
+							headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+							body: JSON.stringify({ titre: l.title || l.titre })
+						}).catch(() => {});
+					}
+				}
+			}
+			setHasChanges(false);
+		} catch (e) {
+			console.error(e);
+		} finally {
+			setSaving(false);
+		}
+	};
+
 	useEffect(() => {
 		if (!moduleId) return;
 
@@ -189,6 +220,7 @@ export default function LeconPage() {
 				}));
 				
 				setLessons(mappedLessons);
+				setHasChanges(false);
 				
 				// Try to get module title
 				if (fId) {
@@ -225,9 +257,22 @@ export default function LeconPage() {
 					<div className="flex-1">
 						<div className="max-w-7xl mx-auto px-4 sm:px-6">
 							<main>
-								<div className="container mx-auto px-4 py-8 pt-6 max-w-5xl">
+								<div className="container mx-auto px-4 py-8 pt-6 max-w-6xl">
 									<ProgressStepper current={3} fId={fId} />
-									<PageHeader title={moduleTitle || 'Leçons'} actions={<></>} />
+									<PageHeader title={moduleTitle || 'Leçons'} actions={
+										hasChanges ? (
+											<div className="flex items-center gap-3">
+												{autoSaveTimer !== null && autoSaveTimer > 0 && (
+													<span className="text-sm font-medium text-gray-500 animate-pulse">
+														Enregistrement automatique dans {autoSaveTimer} s
+													</span>
+												)}
+												<button onClick={handleSave} disabled={saving} className={`flex items-center justify-center w-10 h-10 bg-[#0C8CE9] hover:bg-[#0A71BC] text-white rounded-full transition-all shadow-md active:scale-95 ${saving ? 'opacity-50 cursor-not-allowed' : ''}`} title="Enregistrer les modifications">
+													<FiSave className="w-5 h-5" />
+												</button>
+											</div>
+										) : <></>
+									} />
 
 									<div className="bg-white p-6 rounded-2xl w-full text-black shadow-sm">
 										<div className="mb-4 flex items-center justify-between">
@@ -255,6 +300,7 @@ export default function LeconPage() {
 																		saveLessonsDraft(next);
 																		return next;
 																	});
+																	setHasChanges(true);
 																}}
 																onBlur={() => setEditingLessonId(null)}
 																onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
@@ -295,8 +341,8 @@ export default function LeconPage() {
 											<div>
 												<button type="button" onClick={() => router.back()} className="px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-800 transition">Retour aux modules</button>
 											</div>
-											<div>
-												<button onClick={() => router.back()} className="bg-[#0C8CE9] hover:bg-[#096bb3] text-white px-5 py-2 rounded-lg">Enregistrer</button>
+											<div className="flex items-center gap-3">
+												<button onClick={() => router.back()} disabled={saving} className="bg-gray-800 hover:bg-black text-white px-5 py-2 rounded-lg transition-colors">Terminer</button>
 											</div>
 										</div>
 									</div>

@@ -198,7 +198,7 @@ export default function NewFormation() {
           <div className="flex-1">
             <div className="max-w-7xl mx-auto px-4 sm:px-6">
               <main>
-                <div className="container mx-auto px-4 py-8 pt-6 max-w-4xl">
+                <div className="container mx-auto px-4 py-8 pt-6 max-w-6xl">
                   <PageHeader title="Ajouter une formation" actions={(<></>)} />
 
                   <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-lg w-full text-black">

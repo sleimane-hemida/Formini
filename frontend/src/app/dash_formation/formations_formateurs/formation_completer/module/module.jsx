@@ -1,5 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
+import { FiSave } from 'react-icons/fi';
+import { useAutoSave } from '../../../../../hooks/useAutoSave';
 import dynamic from 'next/dynamic';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Sidebar from '../../../sidebar/sidebar';
@@ -23,8 +25,12 @@ export default function ModuleLecon() {
   const [editingId, setEditingId] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [moduleToDelete, setModuleToDelete] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState(null);
+  const [hasChanges, setHasChanges] = useState(false);
+
+  const autoSaveTimer = useAutoSave(hasChanges, () => handleSave(), 30);
 
   const requestDeleteModule = (id) => {
     setModuleToDelete(id);
@@ -46,6 +52,7 @@ export default function ModuleLecon() {
       if (prev.length <= 1) return prev; // always keep at least one
       const next = prev.filter(m => m.id !== id);
       saveDraft(next);
+      setHasChanges(true);
       return next;
     });
     if (editingId === id) setEditingId(null);
@@ -101,6 +108,7 @@ export default function ModuleLecon() {
           const moduleList = Array.isArray(data) ? data : [];
           setModules(moduleList);
           setModulesCount(moduleList.length);
+          setHasChanges(false);
         })
         .catch(err => {
           console.error('❌ Error loading modules:', err);
@@ -114,6 +122,7 @@ export default function ModuleLecon() {
     setModules(prev => {
       const next = prev.map(m => m.id === id ? { ...m, title: value } : m);
       saveDraft(next);
+      setHasChanges(true);
       return next;
     });
   };
@@ -122,6 +131,7 @@ export default function ModuleLecon() {
     setModules(prev => {
       const next = prev.map(m => m.id === id ? { ...m, description: value } : m);
       saveDraft(next);
+      setHasChanges(true);
       return next;
     });
   };
@@ -159,6 +169,7 @@ export default function ModuleLecon() {
       setModules(next);
       setModulesCount(next.length);
       setEditingId(newModule.id);
+      setHasChanges(true);
     } catch (err) {
       console.error('❌ Error creating module:', err);
       setMessage('Erreur lors de la création du module');
@@ -167,6 +178,73 @@ export default function ModuleLecon() {
 
   const goBackToModules = () => {
     window.location.href = window.location.pathname;
+  };
+
+  const handleSave = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    setSaving(true);
+    setMessage(null);
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      if (!token) {
+        setMessage('Vous devez être connecté.');
+        setSaving(false);
+        return;
+      }
+
+      console.log('📤 Saving modules:', modules);
+
+      // Save each module to backend
+      for (const mod of modules) {
+        if (!mod.id) {
+          // Create new module
+          const res = await fetch('http://localhost:5000/api/modules', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              formationId: fId,
+              title: mod.title,
+              description: mod.description
+            })
+          });
+          if (!res.ok) {
+            console.error('❌ Error creating module:', await res.text());
+          }
+        } else if (typeof mod.id === 'string' && mod.id.includes('api')) {
+          // Already exists via API, skip
+          console.log('✅ Module already saved:', mod.id);
+        } else if (typeof mod.id === 'number' || typeof mod.id === 'string') {
+          // Update existing module
+          const res = await fetch(`http://localhost:5000/api/modules/${mod.id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              titre: mod.title || mod.titre,
+              ordre: modules.indexOf(mod) + 1
+            })
+          });
+          if (!res.ok) {
+            console.error('❌ Error updating module:', await res.text());
+          }
+        }
+      }
+
+      console.log('✅ Modules saved successfully');
+      setMessage('✅ Modules enregistrés avec succès! Continuez à ajouter des leçons ou cliquez "J\'ai terminé" pour continuer.');
+      setHasChanges(false);
+      // Do NOT redirect - stay on page for user to add lessons
+    } catch (err) {
+      console.error('❌ Error:', err);
+      setMessage('❌ Erreur lors de l\'enregistrement');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -181,9 +259,22 @@ export default function ModuleLecon() {
           <div className="flex-1">
             <div className="max-w-7xl mx-auto px-4 sm:px-6">
               <main>
-                <div className="container mx-auto px-4 py-8 pt-6 max-w-4xl">
+                <div className="container mx-auto px-4 py-8 pt-6 max-w-6xl">
                   <ProgressStepper current={3} fId={fId} />
-                  <PageHeader title={formationName || 'Modules & Leçons'} />
+                  <PageHeader title={formationName || 'Modules & Leçons'} actions={
+                    hasChanges ? (
+                      <div className="flex items-center gap-3">
+                        {autoSaveTimer !== null && autoSaveTimer > 0 && (
+                          <span className="text-sm font-medium text-gray-500 animate-pulse">
+                            Enregistrement automatique dans {autoSaveTimer} s
+                          </span>
+                        )}
+                        <button onClick={handleSave} disabled={saving} className={`flex items-center justify-center w-10 h-10 bg-[#0C8CE9] hover:bg-[#0A71BC] text-white rounded-full transition-all shadow-md active:scale-95 ${saving ? 'opacity-50 cursor-not-allowed' : ''}`} title="Enregistrer les modifications">
+                          <FiSave className="w-5 h-5" />
+                        </button>
+                      </div>
+                    ) : <></>
+                  } />
                   <div className="bg-white p-6 rounded-2xl w-full text-black shadow-sm">
                     <div className="flex items-center justify-between mb-4">
                       <button type="button" onClick={addModule} className="inline-flex items-center gap-2 px-3 py-2 border rounded text-sm bg-white hover:bg-gray-50">+ Ajouter un module</button>
@@ -258,89 +349,13 @@ export default function ModuleLecon() {
                       </div>
                       <div className="flex flex-col items-end gap-3">
                         {message && <div className="text-sm text-center w-full">{message}</div>}
-                        <div className="flex gap-3">
+                        <div className="flex items-center gap-3">
                           <button 
                             type="button"
-                            disabled={saving}
-                            onClick={async () => {
-                              setSaving(true);
-                              setMessage(null);
-                              try {
-                                const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-                                if (!token) {
-                                  setMessage('Vous devez être connecté.');
-                                  setSaving(false);
-                                  return;
-                                }
-
-                                console.log('📤 Saving modules:', modules);
-
-                                // Save each module to backend
-                                for (const mod of modules) {
-                                  if (!mod.id) {
-                                    // Create new module
-                                    const res = await fetch('http://localhost:5000/api/modules', {
-                                      method: 'POST',
-                                      headers: {
-                                        'Content-Type': 'application/json',
-                                        'Authorization': `Bearer ${token}`
-                                      },
-                                      body: JSON.stringify({
-                                        formationId: fId,
-                                        title: mod.title,
-                                        description: mod.description
-                                      })
-                                    });
-                                    if (!res.ok) {
-                                      console.error('❌ Error creating module:', await res.text());
-                                    }
-                                  } else if (typeof mod.id === 'string' && mod.id.includes('api')) {
-                                    // Already exists via API, skip
-                                    console.log('✅ Module already saved:', mod.id);
-                                  } else if (typeof mod.id === 'number' || typeof mod.id === 'string') {
-                                    // Update existing module
-                                    const res = await fetch(`http://localhost:5000/api/modules/${mod.id}`, {
-                                      method: 'PUT',
-                                      headers: {
-                                        'Content-Type': 'application/json',
-                                        'Authorization': `Bearer ${token}`
-                                      },
-                                      body: JSON.stringify({
-                                        titre: mod.title || mod.titre,
-                                        ordre: modules.indexOf(mod) + 1
-                                      })
-                                    });
-                                    if (!res.ok) {
-                                      console.error('❌ Error updating module:', await res.text());
-                                    }
-                                  }
-                                }
-
-                                console.log('✅ Modules saved successfully');
-                                setMessage('✅ Modules enregistrés avec succès! Continuez à ajouter des leçons ou cliquez "J\'ai terminé" pour continuer.');
-                                // Do NOT redirect - stay on page for user to add lessons
-                              } catch (err) {
-                                console.error('❌ Error:', err);
-                                setMessage('❌ Erreur lors de l\'enregistrement');
-                              } finally {
-                                setSaving(false);
-                              }
-                            }}
-                            className="bg-gray-600 hover:bg-gray-700 text-white px-5 py-2 rounded-lg disabled:opacity-50"
+                            onClick={() => router.push(`/dash_formation/formations_formateurs/formation_completer/tarification?page=1${fId?`&fId=${fId}`:''}`)}
+                            className="bg-gray-800 hover:bg-black text-white px-5 py-2 rounded-lg transition-colors"
                           >
-                            {saving ? 'Enregistrement...' : 'Enregistrer'}
-                          </button>
-
-                          <button 
-                            type="button"
-                            onClick={() => {
-                              if (confirm('Êtes-vous sûr d\'avoir terminé l\'ajout de modules et de leçons?')) {
-                                router.push(`/dash_formation/formations_formateurs/formation_completer/tarification?page=1${fId?`&fId=${fId}`:''}`);
-                              }
-                            }}
-                            className="bg-[#0C8CE9] hover:bg-[#096bb3] text-white px-5 py-2 rounded-lg"
-                          >
-                            J'ai terminé
+                            Suivant
                           </button>
                         </div>
                       </div>

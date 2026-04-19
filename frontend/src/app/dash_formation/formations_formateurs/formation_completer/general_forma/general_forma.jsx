@@ -1,5 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
+import { FiSave } from 'react-icons/fi';
+import { useAutoSave } from '../../../../../hooks/useAutoSave';
 import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Sidebar from '../../../sidebar/sidebar';
@@ -33,6 +35,8 @@ export default function GeneralForma() {
 	const [saving, setSaving] = useState(false);
 	const [message, setMessage] = useState(null);
 	const [errors, setErrors] = useState({});
+	const [hasChanges, setHasChanges] = useState(false);
+
 
 	// Récupérer les catégories et sous-catégories au montage
 	useEffect(() => {
@@ -93,6 +97,7 @@ export default function GeneralForma() {
 						subcategoryId: data.subcategoryId || (data.subcategory?.id || ''),
 						coverImages: images
 					}));
+					setHasChanges(false);
 					
 					console.log('✅ Form updated:', {
 						description_longue: data.description_longue,
@@ -108,6 +113,7 @@ export default function GeneralForma() {
 	const handleChange = (e) => {
 		const { name, value } = e.target;
 		setForm(prev => ({ ...prev, [name]: value }));
+		setHasChanges(true);
 	};
 
 	const handleCategoryChange = (e) => {
@@ -116,6 +122,7 @@ export default function GeneralForma() {
 		const selectedSubs = subcategories.filter(s => s.categoryId === categoryId);
 		const defaultSubId = selectedSubs.length > 0 ? selectedSubs[0].id : '';
 		setForm(prev => ({ ...prev, categoryId, subcategoryId: defaultSubId }));
+		setHasChanges(true);
 	};
 
 	const validateForm = () => {
@@ -130,7 +137,7 @@ export default function GeneralForma() {
 	};
 
 	const handleSave = async (e) => {
-		e.preventDefault();
+		if (e && e.preventDefault) e.preventDefault();
 		const { ok, errors } = validateForm();
 		if (!ok) {
 			setErrors(errors);
@@ -185,11 +192,12 @@ export default function GeneralForma() {
 			}
 
 			setMessage('✅ Modifications enregistrées avec succès!');
+			setHasChanges(false);
 			
-			// Redirect to next step after 1 second
+			// Clear message after 3 seconds
 			setTimeout(() => {
-				router.push(`/dash_formation/formations_formateurs/formation_completer/detail_forma?fId=${fId}`);
-			}, 1000);
+				setMessage(null);
+			}, 3000);
 		} catch (err) {
 			console.error('❌ Error:', err);
 			setMessage('Erreur réseau lors de l\'enregistrement.');
@@ -197,6 +205,8 @@ export default function GeneralForma() {
 			setSaving(false);
 		}
 	};
+
+	const autoSaveTimer = useAutoSave(hasChanges, handleSave, 30);
 
 	useEffect(() => {
 		// Ensure a default subcategory exists for the selected category
@@ -223,6 +233,7 @@ export default function GeneralForma() {
 			const images = await Promise.all(promises);
 			// Garder les images existantes et ajouter les nouvelles
 			setForm(prev => ({ ...prev, coverImages: [...prev.coverImages, ...images].slice(0,5) }));
+			setHasChanges(true);
 		} catch (err) {
 			console.error('Image read error', err);
 		}
@@ -230,6 +241,7 @@ export default function GeneralForma() {
 
 	const removeImage = (index) => {
 		setForm(prev => ({ ...prev, coverImages: prev.coverImages.filter((_, i) => i !== index) }));
+		setHasChanges(true);
 	};
 
 	return (
@@ -245,9 +257,22 @@ export default function GeneralForma() {
 					<div className="flex-1">
 						<div className="max-w-7xl mx-auto px-4 sm:px-6">
 							<main>
-								<div className="container mx-auto px-4 py-8 pt-6 max-w-4xl">
+								<div className="container mx-auto px-4 py-8 pt-6 max-w-6xl">
 									<ProgressStepper current={1} fId={fId} />
-									<PageHeader title="Informations générales" actions={<></>} />
+									<PageHeader title="Informations générales" actions={
+										hasChanges ? (
+											<div className="flex items-center gap-3">
+												{autoSaveTimer !== null && autoSaveTimer > 0 && (
+													<span className="text-sm font-medium text-gray-500 animate-pulse">
+														Enregistrement automatique dans {autoSaveTimer} s
+													</span>
+												)}
+												<button onClick={handleSave} disabled={saving} className={`flex items-center justify-center w-10 h-10 bg-[#0C8CE9] hover:bg-[#0A71BC] text-white rounded-full transition-all shadow-md active:scale-95 ${saving ? 'opacity-50 cursor-not-allowed' : ''}`} title="Enregistrer les modifications">
+													<FiSave className="w-5 h-5" />
+												</button>
+											</div>
+										) : <></>
+									} />
 
 									<form onSubmit={handleSave} className="bg-white p-8 rounded-2xl shadow-sm w-full text-black">
 										{message && <div className="mb-4 text-sm text-gray-700">{message}</div>}
@@ -337,8 +362,8 @@ export default function GeneralForma() {
 											<div>
 												<button type="button" onClick={() => router.back()} className="px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-gray-800 transition">Retour</button>
 											</div>
-											<div>
-												<button type="submit" disabled={saving} className="bg-[#0C8CE9] hover:bg-[#096bb3] text-white px-5 py-2 rounded-lg">{saving ? 'Enregistrement...' : 'Enregistrer'}</button>
+											<div className="flex items-center gap-3">
+												<button type="button" onClick={() => router.push(`/dash_formation/formations_formateurs/formation_completer/detail_forma?fId=${fId}`)} className="bg-gray-800 hover:bg-black text-white px-5 py-2 rounded-lg transition-colors">Suivant</button>
 											</div>
 										</div>
 									</form>

@@ -1,5 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
+import { FiSave } from 'react-icons/fi';
+import { useAutoSave } from '../../../../../hooks/useAutoSave';
 import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Sidebar from '../../../sidebar/sidebar';
@@ -29,6 +31,8 @@ export default function TarificationPage() {
   const [message, setMessage] = useState(null);
   const [confirmFreeOpen, setConfirmFreeOpen] = useState(false);
   const [confirmMode, setConfirmMode] = useState('activate');
+  const [hasChanges, setHasChanges] = useState(false);
+
 
   useEffect(() => {
     if (fId) {
@@ -56,6 +60,7 @@ export default function TarificationPage() {
           setPromoPrice(data.prix_promo ? String(data.prix_promo) : '');
           setDateDebutPromo(data.date_debut_promo ? data.date_debut_promo.split('T')[0] : '');
           setDateFinPromo(data.date_fin_promo ? data.date_fin_promo.split('T')[0] : '');
+          setHasChanges(false);
         })
         .catch(err => console.error('❌ Erreur lors du chargement:', err));
     } else {
@@ -77,6 +82,7 @@ export default function TarificationPage() {
           if (Number.isFinite(p) && Number.isFinite(pp) && p > 0 && pp >= p) {
             setPromoError('Le prix promotionnel doit être strictement inférieur au prix normal.');
           }
+          setHasChanges(false);
         }
       } catch (err) {
         // ignore
@@ -97,7 +103,7 @@ export default function TarificationPage() {
   };
 
   const handleSave = async (e) => {
-    e && e.preventDefault && e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     
     // Validation: si pas gratuit, le prix normal est OBLIGATOIRE
     if (!isFree && !price) {
@@ -167,11 +173,12 @@ export default function TarificationPage() {
       // Save draft locally for reference
       const draftPayload = { price: price, promoPrice: promoPrice, isFree };
       saveDraft(draftPayload);
+      setHasChanges(false);
       
-      // Redirect to formations list after 1.5 seconds
+      // Clear message after 3 seconds
       setTimeout(() => {
-        router.push(`/dash_formation/formations_formateurs/formations_liste`);
-      }, 1500);
+        setMessage(null);
+      }, 3000);
     } catch (err) {
       console.error('❌ Error:', err);
       setMessage('Erreur réseau lors de l\'enregistrement.');
@@ -179,6 +186,8 @@ export default function TarificationPage() {
       setSaving(false);
     }
   };
+
+  const autoSaveTimer = useAutoSave(hasChanges, (e) => handleSave(e), 30);
 
   const toNumber = (v) => {
     const n = Number(String(v).replace(',', '.'));
@@ -204,6 +213,7 @@ export default function TarificationPage() {
     } else {
       setPromoError('');
     }
+    setHasChanges(true);
   };
 
   return (
@@ -218,9 +228,22 @@ export default function TarificationPage() {
           <div className="flex-1">
             <div className="max-w-7xl mx-auto px-4 sm:px-6">
               <main>
-                <div className="container mx-auto px-4 py-8 pt-6 max-w-4xl">
+                <div className="container mx-auto px-4 py-8 pt-6 max-w-6xl">
                   <ProgressStepper current={4} fId={fId} />
-                  <PageHeader title="Tarification" actions={<></>} />
+                  <PageHeader title="Tarification" actions={
+                    hasChanges ? (
+                      <div className="flex items-center gap-3">
+                        {autoSaveTimer !== null && autoSaveTimer > 0 && (
+                          <span className="text-sm font-medium text-gray-500 animate-pulse">
+                            Enregistrement automatique dans {autoSaveTimer} s
+                          </span>
+                        )}
+                        <button onClick={handleSave} disabled={saving} className={`flex items-center justify-center w-10 h-10 bg-[#0C8CE9] hover:bg-[#0A71BC] text-white rounded-full transition-all shadow-md active:scale-95 ${saving ? 'opacity-50 cursor-not-allowed' : ''}`} title="Enregistrer les modifications">
+                          <FiSave className="w-5 h-5" />
+                        </button>
+                      </div>
+                    ) : <></>
+                  } />
 
                   <form onSubmit={handleSave} className="bg-white p-8 rounded-2xl shadow-sm w-full text-black">
                     {message && <div className="mb-4 text-sm text-gray-700">{message}</div>}
@@ -233,7 +256,7 @@ export default function TarificationPage() {
                       <label className="block text-sm font-semibold mb-2">Gains souhaités (MRU)</label>
                       <div className="flex gap-3 items-center">
                         <div className="relative flex-1">
-                          <input type="number" step="0.01" min="0" placeholder="1200" value={desiredNet} onChange={(e) => setDesiredNet(e.target.value)} disabled={isFree} className="w-full pr-12 px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
+                          <input type="number" step="0.01" min="0" placeholder="1200" value={desiredNet} onChange={(e) => { setDesiredNet(e.target.value); setHasChanges(true); }} disabled={isFree} className="w-full pr-12 px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
                           <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">MRU</span>
                         </div>
                         <button type="button" onClick={handleComputeGross} className="px-4 py-2 bg-[#0C8CE9] text-white rounded-lg hover:bg-[#096bb3]">Calculer le prix</button>
@@ -256,6 +279,7 @@ export default function TarificationPage() {
                             if (v !== '' && promoPrice !== '' && toNumber(promoPrice) >= toNumber(v)) {
                               setPromoError('Le prix promotionnel doit être strictement inférieur au prix normal.');
                             }
+                            setHasChanges(true);
                           }} disabled={isFree} className="w-full pr-12 px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
                           <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">MRU</span>
                         </div>
@@ -274,6 +298,7 @@ export default function TarificationPage() {
                             } else {
                               setPromoError('');
                             }
+                            setHasChanges(true);
                           }} disabled={isFree} className="w-full pr-12 px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
                           <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">MRU</span>
                         </div>
@@ -289,7 +314,7 @@ export default function TarificationPage() {
                           <input 
                             type="date" 
                             value={dateDebutPromo} 
-                            onChange={(e) => setDateDebutPromo(e.target.value)}
+                            onChange={(e) => { setDateDebutPromo(e.target.value); setHasChanges(true); }}
                             className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200" 
                           />
                         </div>
@@ -298,7 +323,7 @@ export default function TarificationPage() {
                           <input 
                             type="date" 
                             value={dateFinPromo} 
-                            onChange={(e) => setDateFinPromo(e.target.value)}
+                            onChange={(e) => { setDateFinPromo(e.target.value); setHasChanges(true); }}
                             className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200" 
                           />
                         </div>
@@ -326,7 +351,11 @@ export default function TarificationPage() {
                           <span className="text-sm text-gray-700">{isFree ? 'Formation gratuite activée' : 'Rendre la formation gratuite'}</span>
                         </div>
 
-                        <button type="submit" disabled={saving} className="bg-[#0C8CE9] hover:bg-[#096bb3] text-white px-5 py-2 rounded-lg">{saving ? 'Enregistrement...' : 'Enregistrer'}</button>
+                        <div className="flex items-center gap-3">
+                          <button type="button" onClick={() => router.push(`/dash_formation/formations_formateurs/formations_liste`)} className="bg-gray-800 hover:bg-black text-white px-5 py-2 rounded-lg transition-colors">
+                            Terminer
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </form>
@@ -349,9 +378,9 @@ export default function TarificationPage() {
                                 setPromoPrice('');
                                 setDesiredNet('');
                                 setComputeMsg('');
-                                // save an empty draft for prices
                                 saveDraft({ price: '', promoPrice: '', isFree: true });
                                 setConfirmFreeOpen(false);
+                                setHasChanges(true);
                               }} className="px-4 py-2 rounded bg-[#0C8CE9] text-white hover:bg-[#096bb3] transition">Activer</button>
                             </div>
                           </>
@@ -365,6 +394,7 @@ export default function TarificationPage() {
                                 setIsFree(false);
                                 saveDraft({ price, promoPrice, isFree: false });
                                 setConfirmFreeOpen(false);
+                                setHasChanges(true);
                               }} className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700 transition">Désactiver</button>
                             </div>
                           </>

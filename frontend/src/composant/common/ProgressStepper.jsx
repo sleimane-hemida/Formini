@@ -16,18 +16,17 @@ export default function ProgressStepper({ current = 1, fId = null }) {
         {steps.map((s, i) => {
           const completed = s.id < current;
           const active = s.id === current;
-          const url = s.path; // keep href stable for SSR/CSR; fId (if any) handled by parent routing
           return (
             <React.Fragment key={s.id}>
-              <Link href={url} className="flex items-center select-none">
-                <div className={`w-9 h-9 rounded-full flex items-center justify-center ${completed ? 'bg-green-500 text-white' : active ? 'bg-blue-500 text-white' : 'bg-white border border-gray-200 text-gray-600'}`}>
+              <div className="flex items-center select-none">
+                <div className={`w-9 h-9 rounded-full flex items-center justify-center ${completed ? 'bg-green-500 text-white shadow-sm' : active ? 'bg-blue-500 text-white shadow-md' : 'bg-white border border-gray-200 text-gray-400'}`}>
                   {completed ? <HiCheck className="w-5 h-5" /> : <span className="font-semibold">{s.id}</span>}
                 </div>
-                <div className={`ml-3 ${active ? 'font-semibold text-black' : 'text-gray-600'} text-sm`}>{s.label}</div>
-              </Link>
+                <div className={`ml-3 ${active ? 'font-bold text-black' : 'text-gray-500'} text-sm`}>{s.label}</div>
+              </div>
 
               {i < steps.length - 1 && (
-                <div className={`flex-1 h-0.5 mx-4 ${s.id < current ? 'bg-blue-300' : 'bg-gray-200'}`} />
+                <div className={`flex-1 h-0.5 mx-4 ${s.id < current ? 'bg-blue-300' : 'bg-gray-100'}`} />
               )}
             </React.Fragment>
           );

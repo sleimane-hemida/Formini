@@ -1,5 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
+import { FiSave } from 'react-icons/fi';
+import { useAutoSave } from '../../../../../hooks/useAutoSave';
 import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Sidebar from '../../../sidebar/sidebar';
@@ -41,6 +43,8 @@ export default function DetailForma() {
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState(null);
+  const [hasChanges, setHasChanges] = useState(false);
+
 
   useEffect(() => {
     if (fId) {
@@ -71,6 +75,7 @@ export default function DetailForma() {
           if (data.public_cible && Array.isArray(data.public_cible)) {
             setSelectedAudiences(data.public_cible);
           }
+          setHasChanges(false);
         })
         .catch(err => console.error('❌ Erreur lors du chargement:', err));
     }
@@ -79,6 +84,7 @@ export default function DetailForma() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
+    setHasChanges(true);
   };
 
   const validate = () => {
@@ -92,7 +98,7 @@ export default function DetailForma() {
   };
 
   const handleSave = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     const { ok, errors } = validate();
     if (!ok) return setErrors(errors);
     setErrors({});
@@ -133,11 +139,12 @@ export default function DetailForma() {
       }
 
       setMessage('✅ Détails enregistrés avec succès!');
+      setHasChanges(false);
       
-      // Redirect to next step after 1 second
+      // Clear message after 3 seconds
       setTimeout(() => {
-        router.push(`/dash_formation/formations_formateurs/formation_completer/module?fId=${fId}`);
-      }, 1000);
+        setMessage(null);
+      }, 3000);
     } catch (err) {
       console.error('❌ Error:', err);
       setMessage('Erreur réseau lors de l\'enregistrement.');
@@ -145,6 +152,8 @@ export default function DetailForma() {
       setSaving(false);
     }
   };
+
+  const autoSaveTimer = useAutoSave(hasChanges, handleSave, 30);
 
   const handleAddAudience = (value) => {
     if (!value) return;
@@ -156,6 +165,7 @@ export default function DetailForma() {
       }
       // clear any previous audience error
       setErrors(errs => ({ ...errs, audiences: undefined }));
+      setHasChanges(true);
       return [...prev, value];
     });
   };
@@ -163,6 +173,7 @@ export default function DetailForma() {
   const handleRemoveAudience = (value) => {
     setSelectedAudiences(prev => prev.filter(v => v !== value));
     setErrors(errs => ({ ...errs, audiences: undefined }));
+    setHasChanges(true);
   };
 
   const totalMinutes = Number(form.minutes || 0);
@@ -192,9 +203,22 @@ export default function DetailForma() {
           <div className="flex-1">
             <div className="max-w-7xl mx-auto px-4 sm:px-6">
               <main>
-                <div className="container mx-auto px-4 py-8 pt-6 max-w-4xl">
+                <div className="container mx-auto px-4 py-8 pt-6 max-w-6xl">
                   <ProgressStepper current={2} fId={fId} />
-                  <PageHeader title="Détails de la formation" actions={<></>} />
+                  <PageHeader title="Détails de la formation" actions={
+                    hasChanges ? (
+                      <div className="flex items-center gap-3">
+                        {autoSaveTimer !== null && autoSaveTimer > 0 && (
+                          <span className="text-sm font-medium text-gray-500 animate-pulse">
+                            Enregistrement automatique dans {autoSaveTimer} s
+                          </span>
+                        )}
+                        <button onClick={handleSave} disabled={saving} className={`flex items-center justify-center w-10 h-10 bg-[#0C8CE9] hover:bg-[#0A71BC] text-white rounded-full transition-all shadow-md active:scale-95 ${saving ? 'opacity-50 cursor-not-allowed' : ''}`} title="Enregistrer les modifications">
+                          <FiSave className="w-5 h-5" />
+                        </button>
+                      </div>
+                    ) : <></>
+                  } />
 
                   <form onSubmit={handleSave} className="bg-white p-8 rounded-2xl shadow-sm w-full text-black">
                     {message && <div className="mb-4 text-sm text-gray-700">{message}</div>}
@@ -251,8 +275,8 @@ export default function DetailForma() {
                       <div>
                         <button type="button" onClick={() => router.back()} className="px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-gray-800 transition">Retour</button>
                       </div>
-                      <div>
-                        <button type="submit" disabled={saving} className="bg-[#0C8CE9] hover:bg-[#096bb3] text-white px-5 py-2 rounded-lg">{saving ? 'Enregistrement...' : 'Enregistrer'}</button>
+                      <div className="flex items-center gap-3">
+                        <button type="button" onClick={() => router.push(`/dash_formation/formations_formateurs/formation_completer/module?fId=${fId}`)} className="bg-gray-800 hover:bg-black text-white px-5 py-2 rounded-lg transition-colors">Suivant</button>
                       </div>
                     </div>
                   </form>
