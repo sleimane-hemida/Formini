@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Header from "../../../../composant/layout/header";
 import Nav from "../../navigation/nav";
 import Footer from "../../../../composant/layout/footer";
@@ -26,113 +26,11 @@ import {
 } from "react-icons/fa";
 import { FiAward, FiBookOpen, FiCalendar, FiBarChart2 } from "react-icons/fi";
 
-// ─── Données mockées ──────────────────────────────────────────────────────────
-const formationsDetail = {
-    1: {
-        id: 1,
-        title: "Masterclass UX/UI Design — De zéro à Pro",
-        category: "Design",
-        categoryIcon: <FaPaintBrush size={14} />,
-        duration: "3 Mois",
-        description:
-            "Apprenez à concevoir des interfaces modernes et engageantes avec Figma. Ce cours couvre tout le processus de conception, des wireframes aux prototypes interactifs, en passant par les principes fondamentaux du design thinking et de l'accessibilité numérique.",
-        author: "Sarah Diallo",
-        image: "/images/users/formation.jpg",
-        avatar: "/images/users/profile.jpg",
-        type: "promotion",
-        oldPrice: "1200 MRU",
-        price: "600 MRU",
-        rating: 5,
-        students: 1284,
-        level: "Débutant → Avancé",
-        language: "Français",
-        lastUpdated: "Avril 2026",
-        modules: [
-            {
-                id: 1,
-                title: "Introduction au Design UX/UI",
-                duration: "45 min",
-                lecons: [
-                    { id: 1, title: "Qu'est-ce que le UX Design ?", duration: "8 min", type: "video", done: true },
-                    { id: 2, title: "Différence entre UX et UI", duration: "6 min", type: "video", done: true },
-                    { id: 3, title: "Les outils du designer moderne", duration: "10 min", type: "video", done: false },
-                    { id: 4, title: "Quiz — Fondamentaux UX", duration: "5 min", type: "quiz", done: false },
-                ],
-            },
-            {
-                id: 2,
-                title: "Maîtriser Figma de A à Z",
-                duration: "2h 10 min",
-                lecons: [
-                    { id: 5, title: "Prise en main de l'interface Figma", duration: "12 min", type: "video", done: false },
-                    { id: 6, title: "Composants et variantes", duration: "18 min", type: "video", done: false },
-                    { id: 7, title: "Auto Layout & Responsive Design", duration: "22 min", type: "video", done: false },
-                    { id: 8, title: "Prototypage interactif", duration: "20 min", type: "video", done: false },
-                    { id: 9, title: "Kit Figma complet (ressources)", duration: "", type: "file", done: false },
-                ],
-            },
-            {
-                id: 3,
-                title: "Design Thinking & Recherche Utilisateur",
-                duration: "1h 30 min",
-                lecons: [
-                    { id: 10, title: "Les 5 phases du Design Thinking", duration: "14 min", type: "video", done: false, locked: true },
-                    { id: 11, title: "Créer des personas efficaces", duration: "16 min", type: "video", done: false, locked: true },
-                    { id: 12, title: "Conduire des entretiens utilisateurs", duration: "18 min", type: "video", done: false, locked: true },
-                ],
-            },
-            {
-                id: 4,
-                title: "Projet Final — Application Mobile",
-                duration: "3h 00 min",
-                lecons: [
-                    { id: 13, title: "Brief du projet et livrables", duration: "10 min", type: "video", done: false, locked: true },
-                    { id: 14, title: "Conception des wireframes", duration: "30 min", type: "video", done: false, locked: true },
-                    { id: 15, title: "Maquette HD et système de design", duration: "45 min", type: "video", done: false, locked: true },
-                    { id: 16, title: "Présentation finale", duration: "20 min", type: "video", done: false, locked: true },
-                ],
-            },
-        ],
-    },
-};
-
-function buildGenericFormation(id) {
-    return {
-        id,
-        title: "Formation " + id,
-        category: "Développement",
-        categoryIcon: <FaLaptopCode size={14} />,
-        duration: "2 Mois",
-        description: "Une formation complète pour maîtriser les compétences essentielles et propulser votre carrière.",
-        author: "Formateur Expert",
-        image: "/images/users/formation.png",
-        avatar: "/images/users/profile.jpg",
-        type: "normal",
-        oldPrice: "",
-        price: "800 MRU",
-        rating: 4,
-        students: 342,
-        level: "Tous niveaux",
-        language: "Français",
-        lastUpdated: "Avril 2026",
-        modules: [
-            {
-                id: 1,
-                title: "Module 1 — Fondamentaux",
-                duration: "1h",
-                lecons: [
-                    { id: 1, title: "Introduction générale", duration: "10 min", type: "video", done: false },
-                    { id: 2, title: "Les concepts clés", duration: "15 min", type: "video", done: false },
-                ],
-            },
-        ],
-    };
-}
-
 // ─── Accordéon Module ─────────────────────────────────────────────────────────
 function ModuleAccordion({ module, index, isOpen, onToggle }) {
-    const done = module.lecons.filter((l) => l.done).length;
-    const total = module.lecons.length;
+    const lecons = module.Lessons || [];
+    const done = lecons.filter((l) => l.done).length;
+    const total = lecons.length;
 
     const typeIcon = (lecon) => {
         if (lecon.locked) return <FaLock size={12} className="text-gray-400" />;
@@ -168,7 +66,7 @@ function ModuleAccordion({ module, index, isOpen, onToggle }) {
 
             {isOpen && (
                 <div className="border-t border-gray-100 bg-gray-50 divide-y divide-gray-100">
-                    {module.lecons.map((lecon) => (
+                    {lecons.map((lecon) => (
                         <div
                             key={lecon.id}
                             className={`flex items-center gap-3 px-5 py-3 text-sm ${
@@ -206,10 +104,101 @@ function ModuleAccordion({ module, index, isOpen, onToggle }) {
 // ─── Composant principal ──────────────────────────────────────────────────────
 export default function ModuleLecon({ formationId }) {
     const router = useRouter();
-    const id = formationId ? Number(formationId) : 1;
-    const formation = formationsDetail[id] || buildGenericFormation(id);
-
+    const searchParams = useSearchParams();
+    const id = searchParams.get('id') || formationId;
+    
+    const [formation, setFormation] = useState(null);
+    const [loading, setLoading] = useState(true);
     const [openModules, setOpenModules] = useState([0]);
+
+    // Charger la formation depuis l'API
+    useEffect(() => {
+        const loadFormation = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    router.push('/auth/login');
+                    return;
+                }
+
+                const response = await fetch(`http://localhost:5000/api/formations/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Formation non trouvée');
+                }
+
+                const data = await response.json();
+                
+                // Formater les données
+                const formattedFormation = {
+                    id: data.id,
+                    title: data.name,
+                    category: data.Category?.name || "Non spécifié",
+                    description: data.description,
+                    image: data.image || "/images/users/formation.png",
+                    duration: `${data.duree_totale_minutes || 0} min`,
+                    rating: 5,
+                    students: 0,
+                    type: "normal",
+                    modules: data.Modules || []
+                };
+
+                setFormation(formattedFormation);
+            } catch (error) {
+                console.error('Erreur:', error);
+                setFormation(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (id) {
+            loadFormation();
+        }
+    }, [id, router]);
+
+    if (loading) {
+        return (
+            <div className="bg-white min-h-screen text-gray-900 font-sans">
+                <Header />
+                <div className="pt-24">
+                    <Nav />
+                    <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex items-center justify-center min-h-[400px]">
+                        <div className="text-center">
+                            <div className="animate-spin w-10 h-10 border-4 border-slate-300 border-t-blue-600 rounded-full mx-auto mb-4"></div>
+                            <p className="text-slate-500">Chargement de la formation...</p>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        );
+    }
+
+    if (!formation) {
+        return (
+            <div className="bg-white min-h-screen text-gray-900 font-sans">
+                <Header />
+                <div className="pt-24">
+                    <Nav />
+                    <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+                        <div className="text-center py-12">
+                            <h1 className="text-2xl font-bold text-gray-900 mb-4">Formation non trouvée</h1>
+                            <button 
+                                onClick={() => router.back()}
+                                className="text-blue-600 hover:text-blue-700 font-medium"
+                            >
+                                Retour
+                            </button>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        );
+    }
 
     const toggleModule = (i) =>
         setOpenModules((prev) =>
@@ -217,7 +206,7 @@ export default function ModuleLecon({ formationId }) {
         );
 
     const allOpen = openModules.length === formation.modules.length;
-    const totalLecons = formation.modules.reduce((s, m) => s + m.lecons.length, 0);
+    const totalLecons = formation.modules.reduce((s, m) => s + (m.Lessons?.length || 0), 0);
 
     const badgeColor = {
         promotion: "bg-amber-100 text-amber-700",

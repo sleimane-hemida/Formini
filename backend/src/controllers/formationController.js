@@ -1,4 +1,4 @@
-const { Formation, Category, User, Module, Subcategory } = require('../models');
+const { Formation, Category, User, Module, Subcategory, Lesson } = require('../models');
 const { validateNiveau, validatePublicCible, validatePricing, NIVEAUX, PUBLIC_CIBLE_OPTIONS } = require('../utils/formations');
 
 exports.createFormation = async (req, res, next) => {
@@ -41,6 +41,44 @@ exports.getFormationOptions = async (req, res, next) => {
   }
 };
 
+// Endpoint public: retourner toutes les formations publiées et actives (optimisé)
+exports.getAllPublishedFormations = async (req, res, next) => {
+  try {
+    const formations = await Formation.findAll({
+      where: {
+        isActive: true
+      },
+      attributes: [
+        'id', 'name', 'description', 'ce_que_vous_apprendrez', 'image',
+        'duree_totale_minutes', 'prix_normal', 'prix_promo', 'est_gratuite',
+        'language', 'categoryId', 'subcategoryId', 'createdAt', 'niveau'
+      ],
+      include: [
+        { model: Category, attributes: ['id', 'name'] },
+        { model: User, as: 'trainer', attributes: ['id', 'name'] },
+        { model: Subcategory, as: 'subcategory', attributes: ['id', 'name'] },
+        { 
+          model: Module, 
+          as: 'Modules', 
+          attributes: ['id'],
+          include: [
+            {
+              model: require('../models/Lesson'),
+              as: 'Lessons',
+              attributes: ['id']
+            }
+          ]
+        }
+      ],
+      order: [['createdAt', 'DESC']]
+    });
+    
+    res.json(formations);
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.getFormations = async (req, res, next) => {
   try {
     // Filter by current user (trainerId) - always applied due to verifyToken middleware
@@ -77,15 +115,42 @@ exports.getFormationById = async (req, res, next) => {
       include: [
         { model: Category },
         { model: User, as: 'trainer', attributes: ['id', 'name', 'email'] },
-        { model: Subcategory, as: 'subcategory' }
+        { model: Subcategory, as: 'subcategory' },
+        {
+          model: Module,
+          as: 'Modules',
+          include: [
+            {
+              model: Lesson,
+              as: 'Lessons',
+              attributes: ['id', 'titre', 'ordre', 'image_couverture']
+            }
+          ]
+        }
       ]
     });
     if (!formation) {
       return res.status(404).json({ error: 'Formation not found' });
     }
 
-    // Verify ownership: only trainer or admin can access their formations
-    if (formation.trainerId !== req.user.id && req.user.role !== 'administrateur') {
+    // Vérifier l'accès: trainer, admin, ou acheteur avec commande
+    const isTrainer = formation.trainerId === req.user.id;
+    const isAdmin = req.user.role === 'administrateur';
+    
+    let isBuyer = false;
+    if (!isTrainer && !isAdmin && req.user.role === 'acheteur') {
+      // Vérifier si l'utilisateur a acheté cette formation
+      const { Order } = require('../models');
+      const order = await Order.findOne({
+        where: {
+          userId: req.user.id,
+          formationId: id
+        }
+      });
+      isBuyer = !!order;
+    }
+
+    if (!isTrainer && !isAdmin && !isBuyer) {
       return res.status(403).json({ error: 'Vous n\'avez pas accès à cette formation' });
     }
     

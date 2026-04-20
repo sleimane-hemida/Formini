@@ -3,6 +3,7 @@ const User = require('./User');
 const Category = require('./Category');
 const Formation = require('./Formation');
 const FormationAccess = require('./FormationAccess');
+const Order = require('./Order');
 const Subcategory = require('./Subcategory');
 const Module = require('./Module');
 const Lesson = require('./Lesson');
@@ -32,6 +33,12 @@ FormationAccess.belongsTo(User, { as: 'user', foreignKey: 'userId' });
 FormationAccess.belongsTo(Formation, { foreignKey: 'formationId' });
 FormationAccess.belongsTo(User, { as: 'admin', foreignKey: 'approvedBy' });
 
+// Order associations
+Order.belongsTo(User, { foreignKey: 'userId' });
+Order.belongsTo(Formation, { foreignKey: 'formationId' });
+User.hasMany(Order, { foreignKey: 'userId' });
+Formation.hasMany(Order, { foreignKey: 'formationId' });
+
 
 const db = {
   sequelize,
@@ -41,6 +48,7 @@ const db = {
   Subcategory,
   Formation,
   FormationAccess,
+  Order,
   Module,
   Lesson,
   Resource

@@ -9,81 +9,74 @@ import { FaPaintBrush, FaCode, FaChartBar, FaCamera } from 'react-icons/fa';
 export default function MesFormations() {
     const [filter, setFilter] = useState('all'); // all, in-progress, completed
     const [searchTerm, setSearchTerm] = useState('');
+    const [formations, setFormations] = useState([]);
+    const [loading, setLoading] = useState(true);
     const router = useRouter();
 
-    // Données simulées des formations
-    const [formations, setFormations] = useState([
-        {
-            id: 1,
-            image: "/images/hero/design-formation.png",
-            category: "Design",
-            categoryIcon: <FaPaintBrush size={18} className="text-[#B1B5C3]" />,
-            duration: "3 Mois",
-            title: "Formation complète en Design UI/UX",
-            description: "Apprenez les bases du design d'interface et de l'expérience utilisateur avec les outils professionnels comme Figma, Adobe XD.",
-            avatar: "/images/users/profile.jpg",
-            author: "Sarah Ahmed",
-            price: "899 MRU",
-            progress: 75,
-            status: "in-progress",
-            totalLessons: 45,
-            completedLessons: 34,
-            lastAccessed: "aujourd'hui"
-        },
-        {
-            id: 2,
-            image: "/images/hero/dev-formation.png",
-            category: "Développement",
-            categoryIcon: <FaCode size={18} className="text-[#B1B5C3]" />,
-            duration: "4 Mois",
-            title: "Développement Web Full Stack avec React et Node.js",
-            description: "Maîtrisez le développement frontend avec React et le backend avec Node.js pour créer des applications web modernes.",
-            avatar: "/images/users/profile.jpg",
-            author: "Omar Hassan",
-            price: "1199 MRU",
-            progress: 100,
-            status: "completed",
-            totalLessons: 58,
-            completedLessons: 58,
-            lastAccessed: "la semaine dernière",
-            certificateUrl: "/certificates/certificate-1.pdf"
-        },
-        {
-            id: 3,
-            image: "/images/hero/data-formation.png",
-            category: "Data Science",
-            categoryIcon: <FaChartBar size={18} className="text-[#B1B5C3]" />,
-            duration: "6 Mois",
-            title: "Analyse de données avec Python et Machine Learning",
-            description: "Découvrez le monde de la data science, de l'analyse exploratoire au machine learning avancé avec Python.",
-            avatar: "/images/users/profile.jpg",
-            author: "Thomas Leroy",
-            price: "1299 MRU",
-            progress: 30,
-            status: "in-progress",
-            totalLessons: 67,
-            completedLessons: 20,
-            lastAccessed: "hier"
-        },
-        {
-            id: 4,
-            image: "/images/hero/photo-formation.png",
-            category: "Photographie",
-            categoryIcon: <FaCamera size={18} className="text-[#B1B5C3]" />,
-            duration: "3 Mois",
-            title: "Photographie professionnelle et retouche",
-            description: "Maîtrisez l'art de la photographie, de la prise de vue à la retouche professionnelle avec Lightroom et Photoshop.",
-            avatar: "/images/users/profile.jpg",
-            author: "Marie Blanc",
-            price: "749 MRU",
-            progress: 100,
-            status: "completed",
-            totalLessons: 35,
-            completedLessons: 35,
-            lastAccessed: "il y a 2 semaines",
-            certificateUrl: "/certificates/certificate-4.pdf"
-        }
-    ]);
+    // Charger les formations achetées depuis l'API
+    useEffect(() => {
+        const loadFormations = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                console.log('Token:', token);
+                if (!token) {
+                    router.push('/auth/login');
+                    return;
+                }
+
+                const response = await fetch('http://localhost:5000/api/orders/my-formations', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log('Formations reçues:', data);
+                
+                if (!data || data.length === 0) {
+                    console.log('Aucune formation achetée');
+                    setFormations([]);
+                    setLoading(false);
+                    return;
+                }
+
+                // Transformer les données de l'API au format attendu
+                const formattedFormations = data.map(order => ({
+                    id: order.Formation.id,
+                    image: order.Formation.image || "/images/users/formation.png",
+                    category: order.Formation.Category?.name || "Non spécifié",
+                    categoryIcon: <FaCode size={18} className="text-[#B1B5C3]" />,
+                    duration: `${order.Formation.duree_totale_minutes || 0} min`,
+                    title: order.Formation.name,
+                    description: order.Formation.description,
+                    avatar: "/images/users/profile.jpg",
+                    author: "Formateur",
+                    price: `${order.Formation.prix_normal || 0} MRU`,
+                    progress: order.status === 'validée' ? 0 : 0,
+                    status: order.status === 'validée' ? 'in-progress' : 'not-started',
+                    totalLessons: order.Formation.Modules?.reduce((total, m) => total + (m.Lessons?.length || 0), 0) || 0,
+                    completedLessons: 0,
+                    lastAccessed: "jamais"
+                }));
+
+                setFormations(formattedFormations);
+                console.log('Formations chargées:', formattedFormations);
+            } catch (error) {
+                console.error('Erreur complète:', error);
+                setFormations([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadFormations();
+    }, [router]);
 
     // Filtrer les formations
     const filteredFormations = formations.filter(formation => {
@@ -98,7 +91,7 @@ export default function MesFormations() {
 
     // Fonction pour naviguer vers les détails
     const handleFormationClick = (formationId) => {
-        router.push(`/mes_formations/forma_details?id=${formationId}`);
+        router.push(`/acheteur/formation/moduleLecon?id=${formationId}`);
     };
 
     return (
@@ -167,7 +160,11 @@ export default function MesFormations() {
 
                 {/* Liste des formations */}
                 <div>
-                    {filteredFormations.length === 0 ? (
+                    {loading ? (
+                        <div className="text-center py-12">
+                            <p className="text-gray-600">Chargement de vos formations...</p>
+                        </div>
+                    ) : filteredFormations.length === 0 ? (
                         <div className="text-center py-12">
                             <HiBookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                             <h3 className="text-xl font-medium text-gray-800 mb-2">

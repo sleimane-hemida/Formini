@@ -50,7 +50,13 @@ export function CardLarge({
 				   {/* Bas de carte: avatar, nom, prix */}
 				   <div className="flex items-center justify-between mt-auto pt-2">
 					   <div className="flex items-center gap-2">
-						   <Image src={avatar} alt={author} width={40} height={40} className="rounded-full border-2 border-white shadow-sm" style={{width: 'auto'}} />
+						   {avatar ? (
+							   <Image src={avatar} alt={author} width={40} height={40} className="rounded-full border-2 border-white shadow-sm" style={{width: 'auto'}} />
+						   ) : (
+							   <div className="w-10 h-10 rounded-full border-2 border-white shadow-sm bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-sm font-semibold">
+								   {author?.charAt(0)?.toUpperCase()}
+							   </div>
+						   )}
 						   <span className="font-medium text-[#363A3D] text-base">{author}</span>
 					   </div>
 					   <div className="flex items-center gap-2">

@@ -9,6 +9,7 @@ const authController = require('../controllers/authController');
 const categoryController = require('../controllers/categoryController');
 const formationController = require('../controllers/formationController');
 const formationAccessController = require('../controllers/formationAccessController');
+const orderController = require('../controllers/orderController');
 const subcategoryController = require('../controllers/subcategoryController');
 const moduleController = require('../controllers/moduleController');
 const lessonController = require('../controllers/lessonController');
@@ -95,7 +96,8 @@ router.delete('/categories/:id', verifyToken, authorize(['administrateur']), cat
 router.get('/categories', categoryController.getAllCategories);
 router.get('/subcategories', subcategoryController.getAllSubcategories);
 
-// Formation routes (public - list)
+// Formation routes (public - list all published formations)
+router.get('/formations-all', formationController.getAllPublishedFormations);
 router.get('/formations/options', formationController.getFormationOptions);
 router.get('/formations', verifyToken, formationController.getFormations);
 router.get('/formations/:id', verifyToken, formationController.getFormationById);
@@ -118,6 +120,11 @@ router.get('/my-formations', verifyToken, authorize(['acheteur']), formationAcce
 router.get('/formations-access/pending', verifyToken, authorize(['administrateur']), formationAccessController.getPendingRequests);
 router.patch('/formations-access/:accessId/approve', verifyToken, authorize(['administrateur']), formationAccessController.approveAccess);
 router.patch('/formations-access/:accessId/reject', verifyToken, authorize(['administrateur']), formationAccessController.rejectAccess);
+
+// Orders routes (acheteur)
+router.post('/orders', verifyToken, authorize(['acheteur']), orderController.createOrder);
+router.get('/orders/my-formations', verifyToken, authorize(['acheteur']), orderController.getMyFormations);
+router.get('/orders/:orderId', verifyToken, authorize(['acheteur']), orderController.getOrderById);
 
 // Module routes (formateur only)
 router.post('/modules', verifyToken, authorize(['formateur']), moduleController.createModule);
