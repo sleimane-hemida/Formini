@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useTranslation } from "../common/useTranslation";
 import { ROUTES } from "../../utils/routes";
 import { HiUser, HiBell } from "react-icons/hi2";
@@ -173,7 +174,9 @@ export default function Header({ onSearchChange, searchValue: externalSearchValu
                     {t('header.subscription')}
                 </button>
                 {/* A PROPOS: visible >= xl */}
-                <a href="#" className="hover:text-[#0C8CE9] transition-colors hidden xl:block">{t('header.about')}</a>
+                <Link href="/about" className="hover:text-[#0C8CE9] transition-colors hidden xl:block">
+                    {t('header.about')}
+                </Link>
             </nav>
 
 
@@ -253,7 +256,9 @@ export default function Header({ onSearchChange, searchValue: externalSearchValu
                 <div className="absolute top-full left-0 w-full bg-white border-b border-gray-200 z-50 flex flex-col items-start p-4 gap-3 animate-fade-in-down">
                     {/* Afficher seulement les éléments cachés */}
                     {screenWidth < 1280 && (
-                        <a href="#" className="w-full py-2 px-2 rounded text-black transition-colors hover:bg-[#E6F1FA] hover:text-[#0C8CE9] focus:text-[#0C8CE9] active:text-[#0C8CE9]">{t('header.about')}</a>
+                        <Link href="/about" className="w-full py-2 px-2 rounded text-black transition-colors hover:bg-[#E6F1FA] hover:text-[#0C8CE9] focus:text-[#0C8CE9] active:text-[#0C8CE9]">
+                            {t('header.about')}
+                        </Link>
                     )}
                     {screenWidth < 1024 && (
                         <button 

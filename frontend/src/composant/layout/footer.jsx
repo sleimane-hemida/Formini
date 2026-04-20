@@ -16,10 +16,26 @@ export default function Footer() {
         <div>
           <div className="font-bold mb-2">Explorer</div>
           <ul className="space-y-1">
-            <li><a href="#" className="hover:underline text-white/90 text-sm">Catalogue des formations</a></li>
-            <li><a href="#" className="hover:underline text-white/90 text-sm">Catégories</a></li>
-            <li><a href="#" className="hover:underline text-white/90 text-sm">Formateurs</a></li>
-            <li><a href="#" className="hover:underline text-white/90 text-sm">Tarifs & abonnements</a></li>
+            <li>
+              <Link href="/formations" className="hover:underline text-white/90 text-sm">
+                Catalogue des formations
+              </Link>
+            </li>
+            <li>
+              <Link href="/allFormateur/formateurListe" className="hover:underline text-white/90 text-sm">
+                Formateurs
+              </Link>
+            </li>
+            <li>
+              <Link href="/abonnement" className="hover:underline text-white/90 text-sm">
+                Tarifs & abonnements
+              </Link>
+            </li>
+            <li>
+              <Link href="/about" className="hover:underline text-white/90 text-sm">
+                À propos
+              </Link>
+            </li>
           </ul>
         </div>
         {/* Bloc 3 — Devenir formateur */}
@@ -42,7 +58,7 @@ export default function Footer() {
           <div className="font-bold mb-2">Aide & Support</div>
           <ul className="space-y-1">
             <li><a href="#" className="hover:underline text-white/90 text-sm">Centre d'aide / FAQ</a></li>
-            <li><a href="#" className="hover:underline text-white/90 text-sm">Nous contacter</a></li>
+            <li><Link href="/about#contact" className="hover:underline text-white/90 text-sm">Nous contacter</Link></li>
             <li><a href="#" className="hover:underline text-white/90 text-sm">Signaler un problème</a></li>
             <li><a href="#" className="hover:underline text-white/90 text-sm">Comment payer</a></li>
           </ul>

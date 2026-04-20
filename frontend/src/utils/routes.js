@@ -13,7 +13,7 @@ export const ROUTES = {
   PROFILE: "/profile",
   DASHBOARD: "/dashboard",
   SETTINGS: "/parametres",
-  MES_FORMATIONS_GENERAL: "/mes_formations/forma_general",
+  MES_FORMATIONS_GENERAL: "/acheteur/formation/listeFormation",
   MES_FORMATIONS_DETAILS: "/mes_formations/forma_details",
   // Updated to match folder name `formations_liste`
   TRAINER_FORMATIONS_LIST: "/dash_formation/formations_formateurs/formations_liste",

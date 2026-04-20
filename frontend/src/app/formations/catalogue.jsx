@@ -246,7 +246,7 @@ export default function Catalogue() {
             />
             
             {/* Barre de catégories fixe avec comportement scroll */}
-            <div className={`fixed left-0 right-0 z-30 bg-white border-b border-gray-200 transition-all duration-700 ease-in-out ${scrolled ? 'top-12 py-1 shadow-md' : 'top-20 sm:top-22 py-3 pb-6 shadow-sm'}`}>
+            <div className={`fixed left-0 right-0 z-30 bg-white  transition-all duration-700 ease-in-out ${scrolled ? 'top-12 py-1' : 'top-20 sm:top-22 py-3 pb-6'}`}>
                 <CategorieBar 
                     selectedCategory={selectedCategory}
                     onCategoryChange={(newCat) => {
