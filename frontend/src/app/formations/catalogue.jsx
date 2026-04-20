@@ -16,6 +16,7 @@ export default function Catalogue() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState("foryou");
     const [scrolled, setScrolled] = useState(false);
+    const [formations, setFormations] = useState([]);
     const [filters, setFilters] = useState({
         subcategories: [],
         languages: [],
@@ -25,8 +26,69 @@ export default function Catalogue() {
         hasPromotion: false,
         isFree: false,
         isNew: false,
-        priceRange: [0, 2000]
+        priceRange: [0, 10000]
     });
+
+    // Charger les formations du backend
+    useEffect(() => {
+        const loadFormations = async () => {
+            try {
+                const res = await fetch('http://localhost:5000/api/formations-all');
+                if (!res.ok) throw new Error('Failed to load formations');
+                const data = await res.json();
+                
+                // Adapter les données du backend au format de l'UI
+                const adaptedFormations = data.map(f => {
+                    // Compter les leçons à partir des modules
+                    let lessonsCount = 0;
+                    if (f.Modules && Array.isArray(f.Modules)) {
+                        lessonsCount = f.Modules.reduce((total, module) => {
+                            return total + (module.Lessons?.length || 0);
+                        }, 0);
+                    }
+                    
+                    return {
+                        id: f.id,
+                        image: f.image || "/images/users/formation.png",
+                        category: f.Category?.name || "Non catégorisé",
+                        categoryId: f.categoryId,
+                        subcategoryId: f.subcategoryId,
+                        categoryIcon: <FaCode size={16} className="text-[#B1B5C3]" />,
+                        duration: f.duree_totale_minutes ? `${f.duree_totale_minutes} min` : "Durée non définie",
+                        title: f.name,
+                        description: f.description || "",
+                        ce_que_vous_apprendrez: f.ce_que_vous_apprendrez || "",
+                        avatar: "/images/users/profile.jpg",
+                        author: f.trainer?.name || "Formateur",
+                        oldPrice: f.prix_normal ? `${parseFloat(f.prix_normal).toLocaleString('fr-FR')} MRU` : "Gratuit",
+                        price: f.est_gratuite ? "Gratuit" : (f.prix_promo ? `${parseFloat(f.prix_promo).toLocaleString('fr-FR')} MRU` : `${parseFloat(f.prix_normal || 0).toLocaleString('fr-FR')} MRU`),
+                        priceNumeric: parseFloat(f.prix_promo || f.prix_normal || 0),
+                        language: f.language || "fr",
+                        modulesCount: f.Modules?.length || 0,
+                        lessonsCount: lessonsCount,
+                        niveau: f.niveau || "Non spécifié",
+                        hasPromotion: !!f.prix_promo,
+                        isFree: f.est_gratuite,
+                        isNew: new Date(f.createdAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+                        dateAdded: new Date(f.createdAt).toISOString().split('T')[0]
+                    };
+                });
+                
+                // Calculer la plage de prix max automatiquement
+                const prices = adaptedFormations.map(f => f.priceNumeric).filter(p => p > 0);
+                const maxPrice = prices.length > 0 ? Math.max(...prices) : 10000;
+                
+                console.log('✅ Formations chargées:', adaptedFormations.length);
+                setFormations(adaptedFormations);
+                setFilters(prev => ({ ...prev, priceRange: [0, maxPrice + 500] }));
+            } catch (err) {
+                console.error('Erreur chargement formations:', err);
+                setFormations([]);
+            }
+        };
+        
+        loadFormations();
+    }, []);
 
     const openModal = (formation) => {
         setSelectedFormation(formation);
@@ -63,194 +125,6 @@ export default function Catalogue() {
             window.removeEventListener('scroll', handleScroll);
         };
     }, []);
-
-    // Données d'exemple des formations
-    const formations = [
-        {
-            id: 1,
-            image: "/images/users/formation.png",
-            category: "Développement Web",
-            categoryId: "devtech",
-            subcategoryId: "Développement web",
-            categoryIcon: <FaCode size={16} className="text-[#B1B5C3]" />,
-            duration: "6 Heures",
-            title: "Formation React & Next.js Complète",
-            description: "Apprenez React et Next.js de zéro jusqu'au niveau avancé avec des projets réels",
-            avatar: "/images/users/profile.jpg",
-            author: "Sarah Martin",
-            oldPrice: "12000 MRU",
-            price: "900 MRU",
-            priceNumeric: 900,
-            language: "fr",
-            modulesCount: 4,
-            lessonsCount: 15,
-            hasPromotion: true,
-            isFree: false,
-            isNew: false,
-            dateAdded: "2026-03-15"
-        },
-        {
-            id: 2,
-            image: "/images/users/formation.png",
-            category: "Design",
-            categoryId: "design",
-            subcategoryId: "UI/UX Design",
-            categoryIcon: <FaPaintBrush size={16} className="text-[#B1B5C3]" />,
-            duration: "3 Mois",
-            title: "UI/UX Design Masterclass",
-            description: "Maîtrisez les principes du design et créez des interfaces utilisateur modernes",
-            avatar: "/images/users/profile.jpg",
-            author: "Ahmed Benali",
-            oldPrice: "",
-            price: "600 MRU",
-            priceNumeric: 600,
-            language: "fr",
-            modulesCount: 8,
-            lessonsCount: 32,
-            hasPromotion: false,
-            isFree: false,
-            isNew: true,
-            dateAdded: "2026-03-25"
-        },
-        {
-            id: 3,
-            image: "/images/users/formation.png",
-            category: "Marketing",
-            categoryId: "marketing",
-            subcategoryId: "Marketing digital",
-            categoryIcon: <FaChartBar size={16} className="text-[#B1B5C3]" />,
-            duration: "2 Mois",
-            title: "Marketing Digital & Réseaux Sociaux",
-            description: "Stratégies complètes pour réussir votre marketing en ligne et sur les réseaux",
-            avatar: "/images/users/profile.jpg",
-            author: "Fatima Zahra",
-            oldPrice: "",
-            price: "450 MRU",
-            priceNumeric: 450,
-            language: "fr",
-            modulesCount: 10,
-            lessonsCount: 38,
-            hasPromotion: false,
-            isFree: false,
-            isNew: false,
-            dateAdded: "2026-02-10"
-        },
-        {
-            id: 4,
-            image: "/images/users/formation.png",
-            category: "Photographie",
-            categoryId: "design",
-            subcategoryId: "Photographie & Retouche",
-            categoryIcon: <FaCamera size={16} className="text-[#B1B5C3]" />,
-            duration: "6 Semaines",
-            title: "Photographie Professionnelle",
-            description: "Techniques avancées de photographie pour devenir un photographe professionnel",
-            avatar: "/images/users/profile.jpg",
-            author: "Mohamed Alami",
-            oldPrice: "500 MRU",
-            price: "350 MRU",
-            priceNumeric: 350,
-            language: "ar",
-            modulesCount: 6,
-            lessonsCount: 24,
-            hasPromotion: true,
-            isFree: false,
-            isNew: false,
-            dateAdded: "2026-01-20"
-        },
-        {
-            id: 5,
-            image: "/images/users/formation.png",
-            category: "Musique",
-            categoryId: "media",
-            subcategoryId: "Podcasting",
-            categoryIcon: <FaMusic size={16} className="text-[#B1B5C3]" />,
-            duration: "8 Semaines",
-            title: "Production Musicale & Mix",
-            description: "Apprenez à composer, enregistrer et mixer votre propre musique",
-            avatar: "/images/users/profile.jpg",
-            author: "Karim Elmansar",
-            oldPrice: "700 MRU",
-            price: "550 MRU",
-            priceNumeric: 550,
-            language: "en",
-            modulesCount: 9,
-            lessonsCount: 29,
-            hasPromotion: true,
-            isFree: false,
-            isNew: false,
-            dateAdded: "2026-03-01"
-        },
-        {
-            id: 6,
-            image: "/images/users/formation.png",
-            category: "Business",
-            categoryId: "business",
-            subcategoryId: "Leadership & Management",
-            categoryIcon: <FaGraduationCap size={16} className="text-[#B1B5C3]" />,
-            duration: "5 Mois",
-            title: "Entrepreneuriat & Création d'Entreprise",
-            description: "Guide complet pour créer et développer votre propre entreprise",
-            avatar: "/images/users/profile.jpg",
-            author: "Laila Bennani",
-            oldPrice: "1000 MRU",
-            price: "750 MRU",
-            priceNumeric: 750,
-            language: "fr",
-            modulesCount: 15,
-            lessonsCount: 62,
-            hasPromotion: true,
-            isFree: false,
-            isNew: true,
-            dateAdded: "2026-03-20"
-        },
-        {
-            id: 7,
-            image: "/images/users/formation.png",
-            category: "Développement Web",
-            categoryId: "devtech",
-            subcategoryId: "Bases de données",
-            categoryIcon: <FaCode size={16} className="text-[#B1B5C3]" />,
-            duration: "3 Mois",
-            title: "Python & Django pour Débutants",
-            description: "Maîtrisez Python et créez des applications web avec Django",
-            avatar: "/images/users/profile.jpg",
-            author: "Youssef Taha",
-            oldPrice: "",
-            price: "0 MRU",
-            priceNumeric: 0,
-            language: "en",
-            modulesCount: 5,
-            lessonsCount: 18,
-            hasPromotion: false,
-            isFree: true,
-            isNew: true,
-            dateAdded: "2026-03-28"
-        },
-        {
-            id: 8,
-            image: "/images/users/formation.png",
-            category: "Design",
-            categoryId: "design",
-            subcategoryId: "Graphic Design",
-            categoryIcon: <FaPaintBrush size={16} className="text-[#B1B5C3]" />,
-            duration: "4 Semaines",
-            title: "Illustrator & Photoshop Avancé",
-            description: "Devenez expert en design graphique avec les outils Adobe",
-            avatar: "/images/users/profile.jpg",
-            author: "Nadia Senhaji",
-            oldPrice: "600 MRU",
-            price: "400 MRU",
-            priceNumeric: 400,
-            language: "ar",
-            modulesCount: 7,
-            lessonsCount: 28,
-            hasPromotion: true,
-            isFree: false,
-            isNew: false,
-            dateAdded: "2026-02-28"
-        }
-    ];
 
     // Filtrage des formations basé sur la recherche et les filtres
     const filteredFormations = formations.filter(formation => {
@@ -330,6 +204,39 @@ export default function Catalogue() {
                matchesLanguage && matchesPrice && matchesPromotion && 
                matchesFree && matchesNew && matchesDate;
     });
+
+    // Log filtrage
+    useEffect(() => {}, [filteredFormations]);
+
+    // Fonction pour acheter une formation
+    const handleBuyFormation = async (formationId) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:5000/api/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ formationId })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.error || 'Erreur lors de l\'achat');
+                return;
+            }
+
+            alert('✅ Formation achetée avec succès! Vérifiez votre espace de formation');
+            closeModal();
+            // Rediriger vers l'espace formations
+            router.push('/mes_formations/forma_general');
+        } catch (error) {
+            console.error('Erreur:', error);
+            alert('❌ Erreur lors de l\'achat');
+        }
+    };
 
     return (
         <div className="min-h-screen bg-white">
@@ -468,7 +375,7 @@ export default function Catalogue() {
                                                 hasPromotion: false,
                                                 isFree: false,
                                                 isNew: false,
-                                                priceRange: [0, 2000]
+                                                priceRange: [0, 10000]
                                             });
                                             setSelectedCategory("foryou");
                                             // remove category query param from URL so useSearchParams updates
@@ -539,16 +446,6 @@ export default function Catalogue() {
                                     <h2 className="text-3xl md:text-4xl font-serif font-bold text-white leading-tight">
                                         {selectedFormation.title}
                                     </h2>
-                                    <div className="flex items-center gap-4 text-white/80 text-sm">
-                                        <div className="flex items-center gap-1.5">
-                                            <FaUsers className="text-[#0C8CE9]" />
-                                            <span>1 250 apprenants</span>
-                                        </div>
-                                        <div className="flex items-center gap-1.5">
-                                            <FaFilter className="text-amber-400" />
-                                            <span className="font-semibold text-amber-400">4.9/5</span>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
 
@@ -561,8 +458,8 @@ export default function Catalogue() {
                                             <span className="w-1 h-6 bg-[#0C8CE9] rounded-full"></span>
                                             À propos de cette formation
                                         </h3>
-                                        <p className="text-slate-600 leading-relaxed text-base italic">
-                                            {selectedFormation.description}. Ce cours complet a été conçu pour vous faire passer d'un niveau débutant à un niveau professionnel en maîtrisant les outils et les méthodes les plus récents du marché Ce cours complet a été conçu pour vous faire passer d'un niveau débutant à un niveau professionnel en maîtrisant les outils et les méthodes les plus récents du marché. Ce cours complet a été conçu pour vous faire passer d'un niveau débutant à un niveau professionnel en maîtrisant les outils et les méthodes les plus récents du marché Ce cours complet a été conçu pour vous faire passer d'un niveau débutant à un niveau professionnel en maîtrisant les outils et les méthodes les plus récents du marché Ce cours complet a été conçu pour vous faire passer d'un niveau débutant à un niveau professionnel en maîtrisant les outils et les méthodes les plus récents du marché Ce cours complet a été conçu pour vous faire passer d'un niveau débutant à un niveau professionnel en maîtrisant les outils et les méthodes les plus récents du marché
+                                        <p className="text-slate-600 leading-relaxed text-base">
+                                            {selectedFormation.description}
                                         </p>
                                     </section>
 
@@ -574,23 +471,23 @@ export default function Catalogue() {
                                         </div>
                                         <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100/50 space-y-1">
                                             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Modules</p>
-                                            <p className="font-bold text-[#1e293b]">4</p>
+                                            <p className="font-bold text-[#1e293b]">{selectedFormation.modulesCount || 0}</p>
                                         </div>
                                         <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100/50 space-y-1">
                                             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Leçons</p>
-                                            <p className="font-bold text-[#1e293b]">15</p>
+                                            <p className="font-bold text-[#1e293b]">{selectedFormation.lessonsCount || 0}</p>
                                         </div>
                                         <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100/50 space-y-1">
                                             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Langue</p>
-                                            <p className="font-bold text-[#1e293b]">Français</p>
+                                            <p className="font-bold text-[#1e293b]">{selectedFormation.language === 'fr' ? 'Français' : selectedFormation.language === 'en' ? 'Anglais' : selectedFormation.language}</p>
                                         </div>
                                         <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100/50 space-y-1">
                                             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Niveau</p>
-                                            <p className="font-bold text-[#1e293b]">Intermédiaire</p>
+                                            <p className="font-bold text-[#1e293b] capitalize">{selectedFormation.niveau}</p>
                                         </div>
                                         <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100/50 space-y-1">
                                             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Accès</p>
-                                            <p className="font-bold text-[#1e293b]">3 mois</p>
+                                            <p className="font-bold text-[#1e293b]">Illimité</p>
                                         </div>
                                     </div>
 
@@ -598,21 +495,34 @@ export default function Catalogue() {
                                     <section>
                                         <h3 className="text-lg font-bold text-[#1e293b] mb-4 uppercase tracking-wider">Ce que vous allez apprendre</h3>
                                         <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            {[
-                                                "Maîtriser les fondamentaux théoriques",
-                                                "Pratiquer sur des projets réels",
-                                                "Obtenir une certification reconnue",
-                                                "Rejoindre une communauté active"
-                                            ].map((item, i) => (
-                                                <li key={i} className="flex items-start gap-3 text-slate-600 text-sm">
-                                                    <div className="mt-1 w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
-                                                        <svg className="w-3 h-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                                        </svg>
-                                                    </div>
-                                                    {item}
-                                                </li>
-                                            ))}
+                                            {selectedFormation.ce_que_vous_apprendrez ? 
+                                                selectedFormation.ce_que_vous_apprendrez.split(',').map((item, i) => (
+                                                    <li key={i} className="flex items-start gap-3 text-slate-600 text-sm">
+                                                        <div className="mt-1 w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+                                                            <svg className="w-3 h-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                                            </svg>
+                                                        </div>
+                                                        {item.trim()}
+                                                    </li>
+                                                ))
+                                                :
+                                                [
+                                                    "Maîtriser les fondamentaux théoriques",
+                                                    "Pratiquer sur des projets réels",
+                                                    "Obtenir une certification reconnue",
+                                                    "Rejoindre une communauté active"
+                                                ].map((item, i) => (
+                                                    <li key={i} className="flex items-start gap-3 text-slate-600 text-sm">
+                                                        <div className="mt-1 w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+                                                            <svg className="w-3 h-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                                            </svg>
+                                                        </div>
+                                                        {item}
+                                                    </li>
+                                                ))
+                                            }
                                         </ul>
                                     </section>
                                 </div>
@@ -631,7 +541,7 @@ export default function Catalogue() {
                                             </div>
                                         </div>
                                         <button 
-                                            onClick={() => router.push(`/acheteur/formation/moduleLecon?id=${selectedFormation.id}`)}
+                                            onClick={() => handleBuyFormation(selectedFormation.id)}
                                             className="w-full mt-8 bg-[#0C8CE9] hover:bg-[#0A71BC] text-white py-4 rounded-xl font-bold shadow-lg shadow-blue-500/30 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3"
                                         >
                                             Acheter
@@ -653,21 +563,8 @@ export default function Catalogue() {
                                                 <p className="text-xs text-[#0C8CE9] font-medium">Expert {selectedFormation.category}</p>
                                             </div>
                                         </div>
-                                        <div className="flex items-center justify-between text-xs py-3 border-y border-slate-50 font-medium">
-                                            <div className="flex flex-col items-center">
-                                                <span className="text-lg font-black text-[#1e293b]">5</span>
-                                                <span className="text-slate-400">formations</span>
-                                            </div>
-                                            <div className="w-px h-8 bg-slate-100"></div>
-                                            <div className="flex flex-col items-center">
-                                                <span className="text-lg font-black text-[#1e293b]">4.9</span>
-                                                <span className="text-slate-400">Notes</span>
-                                            </div>
-                                            <div className="w-px h-8 bg-slate-100"></div>
-                                            <div className="flex flex-col items-center">
-                                                <span className="text-lg font-black text-[#1e293b]">12k</span>
-                                                <span className="text-slate-400">Vues</span>
-                                            </div>
+                                        <div className="text-sm text-slate-500 py-3 border-y border-slate-50">
+                                            <p>Instructeur: <span className="font-semibold text-[#1e293b]">{selectedFormation.author}</span></p>
                                         </div>
                                         <button className="w-full py-3 text-[#0C8CE9] text-xs font-bold uppercase tracking-widest hover:bg-[#0C8CE9]/5 rounded-xl transition-colors">
                                             Voir le profil

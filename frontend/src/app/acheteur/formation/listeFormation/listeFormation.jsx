@@ -11,108 +11,69 @@ import { CardLarge } from "../../../pages_common/card";
 import { FiFilter, FiTag, FiStar, FiGift } from "react-icons/fi";
 import { FaLaptopCode, FaBullhorn, FaCamera, FaBriefcase, FaPaintBrush } from "react-icons/fa";
 
-// Données des formations mockées
-const formationsList = [
-    {
-        id: 1,
-        title: "Masterclass UX/UI Design - De zéro à Pro",
-        category: "Design",
-        categoryIcon: <FaPaintBrush size={18} className="text-[#B1B5C3]" />,
-        duration: "3 Mois",
-        description: "Apprenez à concevoir des interfaces modernes et engageantes avec Figma. Ce cours couvre tout le processus de conception.",
-        author: "Sarah",
-        image: "/images/users/formation.png", // Image locale
-        avatar: "/images/users/profile.jpg",   // Image locale
-        type: "promotion",
-        oldPrice: "1200 MRU",
-        price: "600 MRU",
-        rating: 5
-    },
-    {
-        id: 2,
-        title: "Introduction au Développement Web Front-end",
-        category: "Développement",
-        categoryIcon: <FaLaptopCode size={18} className="text-[#B1B5C3]" />,
-        duration: "2 Semaines",
-        description: "Découvrez les bases indispensables du web : HTML, CSS et JavaScript. Le cours idéal pour commencer votre carrière.",
-        author: "Mamadou",
-        image: "/images/users/formation.png",
-        avatar: "/images/users/profile.jpg",
-        type: "gratuit",
-        oldPrice: "",
-        price: "Gratuit",
-        rating: 4
-    },
-    {
-        id: 3,
-        title: "Marketing Digital et Stratégie SEO Avancée",
-        category: "Marketing",
-        categoryIcon: <FaBullhorn size={18} className="text-[#B1B5C3]" />,
-        duration: "1 Mois",
-        description: "Maîtrisez les outils de croissance en ligne. Boostez votre trafic grâce aux meilleures pratiques d'optimisation.",
-        author: "Jean",
-        image: "/images/users/formation.png",
-        avatar: "/images/users/profile.jpg",
-        type: "normal",
-        oldPrice: "",
-        price: "850 MRU",
-        rating: 5
-    },
-    {
-        id: 4,
-        title: "Formation Complète en Intelligence Artificielle",
-        category: "Data Science",
-        categoryIcon: <FaLaptopCode size={18} className="text-[#B1B5C3]" />,
-        duration: "6 Mois",
-        description: "Comprenez les concepts fondamentaux du Machine Learning et bâtir des modèles prédictifs avec Python.",
-        author: "Lina",
-        image: "/images/users/formation.png",
-        avatar: "/images/users/profile.jpg",
-        type: "promotion",
-        oldPrice: "3000 MRU",
-        price: "1500 MRU",
-        rating: 4
-    },
-    {
-        id: 5,
-        title: "Communication d'Entreprise et Leadership",
-        category: "Business",
-        categoryIcon: <FaBriefcase size={18} className="text-[#B1B5C3]" />,
-        duration: "2 Mois",
-        description: "Développez votre prise de parole en public, apprenez à motiver vos équipes et devenez visionnaire.",
-        author: "Oumar",
-        image: "/images/users/formation.png",
-        avatar: "/images/users/profile.jpg",
-        type: "normal",
-        oldPrice: "",
-        price: "500 MRU",
-        rating: 4
-    },
-    {
-        id: 6,
-        title: "Atelier d'Initiation à la Photographie",
-        category: "Photographie",
-        categoryIcon: <FaCamera size={18} className="text-[#B1B5C3]" />,
-        duration: "1 Semaine",
-        description: "Comprenez les réglages essentiels de votre appareil photo : Ouverture, Vitesse, ISO pour sublimer vos clichés.",
-        author: "Sophie",
-        image: "/images/users/formation.png",
-        avatar: "/images/users/profile.jpg",
-        type: "gratuit",
-        oldPrice: "",
-        price: "Gratuit",
-        rating: 5
-    }
-];
-
 export default function ListeFormation() {
-    // État pour le filtre actif (tous, gratuit, promotion, normal) et la recherche textuelle
+    // État pour le filtre actif et la recherche textuelle
     const [activeFilter, setActiveFilter] = useState("tous");
     const [searchQuery, setSearchQuery] = useState("");
+    const [formations, setFormations] = useState([]);
+    const [loading, setLoading] = useState(true);
     const router = useRouter();
 
+    // Charger les formations achetées depuis l'API
+    useEffect(() => {
+        const loadFormations = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    router.push('/auth/login');
+                    return;
+                }
+
+                const response = await fetch('http://localhost:5000/api/orders/my-formations', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erreur lors du chargement');
+                }
+
+                const data = await response.json();
+                
+                // Transformer les données de l'API
+                const formattedFormations = data.map(order => ({
+                    id: order.Formation.id,
+                    title: order.Formation.name,
+                    category: order.Formation.Category?.name || "Non spécifié",
+                    categoryIcon: <FaPaintBrush size={18} className="text-[#B1B5C3]" />,
+                    duration: `${order.Formation.duree_totale_minutes || 0} min`,
+                    description: order.Formation.description,
+                    author: order.Formation.trainer 
+                        ? `${order.Formation.trainer.prenom} ${order.Formation.trainer.nom_de_famille}` 
+                        : "Formateur inconnu",
+                    image: order.Formation.image || "/images/users/formation.png",
+                    avatar: null,
+                    type: "normal",
+                    oldPrice: "",
+                    price: `${order.Formation.prix_normal || 0} MRU`,
+                    rating: 5
+                }));
+
+                setFormations(formattedFormations);
+            } catch (error) {
+                console.error('Erreur:', error);
+                setFormations([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadFormations();
+    }, [router]);
+
     // Filtrage des données
-    const filteredFormations = formationsList.filter(formation => {
+    const filteredFormations = formations.filter(formation => {
         const matchFilter = activeFilter === "tous" ? true : formation.type === activeFilter;
         const matchSearch = formation.title.toLowerCase().includes(searchQuery.toLowerCase());
         return matchFilter && matchSearch;
@@ -187,7 +148,12 @@ export default function ListeFormation() {
                         </div>
 
                         {/* Grille des Cartes */}
-                        {filteredFormations.length > 0 ? (
+                        {loading ? (
+                            <div className="flex flex-col items-center justify-center p-16">
+                                <div className="animate-spin w-10 h-10 border-4 border-slate-300 border-t-blue-600 rounded-full mb-4"></div>
+                                <p className="text-slate-500">Chargement de vos formations...</p>
+                            </div>
+                        ) : filteredFormations.length > 0 ? (
                             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-8">
                                 {filteredFormations.map((formation) => (
                                     <div

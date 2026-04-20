@@ -1,10 +1,14 @@
 const db = require('../models');
+const createOrdersTable = require('../migrations/create-orders-table');
 
 async function initializeDatabase() {
   try {
     await db.sequelize.authenticate();
     console.log('✅ PostgreSQL connected successfully');
     
+    // Create Orders table if it doesn't exist
+    await createOrdersTable();
+
     // Try to sync with alter first
     // try {
     //   await db.sequelize.sync({ alter: true });
