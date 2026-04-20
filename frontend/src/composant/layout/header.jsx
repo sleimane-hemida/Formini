@@ -159,9 +159,19 @@ export default function Header({ onSearchChange, searchValue: externalSearchValu
                     </button>
                 </div>
                 {/* FORMATEURS: visible >= md */}
-                <a href="#" className="hover:text-[#0C8CE9] transition-colors hidden md:block">{t('header.trainers')}</a>
+                <button 
+                    onClick={() => router.push('/allFormateur/formateurListe')}
+                    className="hover:text-[#0C8CE9] transition-colors hidden md:block"
+                >
+                    {t('header.trainers')}
+                </button>
                 {/* ABONNEMENT: visible >= lg */}
-                <a href="#" className="hover:text-[#0C8CE9] transition-colors hidden lg:block">{t('header.subscription')}</a>
+                <button 
+                    onClick={() => router.push('/abonnement')}
+                    className="hover:text-[#0C8CE9] transition-colors hidden lg:block"
+                >
+                    {t('header.subscription')}
+                </button>
                 {/* A PROPOS: visible >= xl */}
                 <a href="#" className="hover:text-[#0C8CE9] transition-colors hidden xl:block">{t('header.about')}</a>
             </nav>
@@ -246,7 +256,12 @@ export default function Header({ onSearchChange, searchValue: externalSearchValu
                         <a href="#" className="w-full py-2 px-2 rounded text-black transition-colors hover:bg-[#E6F1FA] hover:text-[#0C8CE9] focus:text-[#0C8CE9] active:text-[#0C8CE9]">{t('header.about')}</a>
                     )}
                     {screenWidth < 1024 && (
-                        <a href="#" className="w-full py-2 px-2 rounded text-black transition-colors hover:bg-[#E6F1FA] hover:text-[#0C8CE9] focus:text-[#0C8CE9] active:text-[#0C8CE9]">{t('header.subscription')}</a>
+                        <button 
+                            onClick={() => router.push('/abonnement')}
+                            className="w-full py-2 px-2 rounded text-black transition-colors hover:bg-[#E6F1FA] hover:text-[#0C8CE9] focus:text-[#0C8CE9] active:text-[#0C8CE9] text-left"
+                        >
+                            {t('header.subscription')}
+                        </button>
                     )}
                     {screenWidth < 840 && (
                         <button 
@@ -257,7 +272,12 @@ export default function Header({ onSearchChange, searchValue: externalSearchValu
                         </button>
                     )}
                     {screenWidth < 768 && (
-                        <a href="#" className="w-full py-2 px-2 rounded text-black transition-colors hover:bg-[#E6F1FA] hover:text-[#0C8CE9] focus:text-[#0C8CE9] active:text-[#0C8CE9]">{t('header.trainers')}</a>
+                        <button 
+                            onClick={() => router.push('/allFormateur/formateurListe')}
+                            className="w-full py-2 px-2 rounded text-black transition-colors hover:bg-[#E6F1FA] hover:text-[#0C8CE9] focus:text-[#0C8CE9] active:text-[#0C8CE9] text-left"
+                        >
+                            {t('header.trainers')}
+                        </button>
                     )}
                     {/* Boutons affichés seulement s'ils sont cachés dans le header */}
                     {screenWidth < 640 && (

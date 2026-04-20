@@ -107,7 +107,7 @@ export default function AbonnementAccueil() {
 										Donnez plus de visibilité à votre service : mettez-le en avant auprès d'utilisateurs ciblés pour augmenter les contacts et les demandes. Cliquez sur « choisir une formation » pour lancer la promotion.
 									</div>
 									<div className="flex justify-end">
-										<button onClick={() => setIsModalOpen(true)} className="px-4 py-2 bg-[#0C8CE9] hover:bg-[#096bb3] text-white rounded">Choisir une formation</button>
+										<button onClick={() => router.push('/dash_formation/abonnement/notdisponiblenow')} className="px-4 py-2 bg-[#0C8CE9] hover:bg-[#096bb3] text-white rounded">Choisir une formation</button>
 									</div>
 
 								</section>

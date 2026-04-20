@@ -383,7 +383,7 @@ export default function ListeForma() {
                             </button>
                             {menuOpen === f.id && (
                               <div data-menu-id={f.id} onClick={(e) => e.stopPropagation()} className="absolute right-0 top-10 z-50 w-48 bg-white border border-gray-200 rounded-md shadow-sm py-1">
-                                <button onClick={(e) => { e.stopPropagation(); const q = `formationId=${encodeURIComponent(f.id)}&budget=${encodeURIComponent(100)}&days=${encodeURIComponent(30)}`; router.push(`/dash_formation/abonnement/propulseur_valid?${q}`); setMenuOpen(null); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 text-black">
+                                <button onClick={(e) => { e.stopPropagation(); router.push('/dash_formation/abonnement/notdisponiblenow'); setMenuOpen(null); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 text-black">
                                   <FiSend className="w-4 h-4 text-gray-500" />
                                   <span>Propulser</span>
                                 </button>
