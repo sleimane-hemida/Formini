@@ -43,34 +43,77 @@ export default function Footer() {
           <div className="font-bold mb-2">Devenir formateur</div>
           <ul className="space-y-1">
             <li>
-              <Link href="/dash_formation/dash_principale" className="hover:underline text-white/90 text-sm">
-                Tableau de bord
+              <Link href="/allFormateur/avantageFormateur" className="hover:underline text-white/90 text-sm">
+                Les avantages formateur
               </Link>
             </li>
-            <li><a href="#" className="hover:underline text-white/90 text-sm">Comment ça marche</a></li>
-            <li><a href="#" className="hover:underline text-white/90 text-sm">Créer mon espace formateur</a></li>
-            <li><a href="#" className="hover:underline text-white/90 text-sm">Les avantages formateur</a></li>
-            <li><a href="#" className="hover:underline text-white/90 text-sm">FAQ formateur</a></li>
+            <li>
+              <Link href="/allFormateur/avantageFormateur#faq" className="hover:underline text-white/90 text-sm">
+                FAQ formateur
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="hover:underline text-white/90 text-sm">
+                Comment ça marche
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="hover:underline text-white/90 text-sm">
+                Créer mon espace formateur
+              </Link>
+            </li>
           </ul>
         </div>
         {/* Bloc 4 — Aide & Support */}
         <div>
           <div className="font-bold mb-2">Aide & Support</div>
           <ul className="space-y-1">
-            <li><a href="#" className="hover:underline text-white/90 text-sm">Centre d'aide / FAQ</a></li>
-            <li><Link href="/about#contact" className="hover:underline text-white/90 text-sm">Nous contacter</Link></li>
-            <li><a href="#" className="hover:underline text-white/90 text-sm">Signaler un problème</a></li>
-            <li><a href="#" className="hover:underline text-white/90 text-sm">Comment payer</a></li>
+            <li>
+              <Link href="/aideetplus/aideSuport" className="hover:underline text-white/90 text-sm">
+                Centre d'aide / FAQ
+              </Link>
+            </li>
+            <li>
+              <Link href="/about#contact" className="hover:underline text-white/90 text-sm">
+                Nous contacter
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="hover:underline text-white/90 text-sm">
+                Signaler un problème
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="hover:underline text-white/90 text-sm">
+                Comment payer
+              </Link>
+            </li>
           </ul>
         </div>
         {/* Bloc 5 — Légal */}
         <div>
           <div className="font-bold mb-2">Légal</div>
           <ul className="space-y-1">
-            <li><a href="#" className="hover:underline text-white/90 text-sm">Conditions générales d'utilisation</a></li>
-            <li><a href="#" className="hover:underline text-white/90 text-sm">Politique de confidentialité</a></li>
-            <li><a href="#" className="hover:underline text-white/90 text-sm">Politique de remboursement</a></li>
-            <li><a href="#" className="hover:underline text-white/90 text-sm">Mentions légales</a></li>
+            <li>
+              <Link href="#" className="hover:underline text-white/90 text-sm">
+                Conditions générales d'utilisation
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="hover:underline text-white/90 text-sm">
+                Politique de confidentialité
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="hover:underline text-white/90 text-sm">
+                Politique de remboursement
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="hover:underline text-white/90 text-sm">
+                Mentions légales
+              </Link>
+            </li>
             <li>
               <Link href="/admin/dashboard" className="hover:underline text-[#FFD700] font-bold text-sm">
                 Espace Administration

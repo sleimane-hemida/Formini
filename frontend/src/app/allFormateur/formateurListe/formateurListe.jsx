@@ -97,32 +97,34 @@ export default function FormateurListe() {
         
         <div className="flex flex-col lg:flex-row gap-3 mt-8">
           
-          {/* Sidebar Filters - 200px width for better spacing */}
-          <aside className="w-full lg:w-[180px] flex-shrink-0">
-            <div className="sticky top-28 space-y-6">
+          {/* Sidebar Filters - Clean and simple container */}
+          <aside className="w-full lg:w-[220px] flex-shrink-0">
+            <div className="sticky top-28 bg-white rounded-2xl border border-gray-100 p-5 shadow-sm space-y-8">
                 <div>
-                    <h3 className="text-xs font-extrabold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                        <HiFunnel className="w-4 h-4" />
-                        Catégories
+                    <h3 className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-5 flex items-center gap-2 px-1">
+                        <HiFunnel className="w-3.5 h-3.5 text-[#0C8CE9]" />
+                        Filtrer par expertise
                     </h3>
-                    <nav className="flex flex-row lg:flex-col gap-1 overflow-x-auto lg:overflow-visible no-scrollbar pb-2 lg:pb-0">
+                    <nav className="flex flex-row lg:flex-col gap-1.5 overflow-x-auto lg:overflow-visible no-scrollbar pb-2 lg:pb-0">
                         {expertises.map(exp => (
                             <button
                                 key={exp}
                                 onClick={() => setSelectedExpertise(exp)}
-                                className={`group flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap lg:whitespace-normal text-left ${selectedExpertise === exp ? 'bg-[#0C8CE9] text-white shadow-md' : 'text-gray-600 hover:bg-white hover:text-[#0C8CE9]'}`}
+                                className={`group flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap lg:whitespace-normal text-left ${selectedExpertise === exp ? 'bg-blue-50 text-[#0C8CE9] border border-blue-100' : 'text-gray-500 hover:bg-gray-50 border border-transparent'}`}
                             >
                                 <span>{exp}</span>
-                                <HiChevronRight className={`hidden lg:block w-4 h-4 transition-transform ${selectedExpertise === exp ? 'translate-x-1 opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
+                                <HiChevronRight className={`hidden lg:block w-3.5 h-3.5 transition-transform ${selectedExpertise === exp ? 'translate-x-0.5 opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
                             </button>
                         ))}
                     </nav>
                 </div>
 
-                <div className="hidden lg:block pt-6 border-t border-gray-100">
-                    <p className="text-[10px] text-gray-400 font-bold leading-relaxed uppercase tracking-tighter">
-                        Trouvez l'expert idéal pour votre projet.
-                    </p>
+                <div className="hidden lg:block pt-5 border-t border-gray-50 px-1">
+                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100/50">
+                        <p className="text-[10px] text-[#0C8CE9] font-bold leading-relaxed uppercase tracking-tight">
+                            Trouvez l'expert idéal parmi notre sélection de formateurs qualifiés.
+                        </p>
+                    </div>
                 </div>
             </div>
           </aside>

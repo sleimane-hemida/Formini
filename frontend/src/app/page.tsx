@@ -96,21 +96,75 @@ export default function Home() {
           price="900 MRU"
         />
       </div>
- {/* Trois cartes formateur côte à côte juste avant le footer */}
+      {/* Section promotionnelle avant les formateurs */}
+      <div className="max-w-4xl mx-auto text-center mt-20 mb-12 px-4">
+        <span className="bg-blue-50 text-[#0C8CE9] text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest border border-blue-100">
+          Nos Experts
+        </span>
+        <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-4 mb-4 tracking-tight">
+          Apprenez avec les <span className="text-[#0C8CE9]">meilleurs formateurs</span>
+        </h2>
+        <p className="text-gray-500 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+          Nos formateurs sont des experts passionnés, réputés pour leur savoir-faire et leur pédagogie, prêts à vous accompagner vers la réussite.
+        </p>
+      </div>
+
+      {/* Trois cartes formateur côte à côte juste avant le footer */}
       <div className="flex flex-wrap justify-center gap-8 py-12">
-        {/* Show 2 on mobile, 3 on md+ */}
-        {[1,2,3].map((i) => (
+        {/* Featured trainers on homepage */}
+        {[
+          {
+            id: 1,
+            name: "Ahmed Mahmoud",
+            title: "Expert en Marketing Digital",
+            location: "Nouakchott, Mauritanie",
+            description: "Spécialiste en stratégie digitale avec plus de 10 ans d'expérience.",
+            expertise: ["SEO", "Copywriting", "Ads"],
+            rating: 4.9,
+            image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+          },
+          {
+            id: 2,
+            name: "Sidi Mohamed",
+            title: "Développeur Fullstack Senior",
+            location: "Nouadhibou, Mauritanie",
+            description: "Passionné par la création d'applications web performantes et scalables.",
+            expertise: ["React", "Node.js", "Java"],
+            rating: 4.8,
+            image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop"
+          },
+          {
+            id: 3,
+            name: "Mariem Mint Ahmed",
+            title: "Designer UI/UX & Graphiste",
+            location: "Nouakchott, Mauritanie",
+            description: "Donner vie à vos idées à travers des interfaces intuitives et esthétiques.",
+            expertise: ["Figma", "Photoshop", "Branding"],
+            rating: 5.0,
+            image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop"
+          },
+          {
+            id: 4,
+            name: "Fatimetou Zahra",
+            title: "Formatrice en Soft Skills",
+            location: "Kiffa, Mauritanie",
+            description: "Accompagner les professionnels dans le développement de leurs compétences humaines.",
+            expertise: ["Leadership", "Vente"],
+            rating: 4.9,
+            image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop"
+          }
+        ].map((f, i) => (
           <CardFormateur
-            key={i}
-            image="/images/users/profile.jpg"
-            date="1 - 25 Jan 2025"
-            title={`UI UX Master the Art of Design ${i}`}
-            description="Design intuitive interfaces and seamless user experiences that captivate, simplify interactions, and create meaningful connections between users and digital products"
-            link="#"
-            linkLabel="Formtions"
-            className={
-              i < 3 ? "block md:block" : "hidden md:block"
-            }
+            key={f.id}
+            id={f.id}
+            name={f.name}
+            title={f.title}
+            location={f.location}
+            description={f.description}
+            expertise={f.expertise}
+            rating={f.rating}
+            image={f.image}
+            className={i < 2 ? "block" : i < 3 ? "hidden sm:block" : "hidden lg:block"}
           />
         ))}
       </div>

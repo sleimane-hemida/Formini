@@ -134,17 +134,26 @@ export default function ModuleLecon({ formationId }) {
                 const data = await response.json();
                 
                 // Formater les données
+                // Formater les données avec les vrais champs de la BDD
                 const formattedFormation = {
                     id: data.id,
                     title: data.name,
-                    category: data.Category?.name || "Non spécifié",
-                    description: data.description,
-                    image: data.image || "/images/users/formation.png",
-                    duration: `${data.duree_totale_minutes || 0} min`,
-                    rating: 5,
-                    students: 0,
-                    type: "normal",
-                    modules: data.Modules || []
+                    category: data.Category?.name || null,
+                    description: data.description || null,
+                    image: data.image ? (data.image.startsWith('http') || data.image.startsWith('/') || data.image.startsWith('data:') ? data.image : `http://localhost:5000/uploads/${data.image}`) : null,
+                    duration: data.duree_totale_minutes ? `${data.duree_totale_minutes} min` : "Durée non définie",
+                    rating: data.note_moyenne ? parseFloat(data.note_moyenne) : 0, 
+                    students: data.orders_count || 0,
+                    type: data.prix_promo ? "promotion" : (data.est_gratuite ? "gratuit" : "normal"),
+                    modules: data.Modules || [],
+                    author: data.trainer?.name || null,
+                    avatar: data.trainer?.avatar ? (data.trainer.avatar.startsWith('http') || data.trainer.avatar.startsWith('data:') ? data.trainer.avatar : `http://localhost:5000${data.trainer.avatar}`) : null,
+                    level: data.niveau || null,
+                    language: data.language || null,
+                    lastUpdated: data.updatedAt ? new Date(data.updatedAt).toLocaleDateString('fr-FR') : null,
+                    price: data.est_gratuite ? "Gratuit" : (data.prix_promo ? `${parseFloat(data.prix_promo).toLocaleString('fr-FR')} MRU` : `${parseFloat(data.prix_normal || 0).toLocaleString('fr-FR')} MRU`),
+                    oldPrice: data.prix_promo ? `${parseFloat(data.prix_normal).toLocaleString('fr-FR')} MRU` : null,
+                    objectives: data.ce_que_vous_apprendrez ? data.ce_que_vous_apprendrez.split(',').map(s => s.trim()) : []
                 };
 
                 setFormation(formattedFormation);
@@ -239,28 +248,41 @@ export default function ModuleLecon({ formationId }) {
 
                     {/* ── Image hero ── */}
                     <div className="relative w-full rounded-xl overflow-hidden mb-8 bg-gray-100" style={{ height: "380px" }}>
-                        <Image
-                            src={formation.image}
-                            alt={formation.title}
-                            fill
-                            className="object-cover"
-                            priority
-                        />
+                        {formation.image ? (
+                            <Image
+                                src={formation.image}
+                                alt={formation.title || "Formation"}
+                                fill
+                                className="object-cover"
+                                priority
+                            />
+                        ) : (
+                            <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl">
+                                <FaLaptopCode size={48} className="mb-2 opacity-20" />
+                                <p className="text-sm font-medium">Aucune image disponible</p>
+                            </div>
+                        )}
                         {/* Overlay sobre en bas */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
 
                         {/* Titre en bas du hero */}
                         <div className="absolute bottom-0 left-0 right-0 px-7 pb-7">
                             <div className="flex items-center gap-2 mb-3">
-                                <span className={`text-xs font-semibold px-2.5 py-1 rounded ${badgeColor}`}>
-                                    {formation.category}
-                                </span>
+                                {formation.category ? (
+                                    <span className={`text-xs font-semibold px-2.5 py-1 rounded ${badgeColor}`}>
+                                        {formation.category}
+                                    </span>
+                                ) : (
+                                    <span className="text-xs font-semibold px-2.5 py-1 rounded bg-gray-200 text-gray-500">
+                                        Catégorie non définie
+                                    </span>
+                                )}
                                 <span className="text-xs font-semibold px-2.5 py-1 rounded bg-white/20 text-white backdrop-blur-sm">
                                     {badgeLabel}
                                 </span>
                             </div>
                             <h1 className="text-white text-2xl md:text-3xl font-bold leading-snug">
-                                {formation.title}
+                                {formation.title || "Titre non disponible"}
                             </h1>
                             <div className="flex items-center gap-1 mt-2">
                                 {Array.from({ length: 5 }).map((_, i) =>
@@ -285,7 +307,9 @@ export default function ModuleLecon({ formationId }) {
                                     <FiBookOpen size={16} className="text-[#0C8CE9]" />
                                     À propos de cette formation
                                 </h2>
-                                <p className="text-gray-600 text-sm leading-relaxed">{formation.description}</p>
+                                <p className="text-gray-600 text-sm leading-relaxed">
+                                    {formation.description || <em className="text-gray-400">Aucune description disponible pour cette formation.</em>}
+                                </p>
 
                                 {/* 4 stats */}
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
@@ -305,6 +329,24 @@ export default function ModuleLecon({ formationId }) {
                                     ))}
                                 </div>
                             </section>
+
+                            {/* Ce que vous allez apprendre */}
+                            {formation.objectives && formation.objectives.length > 0 && (
+                                <section className="border border-gray-200 rounded-xl p-6 bg-slate-50/30">
+                                    <h2 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
+                                        <FaCheckCircle size={16} className="text-emerald-500" />
+                                        Ce que vous allez apprendre
+                                    </h2>
+                                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+                                        {formation.objectives.map((obj, i) => (
+                                            <li key={i} className="flex items-start gap-3 text-sm text-gray-600">
+                                                <FaCheckCircle className="text-emerald-500/60 mt-1 shrink-0" size={12} />
+                                                <span>{obj}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </section>
+                            )}
 
                             {/* Programme */}
                             <section className="border border-gray-200 rounded-xl p-6">
@@ -374,17 +416,19 @@ export default function ModuleLecon({ formationId }) {
                                 {/* Détails */}
                                 <div className="flex flex-col gap-3">
                                     {[
-                                        { icon: <FaRegClock size={13} className="text-gray-400" />, label: "Depuis", value: formation.duration },
-                                        { icon: <FiBarChart2 size={13} className="text-gray-400" />, label: "Niveau", value: formation.level },
-                                        { icon: <FaGlobeAfrica size={13} className="text-gray-400" />, label: "Langue", value: formation.language },
-                                        { icon: <FiCalendar size={13} className="text-gray-400" />, label: "Mis à jour", value: formation.lastUpdated },
+                                        { icon: <FaRegClock size={13} className="text-gray-400" />, label: "Durée", value: formation.duration || "Non définie" },
+                                        { icon: <FiBarChart2 size={13} className="text-gray-400" />, label: "Niveau", value: formation.level || "Non spécifié" },
+                                        { icon: <FaGlobeAfrica size={13} className="text-gray-400" />, label: "Langue", value: formation.language || "Non spécifiée" },
+                                        { icon: <FiCalendar size={13} className="text-gray-400" />, label: "Mis à jour", value: formation.lastUpdated || "Date inconnue" },
                                     ].map((row, i) => (
                                         <div key={i} className="flex items-center justify-between text-sm">
                                             <span className="flex items-center gap-2 text-gray-500">
                                                 {row.icon}
                                                 {row.label}
                                             </span>
-                                            <span className="font-semibold text-gray-800">{row.value}</span>
+                                            <span className={`font-semibold ${row.value === "Non définie" || row.value === "Non spécifié" || row.value === "Non spécifiée" || row.value === "Date inconnue" ? 'text-gray-400 font-normal italic' : 'text-gray-800'}`}>
+                                                {row.value}
+                                            </span>
                                         </div>
                                     ))}
                                 </div>
@@ -394,17 +438,27 @@ export default function ModuleLecon({ formationId }) {
                             <div className="border border-gray-200 rounded-xl p-5">
                                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Formateur</p>
                                 <div className="flex items-center gap-3">
-                                    <Image
-                                        src={formation.avatar}
-                                        alt={formation.author}
-                                        width={44}
-                                        height={44}
-                                        className="rounded-lg object-cover border border-gray-200"
-                                        style={{ width: "44px", height: "44px" }}
-                                    />
+                                    {formation.avatar ? (
+                                        <Image
+                                            src={formation.avatar}
+                                            alt={formation.author || "Formateur"}
+                                            width={44}
+                                            height={44}
+                                            className="rounded-lg object-cover border border-gray-200"
+                                            style={{ width: "44px", height: "44px" }}
+                                        />
+                                    ) : (
+                                        <div className="w-11 h-11 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 border border-gray-200">
+                                            <FaUsers size={20} />
+                                        </div>
+                                    )}
                                     <div>
-                                        <p className="text-sm font-semibold text-gray-900">{formation.author}</p>
-                                        <p className="text-xs text-gray-400">{formation.category} · Expert certifié</p>
+                                        <p className="text-sm font-semibold text-gray-900">
+                                            {formation.author || "Formateur non renseigné"}
+                                        </p>
+                                        <p className="text-xs text-gray-400">
+                                            {formation.category || "Expert"} · Certifié
+                                        </p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-1 mt-3">

@@ -208,6 +208,8 @@ export default function Catalogue() {
     // Log filtrage
     useEffect(() => {}, [filteredFormations]);
 
+    const [purchaseFeedback, setPurchaseFeedback] = useState({ show: false, type: 'success', message: '' });
+
     // Fonction pour acheter une formation
     const handleBuyFormation = async (formationId) => {
         try {
@@ -224,17 +226,34 @@ export default function Catalogue() {
             const data = await response.json();
 
             if (!response.ok) {
-                alert(data.error || 'Erreur lors de l\'achat');
+                const isAlreadyOwned = data.error && data.error.includes('déjà acheté');
+                setPurchaseFeedback({
+                    show: true,
+                    type: isAlreadyOwned ? 'info' : 'error',
+                    message: data.error || 'Erreur lors de l\'achat'
+                });
                 return;
             }
 
-            alert('✅ Formation achetée avec succès! Vérifiez votre espace de formation');
-            closeModal();
-            // Rediriger vers l'espace formations
-            router.push('/mes_formations/forma_general');
+            setPurchaseFeedback({
+                show: true,
+                type: 'success',
+                message: 'Formation achetée avec succès ! Retrouvez-la dans votre espace personnel.'
+            });
+            
+            // On attend un peu avant de fermer le modal de détails et rediriger
+            setTimeout(() => {
+                closeModal();
+                router.push('/acheteur/formation/listeFormation');
+            }, 2500);
+
         } catch (error) {
             console.error('Erreur:', error);
-            alert('❌ Erreur lors de l\'achat');
+            setPurchaseFeedback({
+                show: true,
+                type: 'error',
+                message: 'Une erreur réseau est survenue lors de l\'achat.'
+            });
         }
     };
 
@@ -315,9 +334,9 @@ export default function Catalogue() {
                                         {filters.isFree && (
                                             <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">gratuit</span>
                                         )}
-                                        {filters.isNew && (
+                                        {/* {filters.isNew && (
                                             <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">nouveau</span>
-                                        )}
+                                        )} */}
                                     </div>
                                 </div>
                             )}
@@ -432,11 +451,11 @@ export default function Catalogue() {
                                         <span className="px-3 py-1 bg-[#0C8CE9] text-white text-[10px] font-bold uppercase tracking-widest rounded-full">
                                             {selectedFormation.category}
                                         </span>
-                                        {selectedFormation.isNew && (
+                                        {/* {selectedFormation.isNew && (
                                             <span className="px-3 py-1 bg-emerald-500 text-white text-[10px] font-bold uppercase tracking-widest rounded-full">
-                                                Nouveau
+                                                
                                             </span>
-                                        )}
+                                        )} */}
                                         {selectedFormation.hasPromotion && (
                                             <span className="px-3 py-1 bg-amber-500 text-white text-[10px] font-bold uppercase tracking-widest rounded-full">
                                                 Promotion
@@ -572,6 +591,82 @@ export default function Catalogue() {
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Feedback Popup for Purchases */}
+            {purchaseFeedback.show && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+                    <div 
+                        className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-fade-in"
+                        onClick={() => setPurchaseFeedback({ ...purchaseFeedback, show: false })}
+                    />
+                    <div className="relative bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center animate-scale-in border border-slate-100">
+                        <div className={`w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center ${
+                            purchaseFeedback.type === 'success' ? 'bg-emerald-50 text-emerald-500' : 
+                            purchaseFeedback.type === 'info' ? 'bg-blue-50 text-[#0C8CE9]' : 
+                            'bg-red-50 text-red-500'
+                        }`}>
+                            {purchaseFeedback.type === 'success' ? (
+                                <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                </svg>
+                            ) : purchaseFeedback.type === 'info' ? (
+                                <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            ) : (
+                                <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            )}
+                        </div>
+                        
+                        <h3 className={`text-xl font-black mb-3 ${
+                            purchaseFeedback.type === 'success' ? 'text-emerald-600' : 
+                            purchaseFeedback.type === 'info' ? 'text-[#0C8CE9]' : 
+                            'text-red-600'
+                        }`}>
+                            {purchaseFeedback.type === 'success' ? 'Félicitations !' : 
+                             purchaseFeedback.type === 'info' ? 'Information' : 
+                             'Oups !'}
+                        </h3>
+                        
+                        <p className="text-slate-600 font-medium leading-relaxed mb-8">
+                            {purchaseFeedback.message}
+                        </p>
+                        
+                        <div className="space-y-3">
+                            <button 
+                                onClick={() => {
+                                    if (purchaseFeedback.type === 'info' || purchaseFeedback.type === 'success') {
+                                        router.push('/acheteur/formation/listeFormation');
+                                    }
+                                    setPurchaseFeedback({ ...purchaseFeedback, show: false });
+                                }}
+                                className={`w-full py-4 rounded-2xl font-bold transition-all active:scale-95 shadow-lg ${
+                                    purchaseFeedback.type === 'success' 
+                                        ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-200' 
+                                        : purchaseFeedback.type === 'info'
+                                        ? 'bg-[#0C8CE9] hover:bg-[#0A71BC] text-white shadow-blue-200'
+                                        : 'bg-red-500 hover:bg-red-600 text-white shadow-red-200'
+                                }`}
+                            >
+                                {purchaseFeedback.type === 'success' ? 'Génial !' : 
+                                 purchaseFeedback.type === 'info' ? 'Accéder à mes cours' : 
+                                 'Réessayer'}
+                            </button>
+                            
+                            {purchaseFeedback.type === 'info' && (
+                                <button 
+                                    onClick={() => setPurchaseFeedback({ ...purchaseFeedback, show: false })}
+                                    className="w-full py-3 text-slate-400 text-sm font-bold hover:text-slate-600 transition-colors"
+                                >
+                                    Fermer
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
