@@ -63,22 +63,22 @@ export default function AboutContent() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             <ValueCard 
-              icon={<HiRocketLaunch className="w-8 h-8 text-[#0C8CE9]" />}
+              icon={<HiRocketLaunch className="w-8 h-8" />}
               title="Innovation"
               description="Nous repoussons sans cesse les limites technologiques pour améliorer l'apprentissage."
             />
             <ValueCard 
-              icon={<HiShieldCheck className="w-8 h-8 text-[#0C8CE9]" />}
+              icon={<HiShieldCheck className="w-8 h-8" />}
               title="Excellence"
               description="Nous sélectionnons rigoureusement nos formateurs pour garantir un contenu de haute qualité."
             />
             <ValueCard 
-              icon={<HiUserGroup className="w-8 h-8 text-[#0C8CE9]" />}
+              icon={<HiUserGroup className="w-8 h-8" />}
               title="Communauté"
               description="L'échange et le partage sont au cœur de l'expérience Formini."
             />
             <ValueCard 
-              icon={<HiLightBulb className="w-8 h-8 text-[#0C8CE9]" />}
+              icon={<HiLightBulb className="w-8 h-8" />}
               title="Accessibilité"
               description="Apprendre n'importe où, n'importe quand, sur n'importe quel appareil."
             />
@@ -225,10 +225,8 @@ export default function AboutContent() {
 function ValueCard({ icon, title, description }) {
   return (
     <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
-      <div className="bg-blue-50 w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:bg-[#0C8CE9] transition-colors">
-        <div className="group-hover:text-white transition-colors">
-          {icon}
-        </div>
+      <div className="bg-blue-50 w-16 h-16 rounded-xl flex items-center justify-center mb-6 text-[#0C8CE9] group-hover:bg-[#0C8CE9] group-hover:text-white transition-colors">
+        {icon}
       </div>
       <h3 className="text-xl font-bold text-gray-900 mb-3">{title}</h3>
       <p className="text-gray-600 leading-relaxed text-sm">{description}</p>

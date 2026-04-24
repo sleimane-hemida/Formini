@@ -16,11 +16,11 @@ export default function CardFormateur({
     const router = useRouter();
 
     return (
-        <div className={`group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full max-w-xs w-full ${className}`}>
+        <div className={`group bg-white rounded-2xl border border-gray-200 transition-all duration-300 overflow-hidden flex flex-col h-full max-w-xs w-full ${className} card-premium-hover`}>
             {/* Card Header - Compact */}
             <div className="relative h-32 bg-gradient-to-br from-[#0C8CE9] to-[#0A71BC] flex items-center justify-center overflow-hidden flex-shrink-0">
                 <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
-                <div className="relative z-10 w-20 h-20 bg-white rounded-full flex items-center justify-center border-4 border-white/30 shadow-xl overflow-hidden group-hover:scale-105 transition-transform duration-500">
+                <div className="relative z-10 w-20 h-20 bg-white rounded-full flex items-center justify-center border-4 border-white/30 overflow-hidden group-hover:scale-105 transition-transform duration-500">
                     {image ? (
                         <img src={image} alt={name} className="w-full h-full object-cover" />
                     ) : (
@@ -63,7 +63,7 @@ export default function CardFormateur({
                 <div className="mt-auto">
                     <button 
                         onClick={() => router.push(`/allFormateur/formateurDetails?id=${id}`)}
-                        className="w-full flex items-center justify-center gap-2 bg-[#0C8CE9] text-white py-2.5 rounded-xl text-xs font-bold hover:bg-[#0A71BC] transition-all shadow-sm active:scale-95"
+                        className="w-full flex items-center justify-center gap-2 bg-[#0C8CE9] text-white py-2.5 rounded-xl text-xs font-bold hover:bg-[#0A71BC] transition-all active:scale-95"
                     >
                         Voir le profil
                         <HiAcademicCap className="w-4 h-4" />

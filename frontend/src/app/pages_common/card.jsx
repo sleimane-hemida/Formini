@@ -16,7 +16,7 @@ export function CardLarge({
 		return (
 			<div 
 				onClick={onClick}
-				className="bg-[#F5F8FF] rounded-2xl shadow-sm p-5 w-full max-w-[520px] flex flex-col gap-4 cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 mx-auto"
+				className="bg-[#F5F8FF] rounded-2xl border border-gray-200 p-5 w-full max-w-[520px] flex flex-col gap-4 cursor-pointer transition-all duration-300 mx-auto card-premium-hover"
 			>
 				{/* Image large en haut */}
 				   <div className="rounded-xl overflow-hidden h-[200px] w-full mb-2">
@@ -90,7 +90,7 @@ export default function Card({
 	return (
 		 <div 
 		 	onClick={onClick}
-		 	className={`bg-[#F5F8FF] rounded-2xl shadow-sm p-3 w-[270px] max-w-full flex flex-col gap-2 cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${className}`} style={style}
+		 	className={`bg-[#F5F8FF] rounded-2xl border border-gray-200 p-3 w-[270px] max-w-full flex flex-col gap-2 cursor-pointer transition-all duration-300 ${className} card-premium-hover`} style={style}
 		 >
 			   <div className="rounded-xl overflow-hidden h-[90px] w-full mb-2">
 				   <Image src={image} alt={title} width={250} height={90} className="object-cover w-full h-full" style={{height: 'auto'}} />

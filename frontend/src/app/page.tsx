@@ -98,9 +98,6 @@ export default function Home() {
       </div>
       {/* Section promotionnelle avant les formateurs */}
       <div className="max-w-4xl mx-auto text-center mt-20 mb-12 px-4">
-        <span className="bg-blue-50 text-[#0C8CE9] text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest border border-blue-100">
-          Nos Experts
-        </span>
         <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-4 mb-4 tracking-tight">
           Apprenez avec les <span className="text-[#0C8CE9]">meilleurs formateurs</span>
         </h2>

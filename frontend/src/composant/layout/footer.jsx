@@ -53,12 +53,7 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link href="#" className="hover:underline text-white/90 text-sm">
-                Comment ça marche
-              </Link>
-            </li>
-            <li>
-              <Link href="#" className="hover:underline text-white/90 text-sm">
+              <Link href="/dash_formation/dash_principale" className="hover:underline text-white/90 text-sm">
                 Créer mon espace formateur
               </Link>
             </li>
@@ -79,13 +74,8 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link href="#" className="hover:underline text-white/90 text-sm">
-                Signaler un problème
-              </Link>
-            </li>
-            <li>
-              <Link href="#" className="hover:underline text-white/90 text-sm">
-                Comment payer
+              <Link href="/comCaMarche" className="hover:underline text-white/90 text-sm">
+                Comment ça marche
               </Link>
             </li>
           </ul>
