@@ -97,7 +97,7 @@ export default function Home() {
               oldPrice={oldPriceStr}
               price={priceStr}
               className={i < 4 ? "block md:block" : "hidden md:block"}
-              onClick={() => !isMock && router.push(`/acheteur/formation/learning?id=${form.id}`)}
+              onClick={() => !isMock && router.push(`/formations?openModal=${form.id}`)}
             />
           );
         })}
@@ -148,7 +148,7 @@ export default function Home() {
               author={authorName}
               oldPrice={oldPriceStr}
               price={priceStr}
-              onClick={() => !isMock && router.push(`/acheteur/formation/learning?id=${form.id}`)}
+              onClick={() => !isMock && router.push(`/formations?openModal=${form.id}`)}
             />
           );
         })}

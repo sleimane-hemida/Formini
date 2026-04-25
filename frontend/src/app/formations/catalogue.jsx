@@ -110,6 +110,25 @@ export default function Catalogue() {
         }
     }, [searchParams]);
 
+    // Ouvrir le modal automatiquement si le paramètre openModal est présent dans l'URL
+    useEffect(() => {
+        if (!searchParams || formations.length === 0) return;
+        
+        const openModalId = searchParams.get("openModal");
+        if (openModalId) {
+            const formationToOpen = formations.find(f => f.id.toString() === openModalId.toString());
+            if (formationToOpen) {
+                // On utilise un setTimeout pour s'assurer que le rendu est terminé avant d'ouvrir le modal
+                setTimeout(() => openModal(formationToOpen), 100);
+                
+                // Nettoyer l'URL pour éviter que le modal ne se rouvre si on rafraîchit la page ou qu'on ferme le modal
+                const newUrl = new URL(window.location.href);
+                newUrl.searchParams.delete("openModal");
+                window.history.replaceState({}, '', newUrl.toString());
+            }
+        }
+    }, [searchParams, formations]);
+
     // Gestion du scroll pour la barre de catégories (même logique que le header)
     useEffect(() => {
         const handleScroll = () => {
