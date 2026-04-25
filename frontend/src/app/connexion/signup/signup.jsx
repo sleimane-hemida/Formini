@@ -31,6 +31,12 @@ export default function Signup() {
 		e.preventDefault();
 		setError("");
 
+		if (form.password.length < 8) {
+			setError("Le mot de passe doit contenir au moins 8 caractères (lettres et/ou chiffres).");
+			setSuccess("");
+			return;
+		}
+
 		if (form.password !== form.confirmPassword) {
 			setError("Les mots de passe ne correspondent pas.");
 			setSuccess("");
