@@ -34,11 +34,11 @@ export function CardLarge({
 					   </span>
 				   </div>
 				   {/* Titre */}
-				   <div className="font-semibold text-lg md:text-xl text-[#363A3D] leading-snug">
+				   <div className="font-semibold text-lg md:text-xl text-[#363A3D] leading-snug line-clamp-2 break-words">
 					   {title}
 				   </div>
 				   {/* Description */}
-				   <div className="text-[#7D8592] text-base leading-tight">
+				   <div className="text-[#7D8592] text-base leading-tight line-clamp-2 break-words">
 					   {description}
 				   </div>
 				   {/* Avis (étoiles) */}
@@ -51,13 +51,13 @@ export function CardLarge({
 				   <div className="flex items-center justify-between mt-auto pt-2">
 					   <div className="flex items-center gap-2">
 						   {avatar ? (
-							   <Image src={avatar} alt={author} width={40} height={40} className="rounded-full border-2 border-white shadow-sm" style={{width: 'auto'}} />
+							   <Image src={avatar} alt={author || ""} width={40} height={40} className="rounded-full border-2 border-white shadow-sm w-10 h-10 object-cover" />
 						   ) : (
-							   <div className="w-10 h-10 rounded-full border-2 border-white shadow-sm bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-sm font-semibold">
+							   <div className="w-10 h-10 rounded-full border-2 border-white shadow-sm bg-gradient-to-br from-[#0C8CE9] to-[#00A3FF] flex items-center justify-center text-white text-sm font-bold">
 								   {author?.charAt(0)?.toUpperCase()}
 							   </div>
 						   )}
-						   <span className="font-medium text-[#363A3D] text-base">{author}</span>
+						   <span className="font-medium text-[#363A3D] text-base truncate max-w-[120px]">{author}</span>
 					   </div>
 					   <div className="flex items-center gap-2">
 						   {oldPrice && <span className="line-through text-gray-400 text-sm">{oldPrice}</span>}
@@ -105,19 +105,27 @@ export default function Card({
 					{duration}
 				</span>
 			</div>
-			   <div className="font-bold text-base text-gray-900 leading-snug mb-1">{title}</div>
-			   <div className="text-gray-400 text-xs mb-2 leading-tight">{description}</div>
+			   <div className="font-bold text-base text-gray-900 leading-snug mb-1 line-clamp-2 break-words">{title}</div>
+			   <div className="text-gray-400 text-xs mb-2 leading-tight line-clamp-2 break-words flex-1">{description}</div>
 			{/* Avis (étoiles) */}
 			<div className="flex items-center gap-1 text-yellow-400 mb-2">
 				{Array.from({ length: 5 }).map((_, i) => (
 					i < rating ? <FaStar key={i} className="w-3 h-3" /> : <FaRegStar key={i} className="w-3 h-3 text-gray-300" />
 				))}
 			</div>
-			   <div className="flex items-center gap-2 mt-auto">
-				   <Image src={avatar} alt={author} width={28} height={28} className="rounded-full border-2 border-white shadow-sm" style={{width: 'auto'}} />
-				   <span className="font-semibold text-gray-900 text-sm">{author}</span>
-				   <span className="line-through text-gray-400 text-xs ml-2">{oldPrice}</span>
-				   <span className="text-[#00B67A] font-bold text-sm ml-1">{price}</span>
+			   <div className="flex items-center gap-1.5 mt-auto pt-1 border-t border-gray-100">
+				   {avatar ? (
+					   <Image src={avatar} alt={author || ""} width={28} height={28} className="rounded-full border-2 border-white shadow-sm w-7 h-7 object-cover shrink-0" />
+				   ) : (
+					   <div className="w-7 h-7 shrink-0 rounded-full border-2 border-white shadow-sm bg-gradient-to-br from-[#0C8CE9] to-[#00A3FF] flex items-center justify-center text-white text-xs font-bold">
+						   {author?.charAt(0)?.toUpperCase()}
+					   </div>
+				   )}
+				   <span className="font-semibold text-gray-900 text-xs truncate max-w-[70px]">{author}</span>
+				   <div className="ml-auto flex items-center gap-1.5 shrink-0">
+					   {oldPrice && <span className="line-through text-gray-400 text-[10px]">{oldPrice}</span>}
+					   <span className="text-[#00B67A] font-bold text-sm">{price}</span>
+				   </div>
 			   </div>
 		</div>
 	);

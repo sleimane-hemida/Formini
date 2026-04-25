@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import CardFormateur from "./pages_common/card_formateur";
 import { useRouter } from "next/navigation";
 import { ROUTES, buildRouteWithQuery } from "../utils/routes";
@@ -14,6 +15,51 @@ import PubFormateur from "./pages_common/pub_formateur";
 
 export default function Home() {
   const router = useRouter();
+  const [formations, setFormations] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/formations-all')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setFormations(data);
+        }
+      })
+      .catch(err => console.error("Error fetching formations:", err));
+  }, []);
+
+  const mockItems = Array.from({length: 10}).map((_, i) => ({
+    isMock: true,
+    id: `mock-${i}`,
+    image: "/images/users/formation.png",
+    category: i < 4 ? "Design" : "Dev",
+    durationString: i < 4 ? "3 mois" : "2 mois",
+    title: i < 8 ? `Card normale ${i+1}` : (i === 8 ? "Class adds $30 million to its balance sheet for a Zoom-friendly edtech solution" : "AWS Certified solutions Architect"),
+    description: i < 4 ? "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor" : (i === 8 ? "Class, launched less than a year ago by Blackboard co-founder Michael Chasen, integrates exclusively..." : "Autre description pour la deuxième ligne."),
+    avatar: "/images/users/profile.jpg",
+    author: "Lina",
+    oldPrice: i < 4 ? "100 MRU" : "120 MRU",
+    price: i < 4 ? "800 MRU" : "900 MRU"
+  }));
+
+  const displayItems = [...formations, ...mockItems].slice(0, 10);
+  const regularCards = displayItems.slice(0, 8);
+  const largeCards = displayItems.slice(8, 10);
+
+  // Helper pour formater l'URL de l'image de manière sécurisée
+  const getValidImageUrl = (url: string | null | undefined, isMock: boolean, fallback: string | null) => {
+    if (!url) return fallback;
+    if (isMock) return url; // Image locale du frontend (ex: /images/...)
+    
+    // Remplacer les antislashs par des slashs (chemins Windows)
+    const cleanUrl = url.replace(/\\/g, '/');
+    
+    if (cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://') || cleanUrl.startsWith('data:')) {
+      return cleanUrl;
+    }
+    return cleanUrl.startsWith('/') ? `http://localhost:5000${cleanUrl}` : `http://localhost:5000/${cleanUrl}`;
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <Header />
@@ -28,25 +74,33 @@ export default function Home() {
       <div className="flex flex-wrap justify-center gap-6 py-8 md:gap-8 lg:gap-10 xl:gap-12">
         {/* Show 4 cards on mobile, 8 on md+ */}
         {/* Mobile: first 4 cards only, md+: all 8 cards */}
-        {Array.from({length: 8}).map((_, i) => (
-          <Card
-            key={"card-all-"+i}
-            image="/images/users/formation.png"
-            category={i < 4 ? "Design" : "Dev"}
-            duration={i < 4 ? "3 mois" : "2 mois"}
-            title={`Card normale ${i+1}`}
-            description={i < 4 ? "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor" : "Autre description pour la deuxième ligne."}
-            avatar="/images/users/profile.jpg"
-            author="Lina"
-            oldPrice={i < 4 ? "100 MRU" : "120 MRU"}
-            price={i < 4 ? "800 MRU" : "900 MRU"}
-            className={
-              i < 4
-                ? "block md:block"
-                : "hidden md:block"
-            }
-          />
-        ))}
+        {regularCards.map((form: any, i) => {
+          const isMock = form.isMock;
+          const authorName = isMock ? form.author : (form.trainer?.name || "Formateur");
+          const avatarUrl = getValidImageUrl(form.trainer?.avatar || form.avatar, isMock, isMock ? "/images/users/profile.jpg" : null);
+          const imageUrl = getValidImageUrl(form.image, isMock, "/images/users/formation.png");
+          const priceStr = isMock ? form.price : (form.est_gratuite ? "Gratuit" : `${form.prix_promo || form.prix_normal || 0} MRU`);
+          const oldPriceStr = isMock ? form.oldPrice : (form.prix_promo && form.prix_normal ? `${form.prix_normal} MRU` : "");
+          const durationStr = isMock ? form.durationString : (form.duree_totale_minutes ? `${Math.round(form.duree_totale_minutes / 60)}h` : "N/A");
+          const categoryStr = isMock ? form.category : (form.Category?.name || "Catégorie");
+
+          return (
+            <Card
+              key={form.id || `reg-${i}`}
+              image={imageUrl}
+              category={categoryStr}
+              duration={durationStr}
+              title={form.name || form.title}
+              description={form.description}
+              avatar={avatarUrl}
+              author={authorName}
+              oldPrice={oldPriceStr}
+              price={priceStr}
+              className={i < 4 ? "block md:block" : "hidden md:block"}
+              onClick={() => !isMock && router.push(`/acheteur/formation/learning?id=${form.id}`)}
+            />
+          );
+        })}
       </div>
 
       {/* Lien vers le catalogue complet */}
@@ -71,30 +125,33 @@ export default function Home() {
       <PubFormateur />
 
 
-      {/* Une ligne de deux grandes cartes CardLarge */}
       <div className="flex flex-col md:flex-row justify-center gap-8 py-8">
-        <CardLarge
-          image="/images/users/formation.png"
-          category="EdTech"
-          duration="2 mois"
-          title="Class adds $30 million to its balance sheet for a Zoom-friendly edtech solution"
-          description="Class, launched less than a year ago by Blackboard co-founder Michael Chasen, integrates exclusively..."
-          avatar="/images/users/profile.jpg"
-          author="Lina"
-          oldPrice="1000 MRU"
-          price="800 MRU"
-        />
-        <CardLarge
-          image="/images/users/formation.png"
-          category="Design"
-          duration="3 mois"
-          title="AWS Certified solutions Architect"
-          description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor"
-          avatar="/images/users/profile.jpg"
-          author="Lina"
-          oldPrice="1200 MRU"
-          price="900 MRU"
-        />
+        {largeCards.map((form: any, i) => {
+          const isMock = form.isMock;
+          const authorName = isMock ? form.author : (form.trainer?.name || "Formateur");
+          const avatarUrl = getValidImageUrl(form.trainer?.avatar || form.avatar, isMock, isMock ? "/images/users/profile.jpg" : null);
+          const imageUrl = getValidImageUrl(form.image, isMock, "/images/users/formation.png");
+          const priceStr = isMock ? form.price : (form.est_gratuite ? "Gratuit" : `${form.prix_promo || form.prix_normal || 0} MRU`);
+          const oldPriceStr = isMock ? form.oldPrice : (form.prix_promo && form.prix_normal ? `${form.prix_normal} MRU` : "");
+          const durationStr = isMock ? form.durationString : (form.duree_totale_minutes ? `${Math.round(form.duree_totale_minutes / 60)}h` : "N/A");
+          const categoryStr = isMock ? form.category : (form.Category?.name || "Catégorie");
+
+          return (
+            <CardLarge
+              key={form.id || `lrg-${i}`}
+              image={imageUrl}
+              category={categoryStr}
+              duration={durationStr}
+              title={form.name || form.title}
+              description={form.description}
+              avatar={avatarUrl}
+              author={authorName}
+              oldPrice={oldPriceStr}
+              price={priceStr}
+              onClick={() => !isMock && router.push(`/acheteur/formation/learning?id=${form.id}`)}
+            />
+          );
+        })}
       </div>
       {/* Section promotionnelle avant les formateurs */}
       <div className="max-w-4xl mx-auto text-center mt-20 mb-12 px-4">

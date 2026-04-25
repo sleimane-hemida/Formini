@@ -207,10 +207,20 @@ export default function Header({ onSearchChange, searchValue: externalSearchValu
                                 <div className="relative" ref={profileRef}>
                                     <button 
                                         onClick={() => setProfileOpen(!profileOpen)}
-                                        className="text-black hover:text-[#0C8CE9] font-medium p-2 rounded transition-colors"
+                                        className="font-medium p-0 rounded-full transition-colors overflow-hidden border-2 border-transparent hover:border-[#0C8CE9] focus:outline-none flex items-center justify-center"
                                         title="Profil utilisateur"
                                     >
-                                        <HiUser className="w-6 h-6" />
+                                        {user?.avatar ? (
+                                            <img 
+                                                src={user.avatar.startsWith('http') ? user.avatar : `http://localhost:5000${user.avatar.startsWith('/') ? '' : '/'}${user.avatar.replace(/\\/g, '/')}`} 
+                                                alt="Profil" 
+                                                className="w-9 h-9 object-cover rounded-full" 
+                                            />
+                                        ) : (
+                                            <div className="w-9 h-9 rounded-full bg-[#0C8CE9] flex items-center justify-center text-white text-sm font-bold shadow-sm">
+                                                {user?.name?.charAt(0)?.toUpperCase() || user?.firstName?.charAt(0)?.toUpperCase() || <HiUser className="w-5 h-5" />}
+                                            </div>
+                                        )}
                                     </button>
                                     <ProfileDropdown 
                                         isOpen={profileOpen}

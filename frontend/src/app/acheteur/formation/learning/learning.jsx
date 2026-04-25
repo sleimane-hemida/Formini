@@ -22,38 +22,7 @@ import {
     FaFilePdf
 } from "react-icons/fa";
 
-// ─── Mock Data Helpers ────────────────────────────────────────────────────────
-function buildGenericFormation(id) {
-    return {
-        id,
-        title: "Formation Complète Web & Design",
-        modules: [
-            {
-                id: 1,
-                title: "Module 1 — Fondamentaux",
-                duration: "1h",
-                lecons: [
-                    { id: 1, title: "Introduction générale", duration: "10 min", type: "video", done: true },
-                    { id: 2, title: "Les concepts clés", duration: "15 min", type: "video", done: false },
-                    { id: 3, title: "Configuration de l'environnement", duration: "35 min", type: "video", done: false },
-                ],
-            },
-            {
-                id: 2,
-                title: "Module 2 — Techniques avancées",
-                duration: "2h 30min",
-                lecons: [
-                    { id: 4, title: "Maîtriser les outils", duration: "45 min", type: "video", done: false },
-                    { id: 5, title: "Projet pratique #1", duration: "1h 45min", type: "video", done: false, locked: true },
-                ],
-            },
-        ],
-    };
-}
-
-const formationsDetail = {
-    1: buildGenericFormation(1),
-};
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 // ─── Sidebar Module Accordion ─────────────────────────────────────────────────
 function SidebarModule({ module, moduleIndex, isOpen, onToggle, activeLeconId, onSelectLecon }) {
@@ -123,12 +92,93 @@ function SidebarModule({ module, moduleIndex, isOpen, onToggle, activeLeconId, o
 export default function Learning() {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const formationId = Number(searchParams.get("id") || "1");
-    const formation = formationsDetail[formationId] || buildGenericFormation(formationId);
+    const formationId = searchParams.get("id");
 
-    const firstLecon = formation.modules.flatMap((m) => m.lecons).find((l) => !l.locked) || formation.modules[0].lecons[0];
-    const [activeLecon, setActiveLecon] = useState(firstLecon);
+    const [formation, setFormation] = useState(null);
+    const [loadingFormation, setLoadingFormation] = useState(true);
+    const [activeLecon, setActiveLecon] = useState(null);
     const [openModules, setOpenModules] = useState([0]);
+    // Ressources de la leçon active
+    const [videoUrl, setVideoUrl] = useState(null);
+    const [pdfUrl, setPdfUrl] = useState(null);
+    const [loadingResources, setLoadingResources] = useState(false);
+
+    // ── Charger la formation + modules + leçons ──
+    useEffect(() => {
+        if (!formationId) return;
+        const token = localStorage.getItem('token');
+        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+
+        const loadAll = async () => {
+            try {
+                setLoadingFormation(true);
+                // 1. Formation
+                const fRes = await fetch(`http://localhost:5000/api/formations/${formationId}`, { headers });
+                const fData = await fRes.json();
+
+                // 2. Modules
+                const mRes = await fetch(`http://localhost:5000/api/formations/${formationId}/modules`, { headers });
+                const modulesData = await mRes.json();
+
+                // 3. Leçons de chaque module
+                const modulesWithLecons = await Promise.all(
+                    (Array.isArray(modulesData) ? modulesData : []).map(async (mod) => {
+                        const lRes = await fetch(`http://localhost:5000/api/modules/${mod.id}/lessons`, { headers });
+                        const lessonsData = await lRes.json();
+                        return {
+                            ...mod,
+                            title: mod.titre || mod.title || `Module`,
+                            lecons: (Array.isArray(lessonsData) ? lessonsData : []).map(l => ({
+                                ...l,
+                                title: l.titre || l.title || 'Leçon',
+                                duration: l.duree_minutes ? `${l.duree_minutes} min` : null,
+                                done: false,
+                                locked: false,
+                            }))
+                        };
+                    })
+                );
+
+                const built = {
+                    id: fData.id,
+                    title: fData.name || 'Formation',
+                    modules: modulesWithLecons,
+                };
+                setFormation(built);
+
+                // Sélectionner la 1ère leçon
+                const first = modulesWithLecons.flatMap(m => m.lecons).find(l => !l.locked);
+                if (first) setActiveLecon(first);
+            } catch (err) {
+                console.error('❌ Erreur chargement formation:', err);
+            } finally {
+                setLoadingFormation(false);
+            }
+        };
+        loadAll();
+    }, [formationId]);
+
+    // ── Charger les ressources quand la leçon change ──
+    useEffect(() => {
+        if (!activeLecon) return;
+        const token = localStorage.getItem('token');
+        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+        setVideoUrl(null);
+        setPdfUrl(null);
+        setLoadingResources(true);
+        fetch(`http://localhost:5000/api/lessons/${activeLecon.id}/resources`, { headers })
+            .then(r => r.json())
+            .then(resources => {
+                if (Array.isArray(resources)) {
+                    const video = resources.find(r => r.type === 'video');
+                    const pdf = resources.find(r => r.type === 'pdf');
+                    if (video) setVideoUrl(`http://localhost:5000${video.url}`);
+                    if (pdf) setPdfUrl(`http://localhost:5000${pdf.url}`);
+                }
+            })
+            .catch(err => console.error('❌ Erreur ressources:', err))
+            .finally(() => setLoadingResources(false));
+    }, [activeLecon?.id]);
     const [isPlaying, setIsPlaying] = useState(false);
     const [volume, setVolume] = useState(1);
     const [isMuted, setIsMuted] = useState(false);
@@ -233,26 +283,38 @@ export default function Learning() {
     const [showRatingModal, setShowRatingModal] = useState(false);
     const [userRating, setUserRating] = useState(0);
 
+    // Reset vers la vidéo quand on change de leçon — DOIT être avant tout return conditionnel
+    useEffect(() => {
+        setContentType("video");
+        setIsPlaying(false);
+    }, [activeLecon?.id]);
+
     const toggleModule = (i) =>
         setOpenModules((prev) =>
             prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i]
         );
 
+    // Affichage de chargement si pas encore prêt
+    if (loadingFormation || !formation || !activeLecon) {
+        return (
+            <div className="flex h-screen items-center justify-center bg-white">
+                <div className="text-center">
+                    <div className="animate-spin w-10 h-10 border-4 border-slate-200 border-t-[#0C8CE9] rounded-full mx-auto mb-4" />
+                    <p className="text-slate-400 text-sm">Chargement de la formation...</p>
+                </div>
+            </div>
+        );
+    }
+
     const allLecons = formation.modules.flatMap((m) => m.lecons);
     const totalDone = allLecons.filter((l) => l.done).length;
     const totalLecons = allLecons.length;
-    const globalProgress = Math.round((totalDone / totalLecons) * 100);
+    const globalProgress = totalLecons > 0 ? Math.round((totalDone / totalLecons) * 100) : 0;
 
     const unlocked = allLecons.filter((l) => !l.locked);
     const activeIndex = unlocked.findIndex((l) => l.id === activeLecon.id);
     const hasPrev = activeIndex > 0;
     const hasNext = activeIndex < unlocked.length - 1;
-
-    // Reset vers la vidéo quand on change de leçon
-    useEffect(() => {
-        setContentType("video");
-        setIsPlaying(false);
-    }, [activeLecon.id]);
 
     const mockComments = [
         { initiale: "S", nom: "Sarah D.", temps: "il y a 2 jours", texte: "Super explication ! Merci pour la clarification sur la différence entre UX et UI, c'était très clair.", color: "bg-pink-500" },
@@ -336,19 +398,30 @@ export default function Learning() {
                         >
                             {contentType === "video" ? (
                                 <>
-                                    <video
-                                        ref={videoRef}
-                                        src="/demo_video.mp4"
-                                        className="w-full h-full object-contain"
-                                        onTimeUpdate={handleTimeUpdate}
-                                        onLoadedMetadata={handleLoadedMetadata}
-                                        onPlay={() => setIsPlaying(true)}
-                                        onPause={() => setIsPlaying(false)}
-                                        onClick={() => setIsPlaying(!isPlaying)}
-                                    />
+                                    {loadingResources ? (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                            <div className="animate-spin w-10 h-10 border-4 border-white/20 border-t-[#0C8CE9] rounded-full" />
+                                        </div>
+                                    ) : videoUrl ? (
+                                        <video
+                                            ref={videoRef}
+                                            src={videoUrl}
+                                            className="w-full h-full object-contain"
+                                            onTimeUpdate={handleTimeUpdate}
+                                            onLoadedMetadata={handleLoadedMetadata}
+                                            onPlay={() => setIsPlaying(true)}
+                                            onPause={() => setIsPlaying(false)}
+                                            onClick={() => setIsPlaying(!isPlaying)}
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex flex-col items-center justify-center text-white/50">
+                                            <FaPlay size={40} className="mb-3 opacity-30" />
+                                            <p className="text-sm">Aucune vidéo disponible pour cette leçon</p>
+                                        </div>
+                                    )}
                                     
                                     {/* Overlay de lecture au centre */}
-                                    {!isPlaying && (
+                                    {!isPlaying && videoUrl && (
                                         <div 
                                             className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[1px] cursor-pointer"
                                             onClick={() => setIsPlaying(true)}
@@ -427,13 +500,18 @@ export default function Learning() {
                                         </div>
                                     </div>
                                 </>
-                            ) : (
+                            ) : pdfUrl ? (
                                 <iframe
-                                    src="/esprit_millionnaire.pdf#toolbar=0&navpanes=0&scrollbar=1"
+                                    src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=1`}
                                     className="w-full h-[calc(100%+60px)] -mt-[60px] bg-white border-none"
                                     title="Support PDF"
                                     style={{ pointerEvents: 'auto' }}
                                 />
+                            ) : (
+                                <div className="w-full h-full flex flex-col items-center justify-center text-white/50">
+                                    <FaFilePdf size={40} className="mb-3 opacity-30" />
+                                    <p className="text-sm">Aucun PDF disponible pour cette leçon</p>
+                                </div>
                             )}
                         </div>
 

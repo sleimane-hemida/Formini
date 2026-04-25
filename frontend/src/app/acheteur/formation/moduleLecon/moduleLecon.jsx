@@ -149,7 +149,21 @@ export default function ModuleLecon({ formationId }) {
                     author: data.trainer?.name || null,
                     avatar: data.trainer?.avatar ? (data.trainer.avatar.startsWith('http') || data.trainer.avatar.startsWith('data:') ? data.trainer.avatar : `http://localhost:5000${data.trainer.avatar}`) : null,
                     level: data.niveau || null,
-                    language: data.language || null,
+                    language: (() => {
+                        const langMap = {
+                            'fr': 'Français',
+                            'en': 'Anglais',
+                            'ar': 'Arabe',
+                            'es': 'Espagnol',
+                            'de': 'Allemand',
+                            'it': 'Italien',
+                            'pt': 'Portugais',
+                            'zh': 'Chinois',
+                            'ja': 'Japonais',
+                            'ru': 'Russe',
+                        };
+                        return data.language ? (langMap[data.language] || data.language) : null;
+                    })(),
                     lastUpdated: data.updatedAt ? new Date(data.updatedAt).toLocaleDateString('fr-FR') : null,
                     price: data.est_gratuite ? "Gratuit" : (data.prix_promo ? `${parseFloat(data.prix_promo).toLocaleString('fr-FR')} MRU` : `${parseFloat(data.prix_normal || 0).toLocaleString('fr-FR')} MRU`),
                     oldPrice: data.prix_promo ? `${parseFloat(data.prix_normal).toLocaleString('fr-FR')} MRU` : null,

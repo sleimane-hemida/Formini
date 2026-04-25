@@ -222,22 +222,19 @@ export default function LeconPage() {
 				setLessons(mappedLessons);
 				setHasChanges(false);
 				
-				// Try to get module title
-				if (fId) {
-					fetch(`http://localhost:5000/api/formations/${encodeURIComponent(fId)}`, {
-						headers: {
-							'Authorization': `Bearer ${token}`
+				// Fetch module title directly from module endpoint
+				fetch(`http://localhost:5000/api/modules/${encodeURIComponent(moduleId)}`, {
+					headers: {
+						'Authorization': `Bearer ${token}`
+					}
+				})
+					.then(res => res.ok ? res.json() : null)
+					.then(data => {
+						if (data) {
+							setModuleTitle(data.titre || data.title || data.name || '');
 						}
 					})
-						.then(res => res.ok ? res.json() : null)
-						.then(data => {
-							if (data && data.Modules && Array.isArray(data.Modules)) {
-								const mod = data.Modules.find(m => String(m.id) === String(moduleId));
-								if (mod) setModuleTitle(mod.title || `Module ${moduleId}`);
-							}
-						})
-						.catch(err => console.error('Error loading module title:', err));
-				}
+					.catch(err => console.error('Error loading module title:', err));
 			})
 			.catch(err => {
 				console.error('❌ Error loading lessons:', err);

@@ -13,9 +13,17 @@ export default function ProfileDropdown({ isOpen, onClose, user, onLogout }) {
             {/* Header avec infos utilisateur */}
             <div className="p-4 border-b border-gray-100 bg-gray-50">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-[#0C8CE9] rounded-full flex items-center justify-center">
-                        <HiUser className="w-6 h-6 text-white" />
-                    </div>
+                    {user?.avatar ? (
+                        <img 
+                            src={user.avatar.startsWith('http') ? user.avatar : `http://localhost:5000${user.avatar.startsWith('/') ? '' : '/'}${user.avatar.replace(/\\/g, '/')}`} 
+                            alt="Profil" 
+                            className="w-10 h-10 object-cover rounded-full shadow-sm" 
+                        />
+                    ) : (
+                        <div className="w-10 h-10 bg-[#0C8CE9] rounded-full flex items-center justify-center text-white text-lg font-bold shadow-sm">
+                            {user?.name?.charAt(0)?.toUpperCase() || user?.firstName?.charAt(0)?.toUpperCase() || <HiUser className="w-6 h-6 text-white" />}
+                        </div>
+                    )}
                     <div className="flex-1 min-w-0">
                         <h3 className="font-semibold text-gray-800 truncate">
                             {user?.name || user?.firstName || 'Utilisateur'}
