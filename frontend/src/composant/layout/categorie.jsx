@@ -1,13 +1,154 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { FaCode, FaPaintBrush, FaBriefcase, FaBullhorn, FaChartLine, FaLanguage, FaUserGraduate, FaBookOpen, FaHeartbeat, FaTools, FaBalanceScale, FaVideo, FaGraduationCap } from "react-icons/fa";
+import { 
+	FaCode, FaPaintBrush, FaBriefcase, FaBullhorn, FaChartLine, 
+	FaLanguage, FaUserGraduate, FaBookOpen, FaHeartbeat, FaTools, 
+	FaBalanceScale, FaVideo, FaGraduationCap, FaUser, FaUtensils,
+	FaMusic, FaHeart, FaPlane, FaCamera, FaDumbbell, FaSpa,
+	FaCar, FaBuilding, FaHammer, FaLeaf, FaPaw, FaCalendarAlt, FaGem 
+} from "react-icons/fa";
 
 const categories = [
 	{
 		key: "foryou",
 		label: "Pour vous",
 		icon: <FaGraduationCap size={18} />,
+	},
+	{
+		key: "webdev",
+		label: "Développement Web",
+		icon: <FaCode size={18} />,
+	},
+	{
+		key: "design",
+		label: "Design UX/UI",
+		icon: <FaPaintBrush size={18} />,
+	},
+	{
+		key: "business",
+		label: "Business & Marketing",
+		icon: <FaBriefcase size={18} />,
+	},
+	{
+		key: "marketing",
+		label: "Marketing Digital",
+		icon: <FaBullhorn size={18} />,
+	},
+	{
+		key: "data",
+		label: "Data & IA",
+		icon: <FaChartLine size={18} />,
+	},
+	{
+		key: "language",
+		label: "Langues",
+		icon: <FaLanguage size={18} />,
+	},
+	{
+		key: "softskills",
+		label: "Soft Skills",
+		icon: <FaUserGraduate size={18} />,
+	},
+	{
+		key: "it",
+		label: "Informatique & IT",
+		icon: <FaTools size={18} />,
+	},
+	{
+		key: "gaming",
+		label: "Création de Jeux",
+		icon: <FaVideo size={18} />,
+	},
+	{
+		key: "coach",
+		label: "Coaching & Mentoring",
+		icon: <FaUser size={18} />,
+	},
+	{
+		key: "cuisine",
+		label: "Cuisine & Gastronomie",
+		icon: <FaUtensils size={18} />,
+	},
+	{
+		key: "musique",
+		label: "Musique & Arts",
+		icon: <FaMusic size={18} />,
+	},
+	{
+		key: "danse",
+		label: "Danse & Chorégraphie",
+		icon: <FaHeart size={18} />,
+	},
+	{
+		key: "voyage",
+		label: "Voyage & Tourisme",
+		icon: <FaPlane size={18} />,
+	},
+	{
+		key: "photographie",
+		label: "Photographie & Vidéo",
+		icon: <FaCamera size={18} />,
+	},
+	{
+		key: "fitness",
+		label: "Fitness & Bien-être",
+		icon: <FaDumbbell size={18} />,
+	},
+	{
+		key: "yoga",
+		label: "Yoga & Méditation",
+		icon: <FaSpa size={18} />,
+	},
+	{
+		key: "auto",
+		label: "Auto & Moto",
+		icon: <FaCar size={18} />,
+	},
+	{
+		key: "immobilier",
+		label: "Immobilier",
+		icon: <FaBuilding size={18} />,
+	},
+	{
+		key: "legal",
+		label: "Droit & Juridique",
+		icon: <FaBalanceScale size={18} />,
+	},
+	{
+		key: "sante",
+		label: "Santé & Nutrition",
+		icon: <FaHeartbeat size={18} />,
+	},
+	{
+		key: "elearning",
+		label: "E-learning & Éducation",
+		icon: <FaBookOpen size={18} />,
+	},
+	{
+		key: "bricolage",
+		label: "Bricolage & Bricolage",
+		icon: <FaHammer size={18} />,
+	},
+	{
+		key: "jardinage",
+		label: "Jardinage & Paysagisme",
+		icon: <FaLeaf size={18} />,
+	},
+	{
+		key: "animaux",
+		label: "Animaux de Compagnie",
+		icon: <FaPaw size={18} />,
+	},
+	{
+		key: "evenements",
+		label: "Événements & Spectacles",
+		icon: <FaCalendarAlt size={18} />,
+	},
+	{
+		key: "beaute",
+		label: "Beauté & Soins",
+		icon: <FaGem size={18} />,
 	},
 ];
 
