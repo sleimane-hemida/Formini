@@ -62,7 +62,7 @@ export default function LeconPage() {
 
 		try {
 			const nextOrder = lessons.length + 1;
-			const response = await fetch('http://localhost:5000/api/lessons', {
+			const response = await fetch('https://formini-yx2w.onrender.com/api/lessons', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -135,7 +135,7 @@ export default function LeconPage() {
 				formData.append('file', file);
 				formData.append('lessonId', lessonId);
 				
-				const response = await fetch('http://localhost:5000/api/lesson-cover', {
+				const response = await fetch('https://formini-yx2w.onrender.com/api/lesson-cover', {
 					method: 'POST',
 					headers: {
 						'Authorization': `Bearer ${token}`
@@ -152,7 +152,7 @@ export default function LeconPage() {
 				
 				// Update with actual server URL
 				setLessons(prev => {
-					const next = prev.map(x => x.id === lessonId ? { ...x, bg: `http://localhost:5000${result.url}` } : x);
+					const next = prev.map(x => x.id === lessonId ? { ...x, bg: `https://formini-yx2w.onrender.com${result.url}` } : x);
 					return next;
 				});
 			} catch (err) {
@@ -172,7 +172,7 @@ export default function LeconPage() {
 			if (token) {
 				for (const l of lessons) {
 					if (l.title || l.titre) {
-						await fetch(`http://localhost:5000/api/lessons/${l.id}`, {
+						await fetch(`https://formini-yx2w.onrender.com/api/lessons/${l.id}`, {
 							method: 'PUT',
 							headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
 							body: JSON.stringify({ titre: l.title || l.titre })
@@ -200,7 +200,7 @@ export default function LeconPage() {
 		console.log('📥 Loading lessons for module:', moduleId);
 
 		// Load lessons from backend
-		fetch(`http://localhost:5000/api/modules/${encodeURIComponent(moduleId)}/lessons`, {
+		fetch(`https://formini-yx2w.onrender.com/api/modules/${encodeURIComponent(moduleId)}/lessons`, {
 			headers: {
 				'Authorization': `Bearer ${token}`
 			}
@@ -216,14 +216,14 @@ export default function LeconPage() {
 				// Map lessons and set cover images from backend
 				const mappedLessons = lessonsArr.map(lesson => ({
 					...lesson,
-					bg: lesson.image_couverture ? `http://localhost:5000${lesson.image_couverture}` : undefined
+					bg: lesson.image_couverture ? `https://formini-yx2w.onrender.com${lesson.image_couverture}` : undefined
 				}));
 				
 				setLessons(mappedLessons);
 				setHasChanges(false);
 				
 				// Fetch module title directly from module endpoint
-				fetch(`http://localhost:5000/api/modules/${encodeURIComponent(moduleId)}`, {
+				fetch(`https://formini-yx2w.onrender.com/api/modules/${encodeURIComponent(moduleId)}`, {
 					headers: {
 						'Authorization': `Bearer ${token}`
 					}
