@@ -1,5 +1,10 @@
+import { Suspense } from 'react';
 import FormateurDetails from "./formateurDetails";
 
 export default function Page() {
-  return <FormateurDetails />;
+  return (
+    <Suspense fallback={<div>Chargement...</div>}>
+      <FormateurDetails />
+    </Suspense>
+  );
 }

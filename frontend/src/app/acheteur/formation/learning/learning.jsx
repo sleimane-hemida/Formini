@@ -1234,6 +1234,7 @@ export default function Learning() {
                                     Discussion <span className="text-sm font-normal text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md">12</span>
                                 </h3>
 
+                                {/* commentaire pour le deploiement */}
                                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-8">
                                     <div className="flex gap-4">
                                         <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-md">M</div>

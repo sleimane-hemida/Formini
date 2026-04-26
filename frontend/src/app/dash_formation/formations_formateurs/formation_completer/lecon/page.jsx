@@ -1,5 +1,10 @@
+import { Suspense } from 'react';
 import LeconPage from './lecon';
 
 export default function Page() {
-  return <LeconPage />;
+  return (
+    <Suspense fallback={<div>Chargement...</div>}>
+      <LeconPage />
+    </Suspense>
+  );
 }

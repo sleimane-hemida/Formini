@@ -8,7 +8,9 @@ import { useSearchParams } from 'next/navigation';
 
 const Header = dynamic(() => import('../../../../composant/layout/header').then((m) => m.default || m), { ssr: false, loading: () => <div className="w-full bg-gray-200 p-4">Chargement header...</div> });
 
-export default function FactureDetailPage() {
+import { Suspense } from 'react';
+
+function FactureDetailInner() {
 	const params = useSearchParams();
 	const invoiceId = params ? params.get('invoiceId') : null;
 
@@ -35,5 +37,13 @@ export default function FactureDetailPage() {
 
 			<Footer />
 		</>
+	);
+}
+
+export default function FactureDetailPage() {
+	return (
+		<Suspense fallback={<div>Chargement...</div>}>
+			<FactureDetailInner />
+		</Suspense>
 	);
 }

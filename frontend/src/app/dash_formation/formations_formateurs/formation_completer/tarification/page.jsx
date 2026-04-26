@@ -1,7 +1,11 @@
-// Route page wrapper: re-export the client component that implements the page.
+import { Suspense } from 'react';
 import TarificationPage from './tarification';
 
 export default function PageRoute() {
-	return <TarificationPage />;
+	return (
+		<Suspense fallback={<div>Chargement...</div>}>
+			<TarificationPage />
+		</Suspense>
+	);
 }
 
