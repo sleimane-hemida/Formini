@@ -48,7 +48,7 @@ exports.login = async (req, res, next) => {
     const token = jwt.sign(
   { id: user.id, email: user.email, role: user.role },
   process.env.JWT_SECRET,
-  { expiresIn: '7d' }  // ✅ valeur fixe, plus de problème de variable
+  { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }  // ✅ nom corrigé + fallback
 );
 
     res.json({
