@@ -82,7 +82,7 @@ export default function ModuleLecon() {
       }
 
       // Load formation name
-      fetch(`http://localhost:5000/api/formations/${fId}`, {
+      fetch(`https://formini-yx2w.onrender.com/api/formations/${fId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -94,7 +94,7 @@ export default function ModuleLecon() {
         .catch(err => console.error('❌ Error loading formation:', err));
 
       // Load modules from backend
-      fetch(`http://localhost:5000/api/formations/${fId}/modules`, {
+      fetch(`https://formini-yx2w.onrender.com/api/formations/${fId}/modules`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -145,7 +145,7 @@ export default function ModuleLecon() {
 
     try {
       const moduleIndex = modules.length + 1;
-      const response = await fetch('http://localhost:5000/api/modules', {
+      const response = await fetch('https://formini-yx2w.onrender.com/api/modules', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -198,7 +198,7 @@ export default function ModuleLecon() {
       for (const mod of modules) {
         if (!mod.id) {
           // Create new module
-          const res = await fetch('http://localhost:5000/api/modules', {
+          const res = await fetch('https://formini-yx2w.onrender.com/api/modules', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -218,7 +218,7 @@ export default function ModuleLecon() {
           console.log('✅ Module already saved:', mod.id);
         } else if (typeof mod.id === 'number' || typeof mod.id === 'string') {
           // Update existing module
-          const res = await fetch(`http://localhost:5000/api/modules/${mod.id}`, {
+          const res = await fetch(`https://formini-yx2w.onrender.com/api/modules/${mod.id}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',

@@ -113,17 +113,17 @@
 //             try {
 //                 setLoadingFormation(true);
 //                 // 1. Formation
-//                 const fRes = await fetch(`http://localhost:5000/api/formations/${formationId}`, { headers });
+//                 const fRes = await fetch(`https://formini-yx2w.onrender.com/api/formations/${formationId}`, { headers });
 //                 const fData = await fRes.json();
 
 //                 // 2. Modules
-//                 const mRes = await fetch(`http://localhost:5000/api/formations/${formationId}/modules`, { headers });
+//                 const mRes = await fetch(`https://formini-yx2w.onrender.com/api/formations/${formationId}/modules`, { headers });
 //                 const modulesData = await mRes.json();
 
 //                 // 3. Leçons de chaque module
 //                 const modulesWithLecons = await Promise.all(
 //                     (Array.isArray(modulesData) ? modulesData : []).map(async (mod) => {
-//                         const lRes = await fetch(`http://localhost:5000/api/modules/${mod.id}/lessons`, { headers });
+//                         const lRes = await fetch(`https://formini-yx2w.onrender.com/api/modules/${mod.id}/lessons`, { headers });
 //                         const lessonsData = await lRes.json();
 //                         return {
 //                             ...mod,
@@ -166,14 +166,14 @@
 //         setVideoUrl(null);
 //         setPdfUrl(null);
 //         setLoadingResources(true);
-//         fetch(`http://localhost:5000/api/lessons/${activeLecon.id}/resources`, { headers })
+//         fetch(`https://formini-yx2w.onrender.com/api/lessons/${activeLecon.id}/resources`, { headers })
 //             .then(r => r.json())
 //             .then(resources => {
 //                 if (Array.isArray(resources)) {
 //                     const video = resources.find(r => r.type === 'video');
 //                     const pdf = resources.find(r => r.type === 'pdf');
-//                     if (video) setVideoUrl(`http://localhost:5000${video.url}`);
-//                     if (pdf) setPdfUrl(`http://localhost:5000${pdf.url}`);
+//                     if (video) setVideoUrl(`https://formini-yx2w.onrender.com${video.url}`);
+//                     if (pdf) setPdfUrl(`https://formini-yx2w.onrender.com${pdf.url}`);
 //                 }
 //             })
 //             .catch(err => console.error('❌ Erreur ressources:', err))
@@ -701,7 +701,7 @@ import {
 const resolveUrl = (url) => {
     if (!url) return null;
     if (url.startsWith('http://') || url.startsWith('https://')) return url;
-    return `http://localhost:5000${url}`;
+    return `https://formini-yx2w.onrender.com${url}`;
 };
 
 // ─── Sidebar Module Accordion ─────────────────────────────────────────────────
@@ -791,15 +791,15 @@ export default function Learning() {
         const loadAll = async () => {
             try {
                 setLoadingFormation(true);
-                const fRes = await fetch(`http://localhost:5000/api/formations/${formationId}`, { headers });
+                const fRes = await fetch(`https://formini-yx2w.onrender.com/api/formations/${formationId}`, { headers });
                 const fData = await fRes.json();
 
-                const mRes = await fetch(`http://localhost:5000/api/formations/${formationId}/modules`, { headers });
+                const mRes = await fetch(`https://formini-yx2w.onrender.com/api/formations/${formationId}/modules`, { headers });
                 const modulesData = await mRes.json();
 
                 const modulesWithLecons = await Promise.all(
                     (Array.isArray(modulesData) ? modulesData : []).map(async (mod) => {
-                        const lRes = await fetch(`http://localhost:5000/api/modules/${mod.id}/lessons`, { headers });
+                        const lRes = await fetch(`https://formini-yx2w.onrender.com/api/modules/${mod.id}/lessons`, { headers });
                         const lessonsData = await lRes.json();
                         return {
                             ...mod,
@@ -841,7 +841,7 @@ export default function Learning() {
         setVideoUrl(null);
         setPdfUrl(null);
         setLoadingResources(true);
-        fetch(`http://localhost:5000/api/lessons/${activeLecon.id}/resources`, { headers })
+        fetch(`https://formini-yx2w.onrender.com/api/lessons/${activeLecon.id}/resources`, { headers })
             .then(r => r.json())
             .then(resources => {
                 if (Array.isArray(resources)) {

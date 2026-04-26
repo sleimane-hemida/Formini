@@ -33,7 +33,7 @@ export default function Catalogue() {
     useEffect(() => {
         const loadFormations = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/formations-all');
+                const res = await fetch('https://formini-yx2w.onrender.com/api/formations-all');
                 if (!res.ok) throw new Error('Failed to load formations');
                 const data = await res.json();
                 
@@ -233,7 +233,7 @@ export default function Catalogue() {
     const handleBuyFormation = async (formationId) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:5000/api/orders', {
+            const response = await fetch('https://formini-yx2w.onrender.com/api/orders', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

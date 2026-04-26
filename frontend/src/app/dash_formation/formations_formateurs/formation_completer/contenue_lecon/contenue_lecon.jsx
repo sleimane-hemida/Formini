@@ -48,7 +48,7 @@
 // 		console.log('📥 Loading resources for lesson:', lessonId);
 
 // 		// Load resources from backend
-// 		fetch(`http://localhost:5000/api/lessons/${encodeURIComponent(lessonId)}/resources`, {
+// 		fetch(`https://formini-yx2w.onrender.com/api/lessons/${encodeURIComponent(lessonId)}/resources`, {
 // 			headers: {
 // 				'Authorization': `Bearer ${token}`
 // 			}
@@ -66,14 +66,14 @@
 
 // 				if (videoResource) {
 // 					setVideoMeta(videoResource.titre || videoResource.url);
-// 					setVideoUrl(`http://localhost:5000${videoResource.url}`);
+// 					setVideoUrl(`https://formini-yx2w.onrender.com${videoResource.url}`);
 // 					setVideoResourceId(videoResource.id);
 // 					setUploadMessage(`✅ Vidéo chargée: "${videoResource.titre}"`);
 // 				}
 
 // 				if (pdfResource) {
 // 					setPdfMeta(pdfResource.titre || pdfResource.url);
-// 					setPdfUrl(`http://localhost:5000${pdfResource.url}`);
+// 					setPdfUrl(`https://formini-yx2w.onrender.com${pdfResource.url}`);
 // 					setPdfResourceId(pdfResource.id);
 // 					setUploadMessage(`✅ PDF chargé: "${pdfResource.titre}"`);
 // 				}
@@ -139,7 +139,7 @@
 
 // 		try {
 // 			// Delete from backend
-// 			const response = await fetch(`http://localhost:5000/api/resources/${videoResourceId}`, {
+// 			const response = await fetch(`https://formini-yx2w.onrender.com/api/resources/${videoResourceId}`, {
 // 				method: 'DELETE',
 // 				headers: {
 // 					'Authorization': `Bearer ${token}`
@@ -184,7 +184,7 @@
 
 // 		try {
 // 			// Delete from backend
-// 			const response = await fetch(`http://localhost:5000/api/resources/${pdfResourceId}`, {
+// 			const response = await fetch(`https://formini-yx2w.onrender.com/api/resources/${pdfResourceId}`, {
 // 				method: 'DELETE',
 // 				headers: {
 // 					'Authorization': `Bearer ${token}`
@@ -237,7 +237,7 @@
 // 			// Don't append duree_minutes - let backend set it to NULL
 
 // 			// Upload to backend (NO JSON content-type, let browser set it with boundary)
-// 			fetch('http://localhost:5000/api/resources', {
+// 			fetch('https://formini-yx2w.onrender.com/api/resources', {
 // 				method: 'POST',
 // 				headers: {
 // 					'Authorization': `Bearer ${token}`
@@ -251,7 +251,7 @@
 // 				.then(resource => {
 // 					console.log('✅ Video resource created:', resource);
 // 					setVideoFile(file);
-// 					setVideoUrl(`http://localhost:5000${resource.url}`);
+// 					setVideoUrl(`https://formini-yx2w.onrender.com${resource.url}`);
 // 					setVideoResourceId(resource.id);
 // 					setVideoMeta(file.name);
 // 					setUploadMessage(`✅ Vidéo "${file.name}" uploadée avec succès!`);
@@ -295,7 +295,7 @@
 // 			// Don't append duree_minutes - let backend set it to NULL
 
 // 			// Upload to backend (NO JSON content-type, let browser set it with boundary)
-// 			fetch('http://localhost:5000/api/resources', {
+// 			fetch('https://formini-yx2w.onrender.com/api/resources', {
 // 				method: 'POST',
 // 				headers: {
 // 					'Authorization': `Bearer ${token}`
@@ -309,7 +309,7 @@
 // 				.then(resource => {
 // 					console.log('✅ PDF resource created:', resource);
 // 					setPdfFile(file);
-// 					setPdfUrl(`http://localhost:5000${resource.url}`);
+// 					setPdfUrl(`https://formini-yx2w.onrender.com${resource.url}`);
 // 					setPdfResourceId(resource.id);
 // 					setPdfMeta(file.name);
 // 					setUploadMessage(`✅ PDF "${file.name}" uploadé avec succès!`);
@@ -460,7 +460,7 @@ const Header = dynamic(
 const resolveUrl = (url) => {
 	if (!url) return null;
 	if (url.startsWith('http://') || url.startsWith('https://')) return url;
-	return `http://localhost:5000${url}`;
+	return `https://formini-yx2w.onrender.com${url}`;
 };
 
 export default function ContenueLecon() {
@@ -494,7 +494,7 @@ export default function ContenueLecon() {
 		const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 		if (!token) return;
 
-		fetch(`http://localhost:5000/api/lessons/${encodeURIComponent(lessonId)}/resources`, {
+		fetch(`https://formini-yx2w.onrender.com/api/lessons/${encodeURIComponent(lessonId)}/resources`, {
 			headers: { 'Authorization': `Bearer ${token}` }
 		})
 			.then(res => { if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`); return res.json(); })
@@ -566,7 +566,7 @@ export default function ContenueLecon() {
 		xhr.onerror = () => onError('Erreur réseau');
 		xhr.ontimeout = () => onError('Timeout — fichier trop lourd ou connexion trop lente');
 
-		xhr.open('POST', 'http://localhost:5000/api/resources');
+		xhr.open('POST', 'https://formini-yx2w.onrender.com/api/resources');
 		xhr.setRequestHeader('Authorization', `Bearer ${token}`);
 		xhr.send(formData);
 	};
@@ -645,7 +645,7 @@ export default function ContenueLecon() {
 			setVideoResourceId(null); setUploadMessage(null); return;
 		}
 		try {
-			const response = await fetch(`http://localhost:5000/api/resources/${videoResourceId}`, {
+			const response = await fetch(`https://formini-yx2w.onrender.com/api/resources/${videoResourceId}`, {
 				method: 'DELETE',
 				headers: { 'Authorization': `Bearer ${token}` }
 			});
@@ -667,7 +667,7 @@ export default function ContenueLecon() {
 			setPdfResourceId(null); setUploadMessage(null); return;
 		}
 		try {
-			const response = await fetch(`http://localhost:5000/api/resources/${pdfResourceId}`, {
+			const response = await fetch(`https://formini-yx2w.onrender.com/api/resources/${pdfResourceId}`, {
 				method: 'DELETE',
 				headers: { 'Authorization': `Bearer ${token}` }
 			});

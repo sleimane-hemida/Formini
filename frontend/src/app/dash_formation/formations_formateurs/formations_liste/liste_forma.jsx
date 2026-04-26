@@ -48,7 +48,7 @@ export default function ListeForma() {
 
     console.log('🔄 Fetching formations for current user...');
 
-    fetch('http://localhost:5000/api/formations', {
+    fetch('https://formini-yx2w.onrender.com/api/formations', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -123,7 +123,7 @@ export default function ListeForma() {
       // formation.active is current state (before toggle), so we need opposite
       const endpoint = formation.active ? '/disable' : '/enable';
       
-      const res = await fetch(`http://localhost:5000/api/formations/${id}${endpoint}`, {
+      const res = await fetch(`https://formini-yx2w.onrender.com/api/formations/${id}${endpoint}`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -155,7 +155,7 @@ export default function ListeForma() {
     }
 
     try {
-      const res = await fetch(`http://localhost:5000/api/formations/${formationId}`, {
+      const res = await fetch(`https://formini-yx2w.onrender.com/api/formations/${formationId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

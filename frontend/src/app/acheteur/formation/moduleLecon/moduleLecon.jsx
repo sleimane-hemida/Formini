@@ -121,7 +121,7 @@ export default function ModuleLecon({ formationId }) {
                     return;
                 }
 
-                const response = await fetch(`http://localhost:5000/api/formations/${id}`, {
+                const response = await fetch(`https://formini-yx2w.onrender.com/api/formations/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -140,14 +140,14 @@ export default function ModuleLecon({ formationId }) {
                     title: data.name,
                     category: data.Category?.name || null,
                     description: data.description || null,
-                    image: data.image ? (data.image.startsWith('http') || data.image.startsWith('/') || data.image.startsWith('data:') ? data.image : `http://localhost:5000/uploads/${data.image}`) : null,
+                    image: data.image ? (data.image.startsWith('http') || data.image.startsWith('/') || data.image.startsWith('data:') ? data.image : `https://formini-yx2w.onrender.com/uploads/${data.image}`) : null,
                     duration: data.duree_totale_minutes ? `${data.duree_totale_minutes} min` : "Durée non définie",
                     rating: data.note_moyenne ? parseFloat(data.note_moyenne) : 0, 
                     students: data.orders_count || 0,
                     type: data.prix_promo ? "promotion" : (data.est_gratuite ? "gratuit" : "normal"),
                     modules: data.Modules || [],
                     author: data.trainer?.name || null,
-                    avatar: data.trainer?.avatar ? (data.trainer.avatar.startsWith('http') || data.trainer.avatar.startsWith('data:') ? data.trainer.avatar : `http://localhost:5000${data.trainer.avatar}`) : null,
+                    avatar: data.trainer?.avatar ? (data.trainer.avatar.startsWith('http') || data.trainer.avatar.startsWith('data:') ? data.trainer.avatar : `https://formini-yx2w.onrender.com${data.trainer.avatar}`) : null,
                     level: data.niveau || null,
                     language: (() => {
                         const langMap = {
