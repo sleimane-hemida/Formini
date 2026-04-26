@@ -2,6 +2,18 @@ import React from "react";
 import { HiUser, HiStar, HiMapPin, HiAcademicCap } from 'react-icons/hi2';
 import { useRouter } from "next/navigation";
 
+interface CardFormateurProps {
+    id: string | number;
+    name?: string;
+    title?: string;
+    image?: string;
+    rating?: number;
+    location?: string;
+    description?: string;
+    expertise?: string[];
+    className?: string;
+}
+
 export default function CardFormateur({
     id,
     name = "Nom du Formateur",
@@ -12,7 +24,7 @@ export default function CardFormateur({
     description = "Brève biographie du formateur...",
     expertise = [],
     className = ""
-}) {
+}: CardFormateurProps) {
     const router = useRouter();
 
     return (

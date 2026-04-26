@@ -13,7 +13,7 @@ const categories = [
 
 
 
-export default function CategorieBar({ selectedCategory = "foryou", onCategoryChange = () => {}, scrolled = false }) {
+export default function CategorieBar({ selectedCategory = "foryou", onCategoryChange = (categoryKey) => {}, scrolled = false }) {
        const [selected, setSelected] = useState(selectedCategory);
        const scrollRef = useRef(null);
 

@@ -42,12 +42,13 @@ export default function Home() {
     price: i < 4 ? "800 MRU" : "900 MRU"
   }));
 
+  const [searchValue, setSearchValue] = useState("");
   const displayItems = [...formations, ...mockItems].slice(0, 10);
   const regularCards = displayItems.slice(0, 8);
   const largeCards = displayItems.slice(8, 10);
 
   // Helper pour formater l'URL de l'image de manière sécurisée
-  const getValidImageUrl = (url: string | null | undefined, isMock: boolean, fallback: string | null) => {
+  const getValidImageUrl = (url: string | null | undefined, isMock: boolean, fallback: string | undefined) => {
     if (!url) return fallback;
     if (isMock) return url; // Image locale du frontend (ex: /images/...)
     
@@ -62,7 +63,10 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      <Header />
+      <Header 
+        searchValue={searchValue}
+        onSearchChange={(val: string) => setSearchValue(val)}
+      />
       <div className="mt-28" />
       <CategorieBar
         onCategoryChange={(categoryKey) => {
@@ -77,7 +81,7 @@ export default function Home() {
         {regularCards.map((form: any, i) => {
           const isMock = form.isMock;
           const authorName = isMock ? form.author : (form.trainer?.name || "Formateur");
-          const avatarUrl = getValidImageUrl(form.trainer?.avatar || form.avatar, isMock, isMock ? "/images/users/profile.jpg" : null);
+          const avatarUrl = getValidImageUrl(form.trainer?.avatar || form.avatar, isMock, isMock ? "/images/users/profile.jpg" : undefined);
           const imageUrl = getValidImageUrl(form.image, isMock, "/images/users/formation.png");
           const priceStr = isMock ? form.price : (form.est_gratuite ? "Gratuit" : `${form.prix_promo || form.prix_normal || 0} MRU`);
           const oldPriceStr = isMock ? form.oldPrice : (form.prix_promo && form.prix_normal ? `${form.prix_normal} MRU` : "");
@@ -129,7 +133,7 @@ export default function Home() {
         {largeCards.map((form: any, i) => {
           const isMock = form.isMock;
           const authorName = isMock ? form.author : (form.trainer?.name || "Formateur");
-          const avatarUrl = getValidImageUrl(form.trainer?.avatar || form.avatar, isMock, isMock ? "/images/users/profile.jpg" : null);
+          const avatarUrl = getValidImageUrl(form.trainer?.avatar || form.avatar, isMock, isMock ? "/images/users/profile.jpg" : undefined);
           const imageUrl = getValidImageUrl(form.image, isMock, "/images/users/formation.png");
           const priceStr = isMock ? form.price : (form.est_gratuite ? "Gratuit" : `${form.prix_promo || form.prix_normal || 0} MRU`);
           const oldPriceStr = isMock ? form.oldPrice : (form.prix_promo && form.prix_normal ? `${form.prix_normal} MRU` : "");

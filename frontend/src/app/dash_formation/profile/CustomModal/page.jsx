@@ -1,3 +1,4 @@
+"use client";
 import CustomModal from "./CustomModal";
 
 export default function ModalPage() {
