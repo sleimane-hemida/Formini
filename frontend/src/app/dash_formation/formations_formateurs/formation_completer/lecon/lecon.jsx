@@ -62,7 +62,7 @@ export default function LeconPage() {
 
 		try {
 			const nextOrder = lessons.length + 1;
-			const response = await fetch('https://formini-yx2w.onrender.com/api/lessons', {
+			const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ export default function LeconPage() {
 
 			const newLesson = await response.json();
 			console.log('✅ Lesson created:', newLesson);
-			
+
 			setLessons(prev => [...prev, newLesson]);
 			setEditingLessonId(newLesson.id);
 		} catch (err) {
@@ -101,7 +101,7 @@ export default function LeconPage() {
 			if (idx >= 0) {
 				draft.modules[idx].lessons = updatedLessons;
 			} else {
-				draft.modules.push({ id: mId, title: moduleTitle || `Module ${mId}`, lessons: updatedLessons });
+				draft.modules.push({ id: mId, title: moduleTitle || `Module ${mId} `, lessons: updatedLessons });
 			}
 			localStorage.setItem(key, JSON.stringify(draft));
 		} catch (err) {
@@ -112,7 +112,7 @@ export default function LeconPage() {
 	const handlePhotoChange = (e, lessonId) => {
 		const file = e.target.files && e.target.files[0];
 		if (!file) return;
-		
+
 		const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 		if (!token) {
 			alert('Vous devez être connecté.');
@@ -122,37 +122,37 @@ export default function LeconPage() {
 		const reader = new FileReader();
 		reader.onload = async () => {
 			const dataUrl = reader.result;
-			
+
 			// Show preview immediately
 			setLessons(prev => {
 				const next = prev.map(x => x.id === lessonId ? { ...x, bg: dataUrl } : x);
 				return next;
 			});
-			
+
 			// Upload to backend
 			try {
 				const formData = new FormData();
 				formData.append('file', file);
 				formData.append('lessonId', lessonId);
-				
-				const response = await fetch('https://formini-yx2w.onrender.com/api/lesson-cover', {
+
+				const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lesson-cover`, {
 					method: 'POST',
 					headers: {
 						'Authorization': `Bearer ${token}`
 					},
 					body: formData
 				});
-				
+
 				if (!response.ok) {
 					throw new Error(`HTTP error! status: ${response.status}`);
 				}
-				
+
 				const result = await response.json();
 				console.log('✅ Photo saved:', result);
-				
+
 				// Update with actual server URL
 				setLessons(prev => {
-					const next = prev.map(x => x.id === lessonId ? { ...x, bg: `https://formini-yx2w.onrender.com${result.url}` } : x);
+					const next = prev.map(x => x.id === lessonId ? { ...x, bg: `${process.env.NEXT_PUBLIC_API_URL}${result.url}` } : x);
 					return next;
 				});
 			} catch (err) {
@@ -172,11 +172,11 @@ export default function LeconPage() {
 			if (token) {
 				for (const l of lessons) {
 					if (l.title || l.titre) {
-						await fetch(`https://formini-yx2w.onrender.com/api/lessons/${l.id}`, {
+						await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${l.id}`, {
 							method: 'PUT',
 							headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
 							body: JSON.stringify({ titre: l.title || l.titre })
-						}).catch(() => {});
+						}).catch(() => { });
 					}
 				}
 			}
@@ -200,7 +200,7 @@ export default function LeconPage() {
 		console.log('📥 Loading lessons for module:', moduleId);
 
 		// Load lessons from backend
-		fetch(`https://formini-yx2w.onrender.com/api/modules/${encodeURIComponent(moduleId)}/lessons`, {
+		fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modules/${encodeURIComponent(moduleId)}/lessons`, {
 			headers: {
 				'Authorization': `Bearer ${token}`
 			}
@@ -212,18 +212,18 @@ export default function LeconPage() {
 			.then(data => {
 				console.log('✅ Lessons loaded:', data);
 				const lessonsArr = Array.isArray(data) ? data : [];
-				
+
 				// Map lessons and set cover images from backend
 				const mappedLessons = lessonsArr.map(lesson => ({
 					...lesson,
-					bg: lesson.image_couverture ? `https://formini-yx2w.onrender.com${lesson.image_couverture}` : undefined
+					bg: lesson.image_couverture ? `${process.env.NEXT_PUBLIC_API_URL}${lesson.image_couverture}` : undefined
 				}));
-				
+
 				setLessons(mappedLessons);
 				setHasChanges(false);
-				
+
 				// Fetch module title directly from module endpoint
-				fetch(`https://formini-yx2w.onrender.com/api/modules/${encodeURIComponent(moduleId)}`, {
+				fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modules/${encodeURIComponent(moduleId)}`, {
 					headers: {
 						'Authorization': `Bearer ${token}`
 					}
@@ -264,7 +264,7 @@ export default function LeconPage() {
 														Enregistrement automatique dans {autoSaveTimer} s
 													</span>
 												)}
-												<button onClick={handleSave} disabled={saving} className={`flex items-center justify-center w-10 h-10 bg-[#0C8CE9] hover:bg-[#0A71BC] text-white rounded-full transition-all shadow-md active:scale-95 ${saving ? 'opacity-50 cursor-not-allowed' : ''}`} title="Enregistrer les modifications">
+												<button onClick={handleSave} disabled={saving} className={`flex items - center justify - center w - 10 h - 10 bg - [#0C8CE9] hover: bg - [#0A71BC] text - white rounded - full transition - all shadow - md active: scale - 95 ${saving ? 'opacity-50 cursor-not-allowed' : ''}`} title="Enregistrer les modifications">
 													<FiSave className="w-5 h-5" />
 												</button>
 											</div>
@@ -281,9 +281,9 @@ export default function LeconPage() {
 											{lessons.map((l) => (
 												<div
 													key={l.id}
-													onClick={() => router.push(`/dash_formation/formations_formateurs/formation_completer/contenue_lecon?fId=${fId || ''}&moduleId=${moduleId || ''}&lessonId=${l.id}`)}
-													className={`relative border border-blue-200 rounded-md p-4 ${l.bg ? 'bg-cover bg-center' : 'bg-white'} shadow-sm hover:shadow-md cursor-pointer min-h-[120px] flex flex-col justify-between min-w-0 overflow-hidden`}
-													style={ l.bg ? { backgroundImage: `url(${l.bg})` } : undefined }
+													onClick={() => router.push(`/ dash_formation / formations_formateurs / formation_completer / contenue_lecon ? fId = ${fId || ''}& moduleId=${moduleId || ''}& lessonId=${l.id} `)}
+													className={`relative border border - blue - 200 rounded - md p - 4 ${l.bg ? 'bg-cover bg-center' : 'bg-white'} shadow - sm hover: shadow - md cursor - pointer min - h - [120px] flex flex - col justify - between min - w - 0 overflow - hidden`}
+													style={l.bg ? { backgroundImage: `url(${l.bg})` } : undefined}
 												>
 													<div className="min-w-0">
 														{editingLessonId === l.id ? (
@@ -301,18 +301,18 @@ export default function LeconPage() {
 																}}
 																onBlur={() => setEditingLessonId(null)}
 																onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
-																className={`w-full text-sm font-semibold focus:outline-none truncate bg-transparent ${l.bg ? 'text-white' : 'text-gray-900'}`}
-																/>
+																className={`w - full text - sm font - semibold focus: outline - none truncate bg - transparent ${l.bg ? 'text-white' : 'text-gray-900'} `}
+															/>
 														) : (
-															<div className={`text-sm font-semibold truncate ${l.bg ? 'text-white' : 'text-gray-900'}`} title={l.titre || `Leçon ${lessons.indexOf(l) + 1}`}>{l.titre || `Leçon ${lessons.indexOf(l) + 1}`}</div>
+															<div className={`text - sm font - semibold truncate ${l.bg ? 'text-white' : 'text-gray-900'} `} title={l.titre || `Leçon ${lessons.indexOf(l) + 1} `}>{l.titre || `Leçon ${lessons.indexOf(l) + 1} `}</div>
 														)}
-														{l.duration && <div className={`${l.bg ? 'text-white/90' : 'text-xs text-gray-500'} mt-3`}>{l.duration} min</div>}
+														{l.duration && <div className={`${l.bg ? 'text-white/90' : 'text-xs text-gray-500'} mt - 3`}>{l.duration} min</div>}
 													</div>
 
 													{/* bottom-centered action buttons (photo / edit / delete) */}
 													<div className="absolute left-1/2 bottom-3 transform -translate-x-1/2 flex items-center gap-2">
 														<input
-															id={`photo-input-${l.id}`}
+															id={`photo - input - ${l.id} `}
 															type="file"
 															accept="image/*"
 															className="hidden"
@@ -320,11 +320,11 @@ export default function LeconPage() {
 															onPointerDown={(e) => e.stopPropagation()}
 															onChange={(e) => { e.stopPropagation(); handlePhotoChange(e, l.id); }}
 														/>
-														<button type="button" onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); document.getElementById(`photo-input-${l.id}`)?.click(); }} className="p-2 rounded-full bg-white/90 hover:bg-white shadow">
+														<button type="button" onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); document.getElementById(`photo - input - ${l.id} `)?.click(); }} className="p-2 rounded-full bg-white/90 hover:bg-white shadow">
 															<FiCamera className="w-4 h-4 text-gray-700" />
 														</button>
 														<button type="button" onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); setEditingLessonId(l.id); }} className="p-2 rounded-full bg-white/90 hover:bg-white shadow">
-															<FiEdit className={`w-4 h-4 ${l.bg ? 'text-gray-700' : 'text-gray-600'}`} />
+															<FiEdit className={`w - 4 h - 4 ${l.bg ? 'text-gray-700' : 'text-gray-600'} `} />
 														</button>
 														<button type="button" onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); openDeleteModal(l.id); }} className="p-2 rounded-full bg-white/90 hover:bg-red-50 shadow">
 															<FiTrash2 className="w-4 h-4 text-red-600" />

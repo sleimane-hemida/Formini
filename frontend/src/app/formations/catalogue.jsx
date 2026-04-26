@@ -33,10 +33,10 @@ export default function Catalogue() {
     useEffect(() => {
         const loadFormations = async () => {
             try {
-                const res = await fetch('https://formini-yx2w.onrender.com/api/formations-all');
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations-all`);
                 if (!res.ok) throw new Error('Failed to load formations');
                 const data = await res.json();
-                
+
                 // Adapter les données du backend au format de l'UI
                 const adaptedFormations = data.map(f => {
                     // Compter les leçons à partir des modules
@@ -46,7 +46,7 @@ export default function Catalogue() {
                             return total + (module.Lessons?.length || 0);
                         }, 0);
                     }
-                    
+
                     return {
                         id: f.id,
                         image: f.image || "/images/users/formation.png",
@@ -60,7 +60,8 @@ export default function Catalogue() {
                         ce_que_vous_apprendrez: f.ce_que_vous_apprendrez || "",
                         avatar: "/images/users/profile.jpg",
                         author: f.trainer?.name || "Formateur",
-                        oldPrice: f.prix_normal ? `${parseFloat(f.prix_normal).toLocaleString('fr-FR')} MRU` : "Gratuit",
+                        oldPrice: f.prix_normal ? `${parseFloat(f.prix_normal).toLocaleString('fr-FR')
+                            } MRU` : "Gratuit",
                         price: f.est_gratuite ? "Gratuit" : (f.prix_promo ? `${parseFloat(f.prix_promo).toLocaleString('fr-FR')} MRU` : `${parseFloat(f.prix_normal || 0).toLocaleString('fr-FR')} MRU`),
                         priceNumeric: parseFloat(f.prix_promo || f.prix_normal || 0),
                         language: f.language || "fr",
@@ -73,11 +74,11 @@ export default function Catalogue() {
                         dateAdded: new Date(f.createdAt).toISOString().split('T')[0]
                     };
                 });
-                
+
                 // Calculer la plage de prix max automatiquement
                 const prices = adaptedFormations.map(f => f.priceNumeric).filter(p => p > 0);
                 const maxPrice = prices.length > 0 ? Math.max(...prices) : 10000;
-                
+
                 console.log('✅ Formations chargées:', adaptedFormations.length);
                 setFormations(adaptedFormations);
                 setFilters(prev => ({ ...prev, priceRange: [0, maxPrice + 500] }));
@@ -86,7 +87,7 @@ export default function Catalogue() {
                 setFormations([]);
             }
         };
-        
+
         loadFormations();
     }, []);
 
@@ -113,14 +114,14 @@ export default function Catalogue() {
     // Ouvrir le modal automatiquement si le paramètre openModal est présent dans l'URL
     useEffect(() => {
         if (!searchParams || formations.length === 0) return;
-        
+
         const openModalId = searchParams.get("openModal");
         if (openModalId) {
             const formationToOpen = formations.find(f => f.id.toString() === openModalId.toString());
             if (formationToOpen) {
                 // On utilise un setTimeout pour s'assurer que le rendu est terminé avant d'ouvrir le modal
                 setTimeout(() => openModal(formationToOpen), 100);
-                
+
                 // Nettoyer l'URL pour éviter que le modal ne se rouvre si on rafraîchit la page ou qu'on ferme le modal
                 const newUrl = new URL(window.location.href);
                 newUrl.searchParams.delete("openModal");
@@ -138,7 +139,7 @@ export default function Catalogue() {
                 setScrolled(false);
             }
         };
-        
+
         window.addEventListener('scroll', handleScroll);
         return () => {
             window.removeEventListener('scroll', handleScroll);
@@ -148,7 +149,7 @@ export default function Catalogue() {
     // Filtrage des formations basé sur la recherche et les filtres
     const filteredFormations = formations.filter(formation => {
         // Recherche par terme
-        const matchesSearch = 
+        const matchesSearch =
             formation.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             formation.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
             formation.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -165,15 +166,15 @@ export default function Catalogue() {
         })();
 
         // Filtre par sous-catégories
-        const matchesSubcategory = filters.subcategories.length === 0 || 
+        const matchesSubcategory = filters.subcategories.length === 0 ||
             filters.subcategories.includes(formation.subcategoryId);
 
         // Filtre par langues
-        const matchesLanguage = filters.languages.length === 0 || 
+        const matchesLanguage = filters.languages.length === 0 ||
             filters.languages.includes(formation.language);
 
         // Filtre par prix
-        const matchesPrice = formation.priceNumeric >= filters.priceRange[0] && 
+        const matchesPrice = formation.priceNumeric >= filters.priceRange[0] &&
             formation.priceNumeric <= filters.priceRange[1];
 
         // Filtre par promotion
@@ -192,12 +193,12 @@ export default function Catalogue() {
                 const addedDate = new Date(formation.dateAdded);
                 if (filters.dateStart) {
                     const start = new Date(filters.dateStart);
-                    start.setHours(0,0,0,0);
+                    start.setHours(0, 0, 0, 0);
                     if (addedDate < start) return false;
                 }
                 if (filters.dateEnd) {
                     const end = new Date(filters.dateEnd);
-                    end.setHours(23,59,59,999);
+                    end.setHours(23, 59, 59, 999);
                     if (addedDate > end) return false;
                 }
                 return true;
@@ -219,13 +220,13 @@ export default function Catalogue() {
             }
         })();
 
-        return matchesSearch && matchesCategory && matchesSubcategory && 
-               matchesLanguage && matchesPrice && matchesPromotion && 
-               matchesFree && matchesNew && matchesDate;
+        return matchesSearch && matchesCategory && matchesSubcategory &&
+            matchesLanguage && matchesPrice && matchesPromotion &&
+            matchesFree && matchesNew && matchesDate;
     });
 
     // Log filtrage
-    useEffect(() => {}, [filteredFormations]);
+    useEffect(() => { }, [filteredFormations]);
 
     const [purchaseFeedback, setPurchaseFeedback] = useState({ show: false, type: 'success', message: '' });
 
@@ -233,7 +234,7 @@ export default function Catalogue() {
     const handleBuyFormation = async (formationId) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('https://formini-yx2w.onrender.com/api/orders', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -259,7 +260,7 @@ export default function Catalogue() {
                 type: 'success',
                 message: 'Formation achetée avec succès ! Retrouvez-la dans votre espace personnel.'
             });
-            
+
             // On attend un peu avant de fermer le modal de détails et rediriger
             setTimeout(() => {
                 closeModal();
@@ -278,14 +279,14 @@ export default function Catalogue() {
 
     return (
         <div className="min-h-screen bg-white">
-            <Header 
+            <Header
                 onSearchChange={setSearchTerm}
                 searchValue={searchTerm}
             />
-            
+
             {/* Barre de catégories fixe avec comportement scroll */}
-            <div className={`fixed left-0 right-0 z-30 bg-white  transition-all duration-700 ease-in-out ${scrolled ? 'top-12 py-1' : 'top-20 sm:top-22 py-3 pb-6'}`}>
-                <CategorieBar 
+            <div className={`fixed left - 0 right - 0 z - 30 bg - white  transition - all duration - 700 ease -in -out ${scrolled ? 'top-12 py-1' : 'top-20 sm:top-22 py-3 pb-6'}`}>
+                <CategorieBar
                     selectedCategory={selectedCategory}
                     onCategoryChange={(newCat) => {
                         setSelectedCategory(newCat);
@@ -294,21 +295,21 @@ export default function Catalogue() {
                     scrolled={scrolled}
                 />
             </div>
-            
+
             {/* Overlay pour mobile uniquement quand sidebar est ouvert */}
             {sidebarOpen && (
-                <div 
+                <div
                     className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
                     onClick={() => setSidebarOpen(false)}
                 />
             )}
 
             {/* Section principale avec sidebar et contenu */}
-            <div className={`max-w-[1600px] mx-auto px-6 sm:px-10 py-8 transition-all duration-700 ease-in-out ${scrolled ? 'mt-[4.5rem]' : 'mt-40 sm:mt-44'}`}>
+            <div className={`max - w - [1600px] mx - auto px - 6 sm: px - 10 py - 8 transition - all duration - 700 ease -in -out ${scrolled ? 'mt-[4.5rem]' : 'mt-40 sm:mt-44'}`}>
                 <div className="flex gap-10 lg:items-start lg:-ml-12 transition-all duration-500">
                     {/* Sidebar unique - responsive */}
-                    <div className={`lg:sticky ${scrolled ? 'lg:top-24' : 'lg:top-36'} transition-all duration-700 ease-in-out`}>
-                        <Sidebar 
+                    <div className={`lg: sticky ${scrolled ? 'lg:top-24' : 'lg:top-36'} transition - all duration - 700 ease -in -out`}>
+                        <Sidebar
                             isOpen={sidebarOpen}
                             onClose={() => setSidebarOpen(false)}
                             filters={filters}
@@ -432,21 +433,21 @@ export default function Catalogue() {
 
             {/* ── Modal Détail Formation (Inspiré de moduleLecon) ── */}
             {selectedFormation && (
-                <div 
-                    className={`fixed inset-0 z-[100] flex items-center justify-center p-4 transition-all duration-300 ${isModalOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                <div
+                    className={`fixed inset - 0 z - [100] flex items - center justify - center p - 4 transition - all duration - 300 ${isModalOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                 >
                     {/* Backdrop */}
-                    <div 
+                    <div
                         className="absolute inset-0 bg-black/60 backdrop-blur-md"
                         onClick={closeModal}
                     />
 
                     {/* Modal Content */}
-                    <div 
-                        className={`bg-white w-full max-w-5xl h-[90vh] rounded-3xl overflow-hidden relative shadow-2xl transition-all duration-500 transform ${isModalOpen ? 'scale-100 translate-y-0' : 'scale-95 translate-y-8'}`}
+                    <div
+                        className={`bg - white w - full max - w - 5xl h - [90vh] rounded - 3xl overflow - hidden relative shadow - 2xl transition - all duration - 500 transform ${isModalOpen ? 'scale-100 translate-y-0' : 'scale-95 translate-y-8'}`}
                     >
                         {/* Bouton Fermer */}
-                        <button 
+                        <button
                             onClick={closeModal}
                             className="absolute top-6 right-6 z-50 w-10 h-10 bg-black/20 hover:bg-black/40 text-white rounded-full flex items-center justify-center backdrop-blur-md transition-colors"
                         >
@@ -458,13 +459,13 @@ export default function Catalogue() {
                         <div className="h-full overflow-y-auto custom-scrollbar pb-10">
                             {/* 1. Hero Image Section */}
                             <div className="relative w-full h-[320px] bg-slate-100">
-                                <img 
-                                    src={selectedFormation.image} 
+                                <img
+                                    src={selectedFormation.image}
                                     alt={selectedFormation.title}
                                     className="w-full h-full object-cover"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                                
+
                                 <div className="absolute bottom-0 left-0 right-0 p-8 space-y-4">
                                     <div className="flex flex-wrap items-center gap-3">
                                         <span className="px-3 py-1 bg-[#0C8CE9] text-white text-[10px] font-bold uppercase tracking-widest rounded-full">
@@ -533,7 +534,7 @@ export default function Catalogue() {
                                     <section>
                                         <h3 className="text-lg font-bold text-[#1e293b] mb-4 uppercase tracking-wider">Ce que vous allez apprendre</h3>
                                         <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            {selectedFormation.ce_que_vous_apprendrez ? 
+                                            {selectedFormation.ce_que_vous_apprendrez ?
                                                 selectedFormation.ce_que_vous_apprendrez.split(',').map((item, i) => (
                                                     <li key={i} className="flex items-start gap-3 text-slate-600 text-sm">
                                                         <div className="mt-1 w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
@@ -578,7 +579,7 @@ export default function Catalogue() {
                                                 )}
                                             </div>
                                         </div>
-                                        <button 
+                                        <button
                                             onClick={() => handleBuyFormation(selectedFormation.id)}
                                             className="w-full mt-8 bg-[#0C8CE9] hover:bg-[#0A71BC] text-white py-4 rounded-xl font-bold shadow-lg shadow-blue-500/30 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3"
                                         >
@@ -591,8 +592,8 @@ export default function Catalogue() {
                                     <div className="bg-white border border-slate-100 p-6 rounded-3xl shadow-sm space-y-5">
                                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Instructeur</p>
                                         <div className="flex items-center gap-4">
-                                            <img 
-                                                src={selectedFormation.avatar} 
+                                            <img
+                                                src={selectedFormation.avatar}
                                                 alt={selectedFormation.author}
                                                 className="w-14 h-14 rounded-2xl object-cover ring-4 ring-slate-50"
                                             />
@@ -618,16 +619,15 @@ export default function Catalogue() {
             {/* Feedback Popup for Purchases */}
             {purchaseFeedback.show && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
-                    <div 
+                    <div
                         className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-fade-in"
                         onClick={() => setPurchaseFeedback({ ...purchaseFeedback, show: false })}
                     />
                     <div className="relative bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center animate-scale-in border border-slate-100">
-                        <div className={`w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center ${
-                            purchaseFeedback.type === 'success' ? 'bg-emerald-50 text-emerald-500' : 
-                            purchaseFeedback.type === 'info' ? 'bg-blue-50 text-[#0C8CE9]' : 
-                            'bg-red-50 text-red-500'
-                        }`}>
+                        <div className={`w - 20 h - 20 rounded - full mx - auto mb - 6 flex items - center justify - center ${purchaseFeedback.type === 'success' ? 'bg-emerald-50 text-emerald-500' :
+                                purchaseFeedback.type === 'info' ? 'bg-blue-50 text-[#0C8CE9]' :
+                                    'bg-red-50 text-red-500'
+                            }`}>
                             {purchaseFeedback.type === 'success' ? (
                                 <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -642,44 +642,42 @@ export default function Catalogue() {
                                 </svg>
                             )}
                         </div>
-                        
-                        <h3 className={`text-xl font-black mb-3 ${
-                            purchaseFeedback.type === 'success' ? 'text-emerald-600' : 
-                            purchaseFeedback.type === 'info' ? 'text-[#0C8CE9]' : 
-                            'text-red-600'
-                        }`}>
-                            {purchaseFeedback.type === 'success' ? 'Félicitations !' : 
-                             purchaseFeedback.type === 'info' ? 'Information' : 
-                             'Oups !'}
+
+                        <h3 className={`text - xl font - black mb - 3 ${purchaseFeedback.type === 'success' ? 'text-emerald-600' :
+                                purchaseFeedback.type === 'info' ? 'text-[#0C8CE9]' :
+                                    'text-red-600'
+                            }`}>
+                            {purchaseFeedback.type === 'success' ? 'Félicitations !' :
+                                purchaseFeedback.type === 'info' ? 'Information' :
+                                    'Oups !'}
                         </h3>
-                        
+
                         <p className="text-slate-600 font-medium leading-relaxed mb-8">
                             {purchaseFeedback.message}
                         </p>
-                        
+
                         <div className="space-y-3">
-                            <button 
+                            <button
                                 onClick={() => {
                                     if (purchaseFeedback.type === 'info' || purchaseFeedback.type === 'success') {
                                         router.push('/acheteur/formation/listeFormation');
                                     }
                                     setPurchaseFeedback({ ...purchaseFeedback, show: false });
                                 }}
-                                className={`w-full py-4 rounded-2xl font-bold transition-all active:scale-95 shadow-lg ${
-                                    purchaseFeedback.type === 'success' 
-                                        ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-200' 
+                                className={`w - full py - 4 rounded - 2xl font - bold transition - all active: scale - 95 shadow - lg ${purchaseFeedback.type === 'success'
+                                        ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-200'
                                         : purchaseFeedback.type === 'info'
-                                        ? 'bg-[#0C8CE9] hover:bg-[#0A71BC] text-white shadow-blue-200'
-                                        : 'bg-red-500 hover:bg-red-600 text-white shadow-red-200'
-                                }`}
+                                            ? 'bg-[#0C8CE9] hover:bg-[#0A71BC] text-white shadow-blue-200'
+                                            : 'bg-red-500 hover:bg-red-600 text-white shadow-red-200'
+                                    }`}
                             >
-                                {purchaseFeedback.type === 'success' ? 'Génial !' : 
-                                 purchaseFeedback.type === 'info' ? 'Accéder à mes cours' : 
-                                 'Réessayer'}
+                                {purchaseFeedback.type === 'success' ? 'Génial !' :
+                                    purchaseFeedback.type === 'info' ? 'Accéder à mes cours' :
+                                        'Réessayer'}
                             </button>
-                            
+
                             {purchaseFeedback.type === 'info' && (
-                                <button 
+                                <button
                                     onClick={() => setPurchaseFeedback({ ...purchaseFeedback, show: false })}
                                     className="w-full py-3 text-slate-400 text-sm font-bold hover:text-slate-600 transition-colors"
                                 >

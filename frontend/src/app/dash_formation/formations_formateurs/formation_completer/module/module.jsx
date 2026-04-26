@@ -82,7 +82,7 @@ export default function ModuleLecon() {
       }
 
       // Load formation name
-      fetch(`https://formini-yx2w.onrender.com/api/formations/${fId}`, {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations/${fId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -94,7 +94,7 @@ export default function ModuleLecon() {
         .catch(err => console.error('❌ Error loading formation:', err));
 
       // Load modules from backend
-      fetch(`https://formini-yx2w.onrender.com/api/formations/${fId}/modules`, {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations/${fId}/modules`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -145,7 +145,7 @@ export default function ModuleLecon() {
 
     try {
       const moduleIndex = modules.length + 1;
-      const response = await fetch('https://formini-yx2w.onrender.com/api/modules', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modules`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -164,7 +164,7 @@ export default function ModuleLecon() {
 
       const newModule = await response.json();
       console.log('✅ Module created:', newModule);
-      
+
       const next = [...modules, newModule];
       setModules(next);
       setModulesCount(next.length);
@@ -198,7 +198,7 @@ export default function ModuleLecon() {
       for (const mod of modules) {
         if (!mod.id) {
           // Create new module
-          const res = await fetch('https://formini-yx2w.onrender.com/api/modules', {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modules`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -218,7 +218,7 @@ export default function ModuleLecon() {
           console.log('✅ Module already saved:', mod.id);
         } else if (typeof mod.id === 'number' || typeof mod.id === 'string') {
           // Update existing module
-          const res = await fetch(`https://formini-yx2w.onrender.com/api/modules/${mod.id}`, {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modules/${mod.id}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
@@ -269,7 +269,7 @@ export default function ModuleLecon() {
                             Enregistrement automatique dans {autoSaveTimer} s
                           </span>
                         )}
-                        <button onClick={handleSave} disabled={saving} className={`flex items-center justify-center w-10 h-10 bg-[#0C8CE9] hover:bg-[#0A71BC] text-white rounded-full transition-all shadow-md active:scale-95 ${saving ? 'opacity-50 cursor-not-allowed' : ''}`} title="Enregistrer les modifications">
+                        <button onClick={handleSave} disabled={saving} className={`flex items - center justify - center w - 10 h - 10 bg - [#0C8CE9] hover: bg - [#0A71BC] text - white rounded - full transition - all shadow - md active: scale - 95 ${saving ? 'opacity-50 cursor-not-allowed' : ''}`} title="Enregistrer les modifications">
                           <FiSave className="w-5 h-5" />
                         </button>
                       </div>
@@ -287,7 +287,7 @@ export default function ModuleLecon() {
                       <ol className="divide-y divide-gray-100">
                         {modules.map((m, index) => (
                           <li key={m.id} className="py-3">
-                            <div className={`border-2 rounded-lg p-4 transition-shadow flex items-center justify-between ${editingId === m.id ? 'border-blue-300 shadow-md' : 'border-gray-200 hover:border-blue-300'}`}>
+                            <div className={`border - 2 rounded - lg p - 4 transition - shadow flex items - center justify - between ${editingId === m.id ? 'border-blue-300 shadow-md' : 'border-gray-200 hover:border-blue-300'} `}>
                               <div className="flex items-center gap-4 flex-1">
                                 <div className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white font-medium">{index + 1}</div>
                                 {editingId === m.id ? (
@@ -303,7 +303,7 @@ export default function ModuleLecon() {
                                   />
                                 ) : (
                                   <div className="flex-1">
-                                    <div className="text-lg font-medium">{m.title || `Module ${index + 1}`}</div>
+                                    <div className="text-lg font-medium">{m.title || `Module ${index + 1} `}</div>
                                     <div className="text-sm text-gray-500">{m.description || 'Pas de description'}</div>
                                   </div>
                                 )}
@@ -312,7 +312,7 @@ export default function ModuleLecon() {
                                 <button
                                   type="button"
                                   onClick={() => {
-                                    const modulePath = `/dash_formation/formations_formateurs/formation_completer/lecon?fId=${encodeURIComponent(fId)}&moduleId=${encodeURIComponent(m.id)}`;
+                                    const modulePath = `/ dash_formation / formations_formateurs / formation_completer / lecon ? fId = ${encodeURIComponent(fId)}& moduleId=${encodeURIComponent(m.id)} `;
                                     router.push(modulePath);
                                   }}
                                   className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded text-sm"
@@ -331,7 +331,7 @@ export default function ModuleLecon() {
                                   type="button"
                                   onClick={(e) => { e.stopPropagation(); requestDeleteModule(m.id); }}
                                   title="Supprimer le module"
-                                  aria-label={`Supprimer le module ${m.title || m.id}`}
+                                  aria-label={`Supprimer le module $ { m.title || m.id } `}
                                   className="p-2 rounded text-red-500 hover:text-red-700"
                                 >
                                   <FiTrash2 className="w-4 h-4" />
@@ -350,9 +350,9 @@ export default function ModuleLecon() {
                       <div className="flex flex-col items-end gap-3">
                         {message && <div className="text-sm text-center w-full">{message}</div>}
                         <div className="flex items-center gap-3">
-                          <button 
+                          <button
                             type="button"
-                            onClick={() => router.push(`/dash_formation/formations_formateurs/formation_completer/tarification?page=1${fId?`&fId=${fId}`:''}`)}
+                            onClick={() => router.push(`/ dash_formation / formations_formateurs / formation_completer / tarification ? page = 1${fId ? `&fId=${fId}` : ''} `)}
                             className="bg-gray-800 hover:bg-black text-white px-5 py-2 rounded-lg transition-colors"
                           >
                             Suivant

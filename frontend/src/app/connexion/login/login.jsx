@@ -25,16 +25,16 @@ export default function Login() {
         setIsLoading(true);
 
         try {
-            const response = await fetch('https://formini-yx2w.onrender.com/api/auth/login', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(form),
             });
-            
+
             const result = await response.json();
-            
+
             if (response.ok) {
                 setSuccess('Connexion réussie !');
                 localStorage.setItem('token', result.token);
@@ -69,7 +69,7 @@ export default function Login() {
         <div className="min-h-screen flex">
             {/* Côté gauche - Formulaire de connexion sur fond bleu */}
             <div className="flex-1 bg-gradient-to-br from-[#0C8CE9] to-[#1e40af] flex items-center justify-center p-8 relative overflow-hidden">
-                
+
                 <div className="w-full max-w-md relative z-10">
                     {/* Titre */}
                     <div className="text-center mb-6">
@@ -208,12 +208,12 @@ export default function Login() {
                     <p className="text-xl leading-relaxed text-gray-600 mb-2">
                         Reconnectez-vous à votre espace d'apprentissage
                     </p>
-                    
+
                     {/* Logo de connexion en bas */}
                     <div className="mb-2">
-                        <img 
-                            src="/images/hero/login.svg" 
-                            alt="Logo de connexion" 
+                        <img
+                            src="/images/hero/login.svg"
+                            alt="Logo de connexion"
                             className="w-140 h-90 mx-auto mb-6 object-contain"
                         />
                     </div>
