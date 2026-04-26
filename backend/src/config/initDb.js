@@ -174,15 +174,14 @@ async function initializeDatabase() {
     // ✅ Sync ciblé uniquement sur les modèles avec nouveaux champs Cloudinary
     // On évite le sync global qui casse le tableau d'ENUMs de Formation
 // ✅ Sync dans le bon ordre (respect des clés étrangères)
-// ✅ Sync dans le bon ordre (respect des clés étrangères)
-await db.User.sync({ alter: true });
+await db.User.sync({ force: false });
 await db.Category.sync({ force: false });
 await db.Subcategory.sync({ force: false });
-await db.Formation.sync({ force: false });  // ← pas d'alter, bug ENUM PostgreSQL
+await db.Formation.sync({ force: false });
 await db.Module.sync({ force: false });
-await db.Lesson.sync({ alter: true });
-await db.Resource.sync({ alter: true });
-await db.sequelize.sync({ force: false });
+await db.Lesson.sync({ force: false });
+await db.Resource.sync({ force: false });
+// ⚠️ Orders est géré par la migration manuelle, pas par Sequelize sync
 console.log('✅ Database synced');
     // Seed default categories if empty
     const categoryCount = await db.Category.count();
