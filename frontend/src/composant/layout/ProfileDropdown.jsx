@@ -15,7 +15,7 @@ export default function ProfileDropdown({ isOpen, onClose, user, onLogout }) {
                 <div className="flex items-center gap-3">
                     {user?.avatar ? (
                         <img
-                            src={user.avatar.startsWith('http') ? user.avatar : `${process.env.NEXT_PUBLIC_API_URL}${user.avatar.startsWith(`/') ? '' : '/'}${user.avatar.replace(/\\/g, '/')}`} 
+                            src={user.avatar.startsWith('http') ? user.avatar : `${process.env.NEXT_PUBLIC_API_URL}${user.avatar.startsWith('/') ? '' : '/'}${user.avatar.replace(/\\/g, '/')}`} 
                             alt="Profil" 
                             className="w-10 h-10 object-cover rounded-full shadow-sm" 
                         />
