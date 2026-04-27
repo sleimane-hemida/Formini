@@ -16,7 +16,7 @@ export default function Login() {
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
-        if (error) setError(""); // Effacer l'erreur lors de la saisie
+        if (error) setError("");
     };
 
     const handleSubmit = async (e) => {
@@ -32,21 +32,19 @@ export default function Login() {
                 },
                 body: JSON.stringify(form),
             });
-
+            
             const result = await response.json();
-
+            
             if (response.ok) {
                 setSuccess('Connexion réussie !');
                 localStorage.setItem('token', result.token);
                 localStorage.setItem('user', JSON.stringify(result.user));
 
-                // Rediriger selon le rôle de l'utilisateur
                 const role = result?.user?.role;
                 let redirectTo = ROUTES.HOME || '/';
                 if (role === 'acheteur') {
                     redirectTo = '/acheteur';
                 } else if (role === 'formateur') {
-                    // Redirect formateurs to the existing formations list page
                     redirectTo = ROUTES.TRAINER_FORMATIONS_LIST || ROUTES.TRAINER_DASHBOARD || '/';
                 } else if (role === 'administrateur') {
                     redirectTo = ROUTES.DASHBOARD || '/';
@@ -67,17 +65,14 @@ export default function Login() {
 
     return (
         <div className="min-h-screen flex">
-            {/* Côté gauche - Formulaire de connexion sur fond bleu */}
+            {/* Côté gauche */}
             <div className="flex-1 bg-gradient-to-br from-[#0C8CE9] to-[#1e40af] flex items-center justify-center p-8 relative overflow-hidden">
-
                 <div className="w-full max-w-md relative z-10">
-                    {/* Titre */}
                     <div className="text-center mb-6">
                         <h2 className="text-2xl font-bold text-white">Bon retour !</h2>
                         <p className="text-white/80 text-sm mt-1">Connectez-vous à votre compte</p>
                     </div>
 
-                    {/* Messages d'erreur/succès */}
                     {error && (
                         <div className="bg-red-100 border border-red-300 text-red-700 px-3 py-2 rounded-lg mb-3 text-sm">
                             {error}
@@ -89,9 +84,7 @@ export default function Login() {
                         </div>
                     )}
 
-                    {/* Formulaire */}
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        {/* Email */}
                         <div>
                             <label className="block text-sm font-semibold text-white mb-1">Email</label>
                             <div className="relative group">
@@ -113,7 +106,6 @@ export default function Login() {
                             </div>
                         </div>
 
-                        {/* Mot de passe */}
                         <div>
                             <label className="block text-sm font-semibold text-white mb-1">Mot de passe</label>
                             <div className="relative group">
@@ -148,7 +140,6 @@ export default function Login() {
                             </div>
                         </div>
 
-                        {/* Lien mot de passe oublié */}
                         <div className="flex justify-end">
                             <button
                                 type="button"
@@ -159,7 +150,6 @@ export default function Login() {
                             </button>
                         </div>
 
-                        {/* Bouton de connexion */}
                         <button
                             type="submit"
                             disabled={isLoading}
@@ -178,7 +168,6 @@ export default function Login() {
                             )}
                         </button>
 
-                        {/* Lien vers inscription */}
                         <div className="text-center mt-4">
                             <span className="text-white text-sm">
                                 Pas de compte ?{" "}
@@ -195,21 +184,17 @@ export default function Login() {
                 </div>
             </div>
 
-            {/* Côté droit - Image et texte sur fond blanc */}
+            {/* Côté droit */}
             <div className="flex-1 bg-white flex items-center justify-center p-8 relative overflow-hidden">
-                {/* Formes décoratives bleues */}
                 <div className="absolute top-0 left-20 w-32 h-32 bg-[#0C8CE9]/20 rounded-full z-20"></div>
                 <div className="absolute bottom-20 right-20 w-24 h-24 bg-[#1e40af]/20 rounded-full z-20"></div>
                 <div className="absolute bottom-40 left-10 w-16 h-16 bg-[#0C8CE9]/30 rounded-full z-20"></div>
 
                 <div className="text-center text-gray-800 max-w-lg relative z-10 mt-20">
-                    {/* Texte en haut */}
                     <h1 className="text-5xl font-bold mb-4 text-gray-800">Bon retour !</h1>
                     <p className="text-xl leading-relaxed text-gray-600 mb-2">
                         Reconnectez-vous à votre espace d'apprentissage
                     </p>
-
-                    {/* Logo de connexion en bas */}
                     <div className="mb-2">
                         <img
                             src="/images/hero/login.svg"

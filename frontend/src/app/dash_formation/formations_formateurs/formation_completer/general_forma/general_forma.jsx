@@ -41,8 +41,8 @@ export default function GeneralForma() {
 	// Récupérer les catégories et sous-catégories au montage
 	useEffect(() => {
 		Promise.all([
-			fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`).then(res => res.json()),
-			fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/subcategories`).then(res => res.json())
+			fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories').then(res => res.json()),
+			fetch(`${ process.env.NEXT_PUBLIC_API_URL } / api / subcategories').then(res => res.json())
 		])
 			.then(([cats, subcats]) => {
 				setCategories(cats || []);
@@ -267,7 +267,7 @@ export default function GeneralForma() {
 														Enregistrement automatique dans {autoSaveTimer} s
 													</span>
 												)}
-												<button onClick={handleSave} disabled={saving} className={`flex items - center justify - center w - 10 h - 10 bg - [#0C8CE9] hover: bg - [#0A71BC] text - white rounded - full transition - all shadow - md active: scale - 95 ${saving ? 'opacity-50 cursor-not-allowed' : ''}`} title="Enregistrer les modifications">
+												<button onClick={handleSave} disabled={saving} className={`flex items-center justify-center w-10 h-10 bg-[#0C8CE9] hover:bg-[#0A71BC] text-white rounded-full transition-all shadow-md active:scale-95 ${saving ? 'opacity-50 cursor-not-allowed' : ''}`} title="Enregistrer les modifications">
 													<FiSave className="w-5 h-5" />
 												</button>
 											</div>
@@ -302,7 +302,7 @@ export default function GeneralForma() {
 											<div className="md:col-span-2">
 												<label className="block text-sm font-semibold mb-2">Description détaillée</label>
 												<textarea name="descriptionLong" value={form.descriptionLong} onChange={handleChange} rows={6} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200" placeholder="Entrez la description complète de la formation..." />
-												<div className={`text - xs mt - 1 ${form.descriptionLong.length >= 500 ? 'text-green-600' : 'text-red-600'}`}>{form.descriptionLong.length} caractères (minimum 500)</div>
+												<div className={`text-xs mt-1 ${form.descriptionLong.length >= 500 ? 'text-green-600' : 'text-red-600'}`}>{form.descriptionLong.length} caractères (minimum 500)</div>
 												{errors.descriptionLong && <div className="text-xs text-red-600 mt-1">{errors.descriptionLong}</div>}
 											</div>
 
@@ -319,7 +319,7 @@ export default function GeneralForma() {
 												<div className="flex gap-3 flex-wrap mt-3">
 													{form.coverImages.map((img, idx) => (
 														<div key={idx} className="relative w-32 h-20 bg-gray-100 rounded overflow-hidden transform hover:scale-105 transition-shadow duration-150 shadow-sm hover:shadow-md">
-															<img src={img} alt={`cover - ${idx}`} className="w-full h-full object-cover" />
+															<img src={img} alt={`cover-${idx}`} className="w-full h-full object-cover" />
 															<button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/90 rounded-full p-1 text-red-600 hover:bg-red-50">✕</button>
 														</div>
 													))}
@@ -363,7 +363,7 @@ export default function GeneralForma() {
 												<button type="button" onClick={() => router.back()} className="px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-gray-800 transition">Retour</button>
 											</div>
 											<div className="flex items-center gap-3">
-												<button type="button" onClick={() => router.push(`/ dash_formation / formations_formateurs / formation_completer / detail_forma ? fId = ${fId}`)} className="bg-gray-800 hover:bg-black text-white px-5 py-2 rounded-lg transition-colors">Suivant</button>
+												<button type="button" onClick={() => router.push(`/dash_formation/formations_formateurs/formation_completer/detail_forma?fId=${fId}`)} className="bg-gray-800 hover:bg-black text-white px-5 py-2 rounded-lg transition-colors">Suivant</button>
 											</div>
 										</div>
 									</form>

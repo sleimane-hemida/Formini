@@ -33,11 +33,14 @@ export default function Catalogue() {
     useEffect(() => {
         const loadFormations = async () => {
             try {
+                // ✅ FIX 1 : backtick fermant corrigé (était une apostrophe)
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations-all`);
                 if (!res.ok) throw new Error('Failed to load formations');
                 const data = await res.json();
 
+                // Adapter les données du backend au format de l'UI
                 const adaptedFormations = data.map(f => {
+                    // Compter les leçons à partir des modules
                     let lessonsCount = 0;
                     if (f.Modules && Array.isArray(f.Modules)) {
                         lessonsCount = f.Modules.reduce((total, module) => {
@@ -72,6 +75,7 @@ export default function Catalogue() {
                     };
                 });
 
+                // Calculer la plage de prix max automatiquement
                 const prices = adaptedFormations.map(f => f.priceNumeric).filter(p => p > 0);
                 const maxPrice = prices.length > 0 ? Math.max(...prices) : 10000;
 
@@ -94,24 +98,29 @@ export default function Catalogue() {
 
     const closeModal = () => {
         setIsModalOpen(false);
-        setTimeout(() => setSelectedFormation(null), 300);
+        setTimeout(() => setSelectedFormation(null), 300); // Wait for transition
     };
 
+    // Read category from query param (e.g. /formations?category=design)
     const searchParams = useSearchParams();
     const router = useRouter();
-
     useEffect(() => {
         const cat = searchParams ? searchParams.get("category") : null;
-        if (cat) setSelectedCategory(cat);
+        if (cat) {
+            setSelectedCategory(cat);
+        }
     }, [searchParams]);
 
+    // Ouvrir le modal automatiquement si le paramètre openModal est présent dans l'URL
     useEffect(() => {
         if (!searchParams || formations.length === 0) return;
+
         const openModalId = searchParams.get("openModal");
         if (openModalId) {
             const formationToOpen = formations.find(f => f.id.toString() === openModalId.toString());
             if (formationToOpen) {
                 setTimeout(() => openModal(formationToOpen), 100);
+
                 const newUrl = new URL(window.location.href);
                 newUrl.searchParams.delete("openModal");
                 window.history.replaceState({}, '', newUrl.toString());
@@ -119,12 +128,19 @@ export default function Catalogue() {
         }
     }, [searchParams, formations]);
 
+    // Gestion du scroll pour la barre de catégories
     useEffect(() => {
-        const handleScroll = () => setScrolled(window.scrollY > 30);
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 30);
+        };
+
         window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
     }, []);
 
+    // Filtrage des formations basé sur la recherche et les filtres
     const filteredFormations = formations.filter(formation => {
         const matchesSearch =
             formation.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -132,12 +148,24 @@ export default function Catalogue() {
             formation.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
             formation.description.toLowerCase().includes(searchTerm.toLowerCase());
 
-        const matchesCategory = selectedCategory === "foryou" || selectedCategory === formation.categoryId;
-        const matchesSubcategory = filters.subcategories.length === 0 || filters.subcategories.includes(formation.subcategoryId);
-        const matchesLanguage = filters.languages.length === 0 || filters.languages.includes(formation.language);
-        const matchesPrice = formation.priceNumeric >= filters.priceRange[0] && formation.priceNumeric <= filters.priceRange[1];
+        const matchesCategory = (() => {
+            if (selectedCategory === "foryou") return true;
+            return selectedCategory === formation.categoryId;
+        })();
+
+        const matchesSubcategory = filters.subcategories.length === 0 ||
+            filters.subcategories.includes(formation.subcategoryId);
+
+        const matchesLanguage = filters.languages.length === 0 ||
+            filters.languages.includes(formation.language);
+
+        const matchesPrice = formation.priceNumeric >= filters.priceRange[0] &&
+            formation.priceNumeric <= filters.priceRange[1];
+
         const matchesPromotion = !filters.hasPromotion || formation.hasPromotion;
+
         const matchesFree = !filters.isFree || formation.isFree;
+
         const matchesNew = !filters.isNew || formation.isNew;
 
         const matchesDate = (() => {
@@ -155,10 +183,13 @@ export default function Catalogue() {
                 }
                 return true;
             }
+
             if (!filters.dateRange) return true;
             const addedDate = new Date(formation.dateAdded);
             const now = new Date();
-            const diffDays = Math.ceil(Math.abs(now - addedDate) / (1000 * 60 * 60 * 24));
+            const diffTime = Math.abs(now - addedDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
             switch (filters.dateRange) {
                 case 'recent': return diffDays <= 7;
                 case 'month': return diffDays <= 30;
@@ -175,9 +206,11 @@ export default function Catalogue() {
 
     const [purchaseFeedback, setPurchaseFeedback] = useState({ show: false, type: 'success', message: '' });
 
+    // Fonction pour acheter une formation
     const handleBuyFormation = async (formationId) => {
         try {
             const token = localStorage.getItem('token');
+            // ✅ FIX 2 : espace parasite supprimé + guillemet simple → backtick/virgule corrects
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders`, {
                 method: 'POST',
                 headers: {
@@ -222,9 +255,12 @@ export default function Catalogue() {
 
     return (
         <div className="min-h-screen bg-white">
-            <Header onSearchChange={setSearchTerm} searchValue={searchTerm} />
+            <Header
+                onSearchChange={setSearchTerm}
+                searchValue={searchTerm}
+            />
 
-            {/* Barre de catégories fixe */}
+            {/* Barre de catégories fixe avec comportement scroll */}
             <div className={`fixed left-0 right-0 z-30 bg-white transition-all duration-700 ease-in-out ${scrolled ? 'top-12 py-1' : 'top-20 sm:top-22 py-3 pb-6'}`}>
                 <CategorieBar
                     selectedCategory={selectedCategory}
@@ -236,12 +272,18 @@ export default function Catalogue() {
                 />
             </div>
 
+            {/* Overlay pour mobile uniquement quand sidebar est ouvert */}
             {sidebarOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden" onClick={() => setSidebarOpen(false)} />
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+                    onClick={() => setSidebarOpen(false)}
+                />
             )}
 
+            {/* Section principale avec sidebar et contenu */}
             <div className={`max-w-[1600px] mx-auto px-6 sm:px-10 py-8 transition-all duration-700 ease-in-out ${scrolled ? 'mt-[4.5rem]' : 'mt-40 sm:mt-44'}`}>
                 <div className="flex gap-10 lg:items-start lg:-ml-12 transition-all duration-500">
+                    {/* Sidebar unique - responsive */}
                     <div className={`lg:sticky ${scrolled ? 'lg:top-24' : 'lg:top-36'} transition-all duration-700 ease-in-out`}>
                         <Sidebar
                             isOpen={sidebarOpen}
@@ -254,12 +296,16 @@ export default function Catalogue() {
                         />
                     </div>
 
+                    {/* Contenu principal */}
                     <div className="flex-1 min-w-0">
+                        {/* Statistiques et informations */}
                         <div className="mb-8">
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-                                <h2 className="text-lg font-semibold text-gray-700">
-                                    {filteredFormations.length} formation{filteredFormations.length > 1 ? 's' : ''} trouvée{filteredFormations.length > 1 ? 's' : ''}
-                                </h2>
+                                <div className="flex items-center gap-4">
+                                    <h2 className="text-lg font-semibold text-gray-700">
+                                        {filteredFormations.length} formation{filteredFormations.length > 1 ? 's' : ''} trouvée{filteredFormations.length > 1 ? 's' : ''}
+                                    </h2>
+                                </div>
                             </div>
                             {(selectedCategory !== "foryou" || filters.hasPromotion || filters.isFree || filters.isNew || filters.languages.length > 0 || filters.subcategories.length > 0) && (
                                 <div className="flex items-center gap-2 text-sm">
@@ -269,18 +315,27 @@ export default function Catalogue() {
                                     </div>
                                     <div className="flex flex-wrap gap-1">
                                         {selectedCategory !== "foryou" && (
-                                            <span className="px-2 py-1 bg-[#0C8CE9] text-white rounded-full text-xs font-medium">{selectedCategory}</span>
+                                            <span className="px-2 py-1 bg-[#0C8CE9] text-white rounded-full text-xs font-medium">
+                                                {selectedCategory}
+                                            </span>
                                         )}
                                         {filters.languages.map(lang => (
-                                            <span key={lang} className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">{lang}</span>
+                                            <span key={lang} className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
+                                                {lang}
+                                            </span>
                                         ))}
-                                        {filters.hasPromotion && <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">promotion</span>}
-                                        {filters.isFree && <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">gratuit</span>}
+                                        {filters.hasPromotion && (
+                                            <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">promotion</span>
+                                        )}
+                                        {filters.isFree && (
+                                            <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">gratuit</span>
+                                        )}
                                     </div>
                                 </div>
                             )}
                         </div>
 
+                        {/* Grille des formations */}
                         {filteredFormations.length > 0 ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-20">
                                 {filteredFormations.map((formation) => (
@@ -312,7 +367,9 @@ export default function Catalogue() {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                         </svg>
                                     </div>
-                                    <h3 className="text-xl font-semibold text-gray-700 mb-2">Aucune formation trouvée</h3>
+                                    <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                                        Aucune formation trouvée
+                                    </h3>
                                     <p className="text-gray-500 mb-6">
                                         Aucun résultat ne correspond à vos critères de recherche.
                                         <br />Essayez de modifier vos filtres ou votre recherche.
@@ -320,7 +377,18 @@ export default function Catalogue() {
                                     <button
                                         onClick={() => {
                                             setSearchTerm("");
-                                            setFilters({ categories: [], subcategories: [], languages: [], dateRange: null, dateStart: null, dateEnd: null, hasPromotion: false, isFree: false, isNew: false, priceRange: [0, 10000] });
+                                            setFilters({
+                                                categories: [],
+                                                subcategories: [],
+                                                languages: [],
+                                                dateRange: null,
+                                                dateStart: null,
+                                                dateEnd: null,
+                                                hasPromotion: false,
+                                                isFree: false,
+                                                isNew: false,
+                                                priceRange: [0, 10000]
+                                            });
                                             setSelectedCategory("foryou");
                                             router.replace(ROUTES.BROWSE_COURSES);
                                         }}
@@ -335,14 +403,21 @@ export default function Catalogue() {
                 </div>
             </div>
 
-            {/* ── Modal Détail Formation ── */}
+            {/* Modal Détail Formation */}
             {selectedFormation && (
-                <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 transition-all duration-300 ${isModalOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                <div
+                    className={`fixed inset-0 z-[100] flex items-center justify-center p-4 transition-all duration-300 ${isModalOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                >
                     {/* Backdrop */}
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={closeModal} />
+                    <div
+                        className="absolute inset-0 bg-black/60 backdrop-blur-md"
+                        onClick={closeModal}
+                    />
 
                     {/* Modal Content */}
-                    <div className={`bg-white w-full max-w-5xl h-[90vh] rounded-3xl overflow-hidden relative shadow-2xl transition-all duration-500 transform ${isModalOpen ? 'scale-100 translate-y-0' : 'scale-95 translate-y-8'}`}>
+                    <div
+                        className={`bg-white w-full max-w-5xl h-[90vh] rounded-3xl overflow-hidden relative shadow-2xl transition-all duration-500 transform ${isModalOpen ? 'scale-100 translate-y-0' : 'scale-95 translate-y-8'}`}
+                    >
                         {/* Bouton Fermer */}
                         <button
                             onClick={closeModal}
@@ -354,20 +429,29 @@ export default function Catalogue() {
                         </button>
 
                         <div className="h-full overflow-y-auto custom-scrollbar pb-10">
-                            {/* Hero Image */}
+                            {/* Hero Image Section */}
                             <div className="relative w-full h-[320px] bg-slate-100">
-                                <img src={selectedFormation.image} alt={selectedFormation.title} className="w-full h-full object-cover" />
+                                <img
+                                    src={selectedFormation.image}
+                                    alt={selectedFormation.title}
+                                    className="w-full h-full object-cover"
+                                />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
                                 <div className="absolute bottom-0 left-0 right-0 p-8 space-y-4">
                                     <div className="flex flex-wrap items-center gap-3">
                                         <span className="px-3 py-1 bg-[#0C8CE9] text-white text-[10px] font-bold uppercase tracking-widest rounded-full">
                                             {selectedFormation.category}
                                         </span>
                                         {selectedFormation.hasPromotion && (
-                                            <span className="px-3 py-1 bg-amber-500 text-white text-[10px] font-bold uppercase tracking-widest rounded-full">Promotion</span>
+                                            <span className="px-3 py-1 bg-amber-500 text-white text-[10px] font-bold uppercase tracking-widest rounded-full">
+                                                Promotion
+                                            </span>
                                         )}
                                     </div>
-                                    <h2 className="text-3xl md:text-4xl font-serif font-bold text-white leading-tight">{selectedFormation.title}</h2>
+                                    <h2 className="text-3xl md:text-4xl font-serif font-bold text-white leading-tight">
+                                        {selectedFormation.title}
+                                    </h2>
                                 </div>
                             </div>
 
@@ -380,47 +464,78 @@ export default function Catalogue() {
                                             <span className="w-1 h-6 bg-[#0C8CE9] rounded-full"></span>
                                             À propos de cette formation
                                         </h3>
-                                        <p className="text-slate-600 leading-relaxed text-base">{selectedFormation.description}</p>
+                                        <p className="text-slate-600 leading-relaxed text-base">
+                                            {selectedFormation.description}
+                                        </p>
                                     </section>
 
+                                    {/* Quick Stats Grid */}
                                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                        {[
-                                            { label: 'Durée', value: selectedFormation.duration },
-                                            { label: 'Modules', value: selectedFormation.modulesCount || 0 },
-                                            { label: 'Leçons', value: selectedFormation.lessonsCount || 0 },
-                                            { label: 'Langue', value: selectedFormation.language === 'fr' ? 'Français' : selectedFormation.language === 'en' ? 'Anglais' : selectedFormation.language },
-                                            { label: 'Niveau', value: selectedFormation.niveau },
-                                            { label: 'Accès', value: 'Illimité' },
-                                        ].map((item, i) => (
-                                            <div key={i} className="bg-slate-50 p-4 rounded-2xl border border-slate-100/50 space-y-1">
-                                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{item.label}</p>
-                                                <p className="font-bold text-[#1e293b] capitalize">{item.value}</p>
-                                            </div>
-                                        ))}
+                                        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100/50 space-y-1">
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Durée</p>
+                                            <p className="font-bold text-[#1e293b]">{selectedFormation.duration}</p>
+                                        </div>
+                                        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100/50 space-y-1">
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Modules</p>
+                                            <p className="font-bold text-[#1e293b]">{selectedFormation.modulesCount || 0}</p>
+                                        </div>
+                                        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100/50 space-y-1">
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Leçons</p>
+                                            <p className="font-bold text-[#1e293b]">{selectedFormation.lessonsCount || 0}</p>
+                                        </div>
+                                        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100/50 space-y-1">
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Langue</p>
+                                            <p className="font-bold text-[#1e293b]">{selectedFormation.language === 'fr' ? 'Français' : selectedFormation.language === 'en' ? 'Anglais' : selectedFormation.language}</p>
+                                        </div>
+                                        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100/50 space-y-1">
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Niveau</p>
+                                            <p className="font-bold text-[#1e293b] capitalize">{selectedFormation.niveau}</p>
+                                        </div>
+                                        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100/50 space-y-1">
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Accès</p>
+                                            <p className="font-bold text-[#1e293b]">Illimité</p>
+                                        </div>
                                     </div>
 
+                                    {/* Objectives */}
                                     <section>
                                         <h3 className="text-lg font-bold text-[#1e293b] mb-4 uppercase tracking-wider">Ce que vous allez apprendre</h3>
                                         <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            {(selectedFormation.ce_que_vous_apprendrez
-                                                ? selectedFormation.ce_que_vous_apprendrez.split(',')
-                                                : ["Maîtriser les fondamentaux théoriques", "Pratiquer sur des projets réels", "Obtenir une certification reconnue", "Rejoindre une communauté active"]
-                                            ).map((item, i) => (
-                                                <li key={i} className="flex items-start gap-3 text-slate-600 text-sm">
-                                                    <div className="mt-1 w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
-                                                        <svg className="w-3 h-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                                        </svg>
-                                                    </div>
-                                                    {typeof item === 'string' ? item.trim() : item}
-                                                </li>
-                                            ))}
+                                            {selectedFormation.ce_que_vous_apprendrez ?
+                                                selectedFormation.ce_que_vous_apprendrez.split(',').map((item, i) => (
+                                                    <li key={i} className="flex items-start gap-3 text-slate-600 text-sm">
+                                                        <div className="mt-1 w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+                                                            <svg className="w-3 h-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                                            </svg>
+                                                        </div>
+                                                        {item.trim()}
+                                                    </li>
+                                                ))
+                                                :
+                                                [
+                                                    "Maîtriser les fondamentaux théoriques",
+                                                    "Pratiquer sur des projets réels",
+                                                    "Obtenir une certification reconnue",
+                                                    "Rejoindre une communauté active"
+                                                ].map((item, i) => (
+                                                    <li key={i} className="flex items-start gap-3 text-slate-600 text-sm">
+                                                        <div className="mt-1 w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+                                                            <svg className="w-3 h-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                                            </svg>
+                                                        </div>
+                                                        {item}
+                                                    </li>
+                                                ))
+                                            }
                                         </ul>
                                     </section>
                                 </div>
 
                                 {/* Sidebar Column */}
                                 <div className="space-y-6">
+                                    {/* Price Card */}
                                     <div className="bg-[#f8fafc] border border-slate-100 p-8 rounded-3xl shadow-sm">
                                         <div className="space-y-2">
                                             <p className="text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Tarif Premium</p>
@@ -435,14 +550,20 @@ export default function Catalogue() {
                                             onClick={() => handleBuyFormation(selectedFormation.id)}
                                             className="w-full mt-8 bg-[#0C8CE9] hover:bg-[#0A71BC] text-white py-4 rounded-xl font-bold shadow-lg shadow-blue-500/30 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3"
                                         >
-                                            Acheter <FaShoppingCart className="w-5 h-5" />
+                                            Acheter
+                                            <FaShoppingCart className="w-5 h-5" />
                                         </button>
                                     </div>
 
+                                    {/* Author Card */}
                                     <div className="bg-white border border-slate-100 p-6 rounded-3xl shadow-sm space-y-5">
                                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Instructeur</p>
                                         <div className="flex items-center gap-4">
-                                            <img src={selectedFormation.avatar} alt={selectedFormation.author} className="w-14 h-14 rounded-2xl object-cover ring-4 ring-slate-50" />
+                                            <img
+                                                src={selectedFormation.avatar}
+                                                alt={selectedFormation.author}
+                                                className="w-14 h-14 rounded-2xl object-cover ring-4 ring-slate-50"
+                                            />
                                             <div>
                                                 <p className="font-bold text-[#1e293b]">{selectedFormation.author}</p>
                                                 <p className="text-xs text-[#0C8CE9] font-medium">Expert {selectedFormation.category}</p>
@@ -462,16 +583,18 @@ export default function Catalogue() {
                 </div>
             )}
 
-            {/* Feedback Popup */}
+            {/* Feedback Popup for Purchases */}
             {purchaseFeedback.show && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
-                    <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setPurchaseFeedback({ ...purchaseFeedback, show: false })} />
-                    <div className="relative bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center border border-slate-100">
-                        <div className={`w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center ${
-                            purchaseFeedback.type === 'success' ? 'bg-emerald-50 text-emerald-500' :
+                    <div
+                        className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-fade-in"
+                        onClick={() => setPurchaseFeedback({ ...purchaseFeedback, show: false })}
+                    />
+                    <div className="relative bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center animate-scale-in border border-slate-100">
+                        <div className={`w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center ${purchaseFeedback.type === 'success' ? 'bg-emerald-50 text-emerald-500' :
                             purchaseFeedback.type === 'info' ? 'bg-blue-50 text-[#0C8CE9]' :
-                            'bg-red-50 text-red-500'
-                        }`}>
+                                'bg-red-50 text-red-500'
+                            }`}>
                             {purchaseFeedback.type === 'success' ? (
                                 <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -487,16 +610,18 @@ export default function Catalogue() {
                             )}
                         </div>
 
-                        <h3 className={`text-xl font-black mb-3 ${
-                            purchaseFeedback.type === 'success' ? 'text-emerald-600' :
+                        <h3 className={`text-xl font-black mb-3 ${purchaseFeedback.type === 'success' ? 'text-emerald-600' :
                             purchaseFeedback.type === 'info' ? 'text-[#0C8CE9]' :
-                            'text-red-600'
-                        }`}>
+                                'text-red-600'
+                            }`}>
                             {purchaseFeedback.type === 'success' ? 'Félicitations !' :
-                             purchaseFeedback.type === 'info' ? 'Information' : 'Oups !'}
+                                purchaseFeedback.type === 'info' ? 'Information' :
+                                    'Oups !'}
                         </h3>
 
-                        <p className="text-slate-600 font-medium leading-relaxed mb-8">{purchaseFeedback.message}</p>
+                        <p className="text-slate-600 font-medium leading-relaxed mb-8">
+                            {purchaseFeedback.message}
+                        </p>
 
                         <div className="space-y-3">
                             <button
@@ -506,14 +631,16 @@ export default function Catalogue() {
                                     }
                                     setPurchaseFeedback({ ...purchaseFeedback, show: false });
                                 }}
-                                className={`w-full py-4 rounded-2xl font-bold transition-all active:scale-95 shadow-lg ${
-                                    purchaseFeedback.type === 'success' ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-200' :
-                                    purchaseFeedback.type === 'info' ? 'bg-[#0C8CE9] hover:bg-[#0A71BC] text-white shadow-blue-200' :
-                                    'bg-red-500 hover:bg-red-600 text-white shadow-red-200'
-                                }`}
+                                className={`w-full py-4 rounded-2xl font-bold transition-all active:scale-95 shadow-lg ${purchaseFeedback.type === 'success'
+                                    ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-200'
+                                    : purchaseFeedback.type === 'info'
+                                        ? 'bg-[#0C8CE9] hover:bg-[#0A71BC] text-white shadow-blue-200'
+                                        : 'bg-red-500 hover:bg-red-600 text-white shadow-red-200'
+                                    }`}
                             >
                                 {purchaseFeedback.type === 'success' ? 'Génial !' :
-                                 purchaseFeedback.type === 'info' ? 'Accéder à mes cours' : 'Réessayer'}
+                                    purchaseFeedback.type === 'info' ? 'Accéder à mes cours' :
+                                        'Réessayer'}
                             </button>
 
                             {purchaseFeedback.type === 'info' && (
