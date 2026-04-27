@@ -33,7 +33,7 @@ export default function Catalogue() {
     useEffect(() => {
         const loadFormations = async () => {
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations-all`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations-all`);
                 if (!res.ok) throw new Error('Failed to load formations');
                 const data = await res.json();
 
