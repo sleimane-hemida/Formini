@@ -18,7 +18,7 @@ export default function Home() {
   const [formations, setFormations] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch('https://formini-yx2w.onrender.com/api/formations-all')
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations-all`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -28,13 +28,13 @@ export default function Home() {
       .catch(err => console.error("Error fetching formations:", err));
   }, []);
 
-  const mockItems = Array.from({length: 10}).map((_, i) => ({
+  const mockItems = Array.from({ length: 10 }).map((_, i) => ({
     isMock: true,
     id: `mock-${i}`,
     image: "/images/users/formation.png",
     category: i < 4 ? "Design" : "Dev",
     durationString: i < 4 ? "3 mois" : "2 mois",
-    title: i < 8 ? `Card normale ${i+1}` : (i === 8 ? "Class adds $30 million to its balance sheet for a Zoom-friendly edtech solution" : "AWS Certified solutions Architect"),
+    title: i < 8 ? `Card normale ${i + 1}` : (i === 8 ? "Class adds $30 million to its balance sheet for a Zoom-friendly edtech solution" : "AWS Certified solutions Architect"),
     description: i < 4 ? "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor" : (i === 8 ? "Class, launched less than a year ago by Blackboard co-founder Michael Chasen, integrates exclusively..." : "Autre description pour la deuxième ligne."),
     avatar: "/images/users/profile.jpg",
     author: "Lina",
@@ -50,20 +50,19 @@ export default function Home() {
   // Helper pour formater l'URL de l'image de manière sécurisée
   const getValidImageUrl = (url: string | null | undefined, isMock: boolean, fallback: string | undefined) => {
     if (!url) return fallback;
-    if (isMock) return url; // Image locale du frontend (ex: /images/...)
-    
-    // Remplacer les antislashs par des slashs (chemins Windows)
+    if (isMock) return url;
+
     const cleanUrl = url.replace(/\\/g, '/');
-    
+
     if (cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://') || cleanUrl.startsWith('data:')) {
       return cleanUrl;
     }
-    return cleanUrl.startsWith('/') ? `https://formini-yx2w.onrender.com${cleanUrl}` : `https://formini-yx2w.onrender.com/${cleanUrl}`;
+    return cleanUrl.startsWith('/') ? `${process.env.NEXT_PUBLIC_API_URL}${cleanUrl}` : `${process.env.NEXT_PUBLIC_API_URL}/${cleanUrl}`;
   };
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      <Header 
+      <Header
         searchValue={searchValue}
         onSearchChange={(val: string) => setSearchValue(val)}
       />
@@ -74,10 +73,9 @@ export default function Home() {
         }}
       />
       <HomeCommon />
-      {/* Deux lignes de cartes normales (4 par ligne, 8 sur desktop, 4 sur mobile) */}
+
+      {/* Deux lignes de cartes normales */}
       <div className="flex flex-wrap justify-center gap-6 py-8 md:gap-8 lg:gap-10 xl:gap-12">
-        {/* Show 4 cards on mobile, 8 on md+ */}
-        {/* Mobile: first 4 cards only, md+: all 8 cards */}
         {regularCards.map((form: any, i) => {
           const isMock = form.isMock;
           const authorName = isMock ? form.author : (form.trainer?.name || "Formateur");
@@ -109,7 +107,7 @@ export default function Home() {
 
       {/* Lien vers le catalogue complet */}
       <div className="flex justify-center mt-6 mb-8">
-        <button 
+        <button
           onClick={() => router.push(ROUTES.BROWSE_COURSES)}
           className="inline-flex items-center gap-2 bg-gradient-to-r from-[#0C8CE9] to-[#00A3FF] text-white font-semibold px-8 py-3 rounded-xl hover:from-[#0A71BC] hover:to-[#0080CC] transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
         >
@@ -120,7 +118,7 @@ export default function Home() {
         </button>
       </div>
 
-      {/* Bouton et titre centrés après les formations */}
+      {/* Titre centré */}
       <div className="flex flex-col items-center justify-center w-full mt-8 mb-0.5">
         <h2 className="text-3xl md:text-4xl font-bold text-[#00A3FF] mb-0 text-center leading-tight">N'importe où N'importe quand</h2>
       </div>
@@ -128,7 +126,7 @@ export default function Home() {
       {/* Section promotionnelle formateur */}
       <PubFormateur />
 
-
+      {/* Grandes cartes */}
       <div className="flex flex-col md:flex-row justify-center gap-8 py-8">
         {largeCards.map((form: any, i) => {
           const isMock = form.isMock;
@@ -157,7 +155,8 @@ export default function Home() {
           );
         })}
       </div>
-      {/* Section promotionnelle avant les formateurs */}
+
+      {/* Section formateurs */}
       <div className="max-w-4xl mx-auto text-center mt-20 mb-12 px-4">
         <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-4 mb-4 tracking-tight">
           Apprenez avec les <span className="text-[#0C8CE9]">meilleurs formateurs</span>
@@ -167,9 +166,8 @@ export default function Home() {
         </p>
       </div>
 
-      {/* Trois cartes formateur côte à côte juste avant le footer */}
+      {/* Cartes formateurs */}
       <div className="flex flex-wrap justify-center gap-8 py-12">
-        {/* Featured trainers on homepage */}
         {[
           {
             id: 1,
@@ -227,17 +225,7 @@ export default function Home() {
         ))}
       </div>
 
-
-      {/*
-      <div className="flex flex-1">
-        <Sidebar />
-        <main className="flex-1 p-8 bg-white">
-          <p className="text-lg text-gray-700">Eden Hazard, né le 7 janvier 1991 à La Louvière en Belgique, est un footballeur international belge qui joue au poste d'ailier gauche entre 2007 et 2023. (Texte de démonstration)</p>
-        </main>
-      </div>
-      */}
       <Footer />
     </div>
   );
 }
-// ...existing code...

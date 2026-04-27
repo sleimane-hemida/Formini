@@ -36,7 +36,7 @@ export default function Profile() {
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
 	const [isEditing, setIsEditing] = useState(false);
-	
+
 	const [formData, setFormData] = useState({
 		prenom: '',
 		nom_de_famille: '',
@@ -53,8 +53,8 @@ export default function Profile() {
 				const token = localStorage.getItem('token');
 				if (!token) return;
 
-				const response = await fetch('https://formini-yx2w.onrender.com/api/user/profile', {
-					headers: { 'Authorization': `Bearer ${token}` }
+				const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/profile', {
+					headers: { 'Authorization': `Bearer ${ token }` }
 				});
 
 				if (!response.ok) throw new Error('Erreur chargement profil');
@@ -63,7 +63,7 @@ export default function Profile() {
 				setUser(userData);
 
 				if (userData.avatar) {
-					setProfileImage(`https://formini-yx2w.onrender.com${userData.avatar}`);
+					setProfileImage(`${ process.env.NEXT_PUBLIC_API_URL }${ userData.avatar }`);
 				}
 
 				setFormData({
@@ -99,37 +99,37 @@ export default function Profile() {
 				const formDataUpload = new FormData();
 				formDataUpload.append('avatar', file);
 
-				const response = await fetch('https://formini-yx2w.onrender.com/api/user/avatar', {
+				const response = await fetch(`${ process.env.NEXT_PUBLIC_API_URL } / api / user / avatar', {
 					method: 'POST',
 					headers: { 'Authorization': `Bearer ${token}` },
 					body: formDataUpload
 				});
 
-				if (!response.ok) throw new Error('Erreur upload');
+	if (!response.ok) throw new Error('Erreur upload');
 
-				const result = await response.json();
-				setProfileImage(`https://formini-yx2w.onrender.com${result.avatar}`);
-			} catch (err) {
-				console.error('❌ Erreur upload avatar:', err);
-			}
+	const result = await response.json();
+	setProfileImage(`${process.env.NEXT_PUBLIC_API_URL}${result.avatar}`);
+} catch (err) {
+	console.error('❌ Erreur upload avatar:', err);
+}
 		}
 	};
 
-	const handleInputChange = (e) => {
-		const { name, value } = e.target;
-		setFormData(prev => ({ ...prev, [name]: value }));
-	};
+const handleInputChange = (e) => {
+	const { name, value } = e.target;
+	setFormData(prev => ({ ...prev, [name]: value }));
+};
 
-	const handleSave = async () => {
-		setSaving(true);
-		try {
-			const token = localStorage.getItem('token');
-			if (!token) throw new Error('Non authentifié');
+const handleSave = async () => {
+	setSaving(true);
+	try {
+		const token = localStorage.getItem('token');
+		if (!token) throw new Error('Non authentifié');
 
-			const response = await fetch('https://formini-yx2w.onrender.com/api/user/profile', {
+		const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/profile', {
 				method: 'PUT',
 				headers: {
-					'Authorization': `Bearer ${token}`,
+					'Authorization': `Bearer ${ token }`,
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify(formData)
@@ -287,7 +287,7 @@ export default function Profile() {
 														value={formData.prenom} 
 														onChange={handleInputChange} 
 														disabled={!isEditing}
-														className={`w-full px-4 py-3.5 border rounded-xl outline-none transition-all font-medium ${isEditing ? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900' : 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed'}`} 
+														className={`w - full px - 4 py - 3.5 border rounded - xl outline - none transition - all font - medium ${ isEditing? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900': 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed' }`} 
 														placeholder="Votre prénom" 
 													/>
 												</div>
@@ -301,7 +301,7 @@ export default function Profile() {
 														value={formData.nom_de_famille} 
 														onChange={handleInputChange} 
 														disabled={!isEditing}
-														className={`w-full px-4 py-3.5 border rounded-xl outline-none transition-all font-medium ${isEditing ? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900' : 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed'}`} 
+														className={`w - full px - 4 py - 3.5 border rounded - xl outline - none transition - all font - medium ${ isEditing? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900': 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed' }`} 
 														placeholder="Votre nom" 
 													/>
 												</div>
@@ -315,7 +315,7 @@ export default function Profile() {
 														value={formData.email} 
 														onChange={handleInputChange} 
 														disabled={!isEditing}
-														className={`w-full px-4 py-3.5 border rounded-xl outline-none transition-all font-medium ${isEditing ? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900' : 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed'}`} 
+														className={`w - full px - 4 py - 3.5 border rounded - xl outline - none transition - all font - medium ${ isEditing? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900': 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed' }`} 
 														placeholder="votre@email.com" 
 													/>
 												</div>
@@ -329,7 +329,7 @@ export default function Profile() {
 														value={formData.telephone} 
 														onChange={handleInputChange} 
 														disabled={!isEditing}
-														className={`w-full px-4 py-3.5 border rounded-xl outline-none transition-all font-medium ${isEditing ? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900' : 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed'}`} 
+														className={`w - full px - 4 py - 3.5 border rounded - xl outline - none transition - all font - medium ${ isEditing? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900': 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed' }`} 
 														placeholder="+222 00 00 00 00" 
 													/>
 												</div>
@@ -343,7 +343,7 @@ export default function Profile() {
 														value={formData.date_naissance} 
 														onChange={handleInputChange} 
 														disabled={!isEditing}
-														className={`w-full px-4 py-3.5 border rounded-xl outline-none transition-all font-medium ${isEditing ? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900' : 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed'}`} 
+														className={`w - full px - 4 py - 3.5 border rounded - xl outline - none transition - all font - medium ${ isEditing? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900': 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed' }`} 
 													/>
 												</div>
 
@@ -356,7 +356,7 @@ export default function Profile() {
 														value={formData.localisation} 
 														onChange={handleInputChange} 
 														disabled={!isEditing}
-														className={`w-full px-4 py-3.5 border rounded-xl outline-none transition-all font-medium ${isEditing ? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900' : 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed'}`} 
+														className={`w - full px - 4 py - 3.5 border rounded - xl outline - none transition - all font - medium ${ isEditing? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900': 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed' }`} 
 														placeholder="Nouakchott, Mauritanie" 
 													/>
 												</div>
@@ -371,7 +371,7 @@ export default function Profile() {
 													onChange={handleInputChange} 
 													rows={4} 
 													disabled={!isEditing}
-													className={`w-full px-4 py-4 border rounded-xl outline-none transition-all resize-none font-medium leading-relaxed ${isEditing ? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900' : 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed'}`} 
+													className={`w - full px - 4 py - 4 border rounded - xl outline - none transition - all resize - none font - medium leading - relaxed ${ isEditing? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900': 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed' }`} 
 													placeholder="Parlez-nous de vous, vos compétences, vos passions..." 
 												/>
 											</div>

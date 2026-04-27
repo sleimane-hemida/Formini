@@ -24,16 +24,16 @@ export default function MesFormations() {
                     return;
                 }
 
-                const response = await fetch('https://formini-yx2w.onrender.com/api/orders/my-formations', {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/my-formations', {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${ token }`
                     }
                 });
 
                 console.log('Response status:', response.status);
                 
                 if (!response.ok) {
-                    throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+                    throw new Error(`Erreur ${ response.status }: ${ response.statusText }`);
                 }
 
                 const data = await response.json();
@@ -52,12 +52,12 @@ export default function MesFormations() {
                     image: order.Formation.image || "/images/users/formation.png",
                     category: order.Formation.Category?.name || "Non spécifié",
                     categoryIcon: <FaCode size={18} className="text-[#B1B5C3]" />,
-                    duration: `${order.Formation.duree_totale_minutes || 0} min`,
+                    duration: `${ order.Formation.duree_totale_minutes || 0 } min`,
                     title: order.Formation.name,
                     description: order.Formation.description,
                     avatar: "/images/users/profile.jpg",
                     author: "Formateur",
-                    price: `${order.Formation.prix_normal || 0} MRU`,
+                    price: `${ order.Formation.prix_normal || 0 } MRU`,
                     progress: order.status === 'validée' ? 0 : 0,
                     status: order.status === 'validée' ? 'in-progress' : 'not-started',
                     totalLessons: order.Formation.Modules?.reduce((total, m) => total + (m.Lessons?.length || 0), 0) || 0,
@@ -91,7 +91,7 @@ export default function MesFormations() {
 
     // Fonction pour naviguer vers les détails
     const handleFormationClick = (formationId) => {
-        router.push(`/acheteur/formation/moduleLecon?id=${formationId}`);
+        router.push(`/ acheteur / formation / moduleLecon ? id = ${ formationId }`);
     };
 
     return (
@@ -112,31 +112,31 @@ export default function MesFormations() {
                         <div className="flex gap-2">
                             <button 
                                 onClick={() => setFilter('all')}
-                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                    filter === 'all' 
-                                        ? 'bg-[#0C8CE9] text-white' 
-                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                className={`px - 4 py - 2 rounded - lg font - medium transition - colors ${
+                    filter === 'all'
+                    ? 'bg-[#0C8CE9] text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                 }`}
                             >
                                 Toutes
                             </button>
                             <button 
                                 onClick={() => setFilter('in-progress')}
-                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                    filter === 'in-progress' 
-                                        ? 'bg-[#0C8CE9] text-white' 
-                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                }`}
+                                className={`px - 4 py - 2 rounded - lg font - medium transition - colors ${
+                filter === 'in-progress'
+                    ? 'bg-[#0C8CE9] text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            } `}
                             >
                                 En cours
                             </button>
                             <button 
                                 onClick={() => setFilter('completed')}
-                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                    filter === 'completed' 
-                                        ? 'bg-[#0C8CE9] text-white' 
-                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                }`}
+                                className={`px - 4 py - 2 rounded - lg font - medium transition - colors ${
+                filter === 'completed'
+                    ? 'bg-[#0C8CE9] text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            } `}
                             >
                                 Terminées
                             </button>
@@ -168,7 +168,7 @@ export default function MesFormations() {
                         <div className="text-center py-12">
                             <HiBookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                             <h3 className="text-xl font-medium text-gray-800 mb-2">
-                                {filter === 'all' ? 'Aucune formation trouvée' : `Aucune formation ${filter === 'in-progress' ? 'en cours' : 'terminée'}`}
+                                {filter === 'all' ? 'Aucune formation trouvée' : `Aucune formation ${ filter === 'in-progress' ? 'en cours' : 'terminée' } `}
                             </h3>
                             <p className="text-gray-600">
                                 {searchTerm ? 'Essayez de modifier votre recherche.' : 'Découvrez notre catalogue de formations pour commencer à apprendre !'}

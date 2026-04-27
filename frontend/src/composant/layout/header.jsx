@@ -212,7 +212,7 @@ export default function Header({ onSearchChange, searchValue: externalSearchValu
                                     >
                                         {user?.avatar ? (
                                             <img 
-                                                src={user.avatar.startsWith('http') ? user.avatar : `https://formini-yx2w.onrender.com${user.avatar.startsWith('/') ? '' : '/'}${user.avatar.replace(/\\/g, '/')}`} 
+                                                src={user.avatar.startsWith('http') ? user.avatar : `${process.env.NEXT_PUBLIC_API_URL}${user.avatar.startsWith('/') ? '' : '/'}${user.avatar.replace(/\\/g, '/')}`} 
                                                 alt="Profil" 
                                                 className="w-9 h-9 object-cover rounded-full" 
                                             />

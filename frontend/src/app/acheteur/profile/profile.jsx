@@ -36,7 +36,8 @@ export default function ProfilePage() {
                     return;
                 }
 
-                const response = await fetch('https://formini-yx2w.onrender.com/api/user/profile', {
+                // ✅ FIX 1 : apostrophe fermante → backtick + espaces parasites supprimés dans Bearer
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/profile`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -56,8 +57,10 @@ export default function ProfilePage() {
                     loisirs_centres_interet: user.loisirs_centres_interet || '',
                     statut_actuel: user.statut_actuel || 'Étudiant(e)'
                 });
+
+                // ✅ FIX 2 : espaces parasites supprimés dans les template literals de l'avatar
                 if (user.avatar) {
-                    setProfileImage(`https://formini-yx2w.onrender.com${user.avatar}`);
+                    setProfileImage(`${process.env.NEXT_PUBLIC_API_URL}${user.avatar}`);
                 }
                 setSuccess('Profil chargé avec succès');
                 setTimeout(() => setSuccess(''), 3000);
@@ -87,7 +90,8 @@ export default function ProfilePage() {
             const token = localStorage.getItem('token');
             if (!token) throw new Error('Non authentifié');
 
-            const response = await fetch('https://formini-yx2w.onrender.com/api/user/profile', {
+            // ✅ FIX 3 : URL cassée (espaces + slashes parasites + apostrophe) → corrigée
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/profile`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -97,11 +101,11 @@ export default function ProfilePage() {
             });
 
             if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || 'Erreur lors de la sauvegarde');
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Erreur lors de la sauvegarde');
             }
 
-            const updated = await response.json();
+            await response.json();
             setSuccess('Profil mis à jour avec succès!');
             setTimeout(() => setSuccess(''), 3000);
         } catch (err) {
@@ -124,7 +128,8 @@ export default function ProfilePage() {
                 const formData = new FormData();
                 formData.append('avatar', file);
 
-                const response = await fetch('https://formini-yx2w.onrender.com/api/user/avatar', {
+                // ✅ FIX 4 : apostrophe fermante → backtick + espaces parasites dans Bearer supprimés
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/avatar`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -133,16 +138,17 @@ export default function ProfilePage() {
                 });
 
                 if (!response.ok) {
-                    throw new Error('Erreur lors de l\'upload');
+                    throw new Error("Erreur lors de l'upload");
                 }
 
                 const result = await response.json();
-                setProfileImage(`https://formini-yx2w.onrender.com${result.avatar}`);
+                // ✅ FIX 5 : espaces parasites dans template literal de l'avatar result
+                setProfileImage(`${process.env.NEXT_PUBLIC_API_URL}${result.avatar}`);
                 setSuccess('Photo de profil mise à jour!');
                 setTimeout(() => setSuccess(''), 3000);
             } catch (err) {
                 console.error('❌ Erreur upload avatar:', err);
-                setError('Erreur lors de l\'upload de la photo');
+                setError("Erreur lors de l'upload de la photo");
                 setTimeout(() => setError(''), 3000);
             }
         }
@@ -159,14 +165,12 @@ export default function ProfilePage() {
     return (
         <div className="bg-white min-h-screen text-slate-900 font-sans">
             <Header />
-            <div className="pt-24"> 
+            <div className="pt-24">
                 <Nav />
-                {/* Conteneur principal élargi pour utiliser plus d'espace */}
                 <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-                    
-                    {/* Le grand wrapper demandé avec border et shadow */}
+
                     <div className="bg-white border border-slate-200 shadow-xl shadow-slate-200/40 rounded-[2rem] p-6 sm:p-10 mb-8">
-                        
+
                         {/* En-tête de la page */}
                         <div className="mb-10 text-center md:text-left">
                             <h1 className="text-3xl font-extrabold text-slate-900">Mon Profil</h1>
@@ -174,18 +178,18 @@ export default function ProfilePage() {
                         </div>
 
                         <div className="flex flex-col md:flex-row gap-8 lg:gap-10">
-                            
+
                             {/* Colonne Gauche : Photo de Profil et Résumé */}
                             <div className="w-full md:w-1/3 xl:w-1/4">
                                 <div className="bg-slate-50 border border-slate-200 shadow-sm rounded-2xl p-6 flex flex-col items-center sticky top-28">
-                                    
-                                    {/* Photo de profil (Input de type file) */}
+
+                                    {/* Photo de profil */}
                                     <label className="relative group cursor-pointer mb-5 block">
                                         <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-md bg-slate-200 relative flex items-center justify-center">
                                             {profileImage ? (
-                                                <img 
-                                                    src={profileImage} 
-                                                    alt="Profile" 
+                                                <img
+                                                    src={profileImage}
+                                                    alt="Profile"
                                                     className="w-full h-full object-cover"
                                                     onError={() => setProfileImage(null)}
                                                 />
@@ -206,7 +210,7 @@ export default function ProfilePage() {
                                     <span className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full mt-2">
                                         {profileData.statut_actuel || 'Apprenant'}
                                     </span>
-                                    
+
                                     <div className="w-full mt-8 space-y-4 pt-6 border-t border-slate-200">
                                         <div className="flex items-center text-[13px] font-medium text-slate-600">
                                             <div className="bg-white p-2 rounded-lg border border-slate-200 mr-3 shadow-sm">
@@ -230,12 +234,11 @@ export default function ProfilePage() {
                                     <h3 className="text-[16px] font-bold text-slate-900 mb-6 pb-4 border-b border-slate-200">
                                         Informations Personnelles
                                     </h3>
-                                    
+
                                     <form className="space-y-6">
-                                        
-                                        {/* Grille de 2 colonnes pour les formulaires standards */}
+
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
-                                            
+
                                             {/* Prénom */}
                                             <div>
                                                 <label className="block text-[13px] font-bold text-slate-700 mb-2 drop-shadow-sm">Prénom</label>
@@ -276,7 +279,7 @@ export default function ProfilePage() {
                                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                         <FiPhone className="text-slate-400" />
                                                     </div>
-                                                    <input type="tel" name="telephone" value={profileData.telephone} onChange={handleChange} className="w-full pl-10 pr-3 py-2.5 bg-white border border-slate-200 rounded-lg text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-medium text-slate-800" placeholder="+33 6 00 00 00 00" />
+                                                    <input type="tel" name="telephone" value={profileData.telephone} onChange={handleChange} className="w-full pl-10 pr-3 py-2.5 bg-white border border-slate-200 rounded-lg text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-medium text-slate-800" placeholder="+222 00 00 00 00" />
                                                 </div>
                                             </div>
 
@@ -302,7 +305,7 @@ export default function ProfilePage() {
                                                 </div>
                                             </div>
 
-                                            {/* Statut social */}
+                                            {/* Statut actuel */}
                                             <div>
                                                 <label className="block text-[13px] font-bold text-slate-700 mb-2 drop-shadow-sm">Statut Actuel</label>
                                                 <div className="relative">
@@ -334,7 +337,7 @@ export default function ProfilePage() {
                                             </div>
                                         </div>
 
-                                        {/* Biographie complète (Pleine largeur) */}
+                                        {/* Biographie */}
                                         <div className="pt-2">
                                             <label className="block text-[13px] font-bold text-slate-700 mb-2 drop-shadow-sm">À propos de moi (Biographie)</label>
                                             <textarea name="biographie" rows="4" value={profileData.biographie} onChange={handleChange} className="w-full p-3 bg-white border border-slate-200 rounded-lg text-[13px] shadow-sm placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-y font-medium text-slate-800 leading-relaxed" placeholder="Dites-nous en plus sur vous..."></textarea>

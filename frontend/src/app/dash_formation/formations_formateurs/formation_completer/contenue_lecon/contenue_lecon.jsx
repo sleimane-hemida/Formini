@@ -48,7 +48,7 @@
 // 		console.log('📥 Loading resources for lesson:', lessonId);
 
 // 		// Load resources from backend
-// 		fetch(`https://formini-yx2w.onrender.com/api/lessons/${encodeURIComponent(lessonId)}/resources`, {
+// 		fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${encodeURIComponent(lessonId)}/resources`, {
 // 			headers: {
 // 				'Authorization': `Bearer ${token}`
 // 			}
@@ -66,14 +66,14 @@
 
 // 				if (videoResource) {
 // 					setVideoMeta(videoResource.titre || videoResource.url);
-// 					setVideoUrl(`https://formini-yx2w.onrender.com${videoResource.url}`);
+// 					setVideoUrl(`${process.env.NEXT_PUBLIC_API_URL}${videoResource.url}`);
 // 					setVideoResourceId(videoResource.id);
 // 					setUploadMessage(`✅ Vidéo chargée: "${videoResource.titre}"`);
 // 				}
 
 // 				if (pdfResource) {
 // 					setPdfMeta(pdfResource.titre || pdfResource.url);
-// 					setPdfUrl(`https://formini-yx2w.onrender.com${pdfResource.url}`);
+// 					setPdfUrl(`${process.env.NEXT_PUBLIC_API_URL}${pdfResource.url}`);
 // 					setPdfResourceId(pdfResource.id);
 // 					setUploadMessage(`✅ PDF chargé: "${pdfResource.titre}"`);
 // 				}
@@ -139,7 +139,7 @@
 
 // 		try {
 // 			// Delete from backend
-// 			const response = await fetch(`https://formini-yx2w.onrender.com/api/resources/${videoResourceId}`, {
+// 			const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/resources/${videoResourceId}`, {
 // 				method: 'DELETE',
 // 				headers: {
 // 					'Authorization': `Bearer ${token}`
@@ -184,7 +184,7 @@
 
 // 		try {
 // 			// Delete from backend
-// 			const response = await fetch(`https://formini-yx2w.onrender.com/api/resources/${pdfResourceId}`, {
+// 			const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/resources/${pdfResourceId}`, {
 // 				method: 'DELETE',
 // 				headers: {
 // 					'Authorization': `Bearer ${token}`
@@ -237,7 +237,7 @@
 // 			// Don't append duree_minutes - let backend set it to NULL
 
 // 			// Upload to backend (NO JSON content-type, let browser set it with boundary)
-// 			fetch('https://formini-yx2w.onrender.com/api/resources', {
+// 			fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/resources', {
 // 				method: 'POST',
 // 				headers: {
 // 					'Authorization': `Bearer ${token}`
@@ -251,7 +251,7 @@
 // 				.then(resource => {
 // 					console.log('✅ Video resource created:', resource);
 // 					setVideoFile(file);
-// 					setVideoUrl(`https://formini-yx2w.onrender.com${resource.url}`);
+// 					setVideoUrl(`${process.env.NEXT_PUBLIC_API_URL}${resource.url}`);
 // 					setVideoResourceId(resource.id);
 // 					setVideoMeta(file.name);
 // 					setUploadMessage(`✅ Vidéo "${file.name}" uploadée avec succès!`);
@@ -295,7 +295,7 @@
 // 			// Don't append duree_minutes - let backend set it to NULL
 
 // 			// Upload to backend (NO JSON content-type, let browser set it with boundary)
-// 			fetch('https://formini-yx2w.onrender.com/api/resources', {
+// 			fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/resources', {
 // 				method: 'POST',
 // 				headers: {
 // 					'Authorization': `Bearer ${token}`
@@ -309,7 +309,7 @@
 // 				.then(resource => {
 // 					console.log('✅ PDF resource created:', resource);
 // 					setPdfFile(file);
-// 					setPdfUrl(`https://formini-yx2w.onrender.com${resource.url}`);
+// 					setPdfUrl(`${process.env.NEXT_PUBLIC_API_URL}${resource.url}`);
 // 					setPdfResourceId(resource.id);
 // 					setPdfMeta(file.name);
 // 					setUploadMessage(`✅ PDF "${file.name}" uploadé avec succès!`);
@@ -460,7 +460,7 @@ const Header = dynamic(
 const resolveUrl = (url) => {
 	if (!url) return null;
 	if (url.startsWith('http://') || url.startsWith('https://')) return url;
-	return `https://formini-yx2w.onrender.com${url}`;
+	return `${process.env.NEXT_PUBLIC_API_URL}${url}`;
 };
 
 export default function ContenueLecon() {
@@ -494,7 +494,7 @@ export default function ContenueLecon() {
 		const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 		if (!token) return;
 
-		fetch(`https://formini-yx2w.onrender.com/api/lessons/${encodeURIComponent(lessonId)}/resources`, {
+		fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${encodeURIComponent(lessonId)}/resources`, {
 			headers: { 'Authorization': `Bearer ${token}` }
 		})
 			.then(res => { if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`); return res.json(); })
@@ -566,8 +566,8 @@ export default function ContenueLecon() {
 		xhr.onerror = () => onError('Erreur réseau');
 		xhr.ontimeout = () => onError('Timeout — fichier trop lourd ou connexion trop lente');
 
-		xhr.open('POST', 'https://formini-yx2w.onrender.com/api/resources');
-		xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+		xhr.open('POST', `${process.env.NEXT_PUBLIC_API_URL}/api/resources');
+		xhr.setRequestHeader('Authorization', `Bearer ${ token }`);
 		xhr.send(formData);
 	};
 
@@ -596,7 +596,7 @@ export default function ContenueLecon() {
 			},
 			(err) => {
 				console.error('❌ Error uploading video:', err);
-				setUploadMessage(`❌ Erreur upload vidéo: ${err}`);
+				setUploadMessage(`❌ Erreur upload vidéo: ${ err }`);
 				setVideoUploading(false);
 				setVideoProgress(0);
 			}
@@ -628,7 +628,7 @@ export default function ContenueLecon() {
 			},
 			(err) => {
 				console.error('❌ Error uploading PDF:', err);
-				setUploadMessage(`❌ Erreur upload PDF: ${err}`);
+				setUploadMessage(`❌ Erreur upload PDF: ${ err }`);
 				setPdfUploading(false);
 				setPdfProgress(0);
 			}
@@ -645,15 +645,15 @@ export default function ContenueLecon() {
 			setVideoResourceId(null); setUploadMessage(null); return;
 		}
 		try {
-			const response = await fetch(`https://formini-yx2w.onrender.com/api/resources/${videoResourceId}`, {
+			const response = await fetch(`${ process.env.NEXT_PUBLIC_API_URL } / api / resources / ${ videoResourceId }`, {
 				method: 'DELETE',
-				headers: { 'Authorization': `Bearer ${token}` }
+				headers: { 'Authorization': `Bearer ${ token }` }
 			});
-			if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+			if (!response.ok) throw new Error(`HTTP error! status: ${ response.status }`);
 			setVideoUrl(null); setVideoFile(null); setVideoMeta(null);
 			setVideoResourceId(null); setUploadMessage('✅ Vidéo supprimée'); setHasChanges(true);
 		} catch (err) {
-			setUploadMessage(`❌ Erreur lors de la suppression: ${err.message}`);
+			setUploadMessage(`❌ Erreur lors de la suppression: ${ err.message }`);
 		}
 	};
 
@@ -667,15 +667,15 @@ export default function ContenueLecon() {
 			setPdfResourceId(null); setUploadMessage(null); return;
 		}
 		try {
-			const response = await fetch(`https://formini-yx2w.onrender.com/api/resources/${pdfResourceId}`, {
+			const response = await fetch(`${ process.env.NEXT_PUBLIC_API_URL } / api / resources / ${ pdfResourceId }`, {
 				method: 'DELETE',
-				headers: { 'Authorization': `Bearer ${token}` }
+				headers: { 'Authorization': `Bearer ${ token }` }
 			});
-			if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+			if (!response.ok) throw new Error(`HTTP error! status: ${ response.status }`);
 			setPdfUrl(null); setPdfFile(null); setPdfMeta(null);
 			setPdfResourceId(null); setUploadMessage('✅ PDF supprimé'); setHasChanges(true);
 		} catch (err) {
-			setUploadMessage(`❌ Erreur lors de la suppression: ${err.message}`);
+			setUploadMessage(`❌ Erreur lors de la suppression: ${ err.message }`);
 		}
 	};
 
@@ -709,7 +709,7 @@ export default function ContenueLecon() {
 														Enregistrement automatique dans {autoSaveTimer} s
 													</span>
 												)}
-												<button onClick={handleSave} disabled={saving} className={`flex items-center justify-center w-10 h-10 bg-[#0C8CE9] hover:bg-[#0A71BC] text-white rounded-full transition-all shadow-md active:scale-95 ${saving ? 'opacity-50 cursor-not-allowed' : ''}`} title="Enregistrer les modifications">
+												<button onClick={handleSave} disabled={saving} className={`flex items - center justify - center w - 10 h - 10 bg - [#0C8CE9] hover: bg - [#0A71BC] text - white rounded - full transition - all shadow - md active: scale - 95 ${ saving? 'opacity-50 cursor-not-allowed': '' }`} title="Enregistrer les modifications">
 													<FiSave className="w-5 h-5" />
 												</button>
 											</div>
@@ -749,7 +749,7 @@ export default function ContenueLecon() {
 														<div className="w-full bg-gray-200 rounded-full h-2">
 															<div
 																className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-																style={{ width: `${videoProgress}%` }}
+																style={{ width: `${ videoProgress } % ` }}
 															/>
 														</div>
 													</div>
@@ -778,7 +778,7 @@ export default function ContenueLecon() {
 														<div className="w-full bg-gray-200 rounded-full h-2">
 															<div
 																className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-																style={{ width: `${pdfProgress}%` }}
+																style={{ width: `${ pdfProgress } % ` }}
 															/>
 														</div>
 													</div>
@@ -803,35 +803,38 @@ export default function ContenueLecon() {
 														<div className="border rounded-md overflow-hidden">
 															<iframe
 																src={`https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}&embedded=true`}
-																width="100%"
-																height="600px"
-																className="rounded-md"
-																title={pdfMeta}
-															/>
-														</div>
-														<a href={pdfUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-sm text-blue-600 hover:underline">
-															📄 Ouvrir le PDF dans un nouvel onglet
-														</a>
-													</div>
-												)}
-												{!videoUrl && !pdfUrl && (
-													<div className="text-xs text-gray-500">Aucun aperçu disponible. Importez un fichier pour le visualiser.</div>
-												)}
-											</div>
-										</div>
+			width = "100%"
+																height = "600px"
+																className = "rounded-md"
+																title = { pdfMeta }
+			/>
+														</div >
+		<a href={pdfUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-sm text-blue-600 hover:underline">
+			📄 Ouvrir le PDF dans un nouvel onglet
+		</a>
+													</div >
+												)
+}
+{
+	!videoUrl && !pdfUrl && (
+		<div className="text-xs text-gray-500">Aucun aperçu disponible. Importez un fichier pour le visualiser.</div>
+	)
+}
+											</div >
+										</div >
 
-										<div className="mt-6 flex items-center justify-between">
-											<button onClick={() => router.back()} className="px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-100">Retour</button>
-											<button type="button" onClick={() => router.back()} className="bg-gray-800 hover:bg-black text-white px-5 py-2 rounded-lg transition-colors">Terminer</button>
-										</div>
-									</div>
-								</div>
-							</main>
-						</div>
-					</div>
-				</div>
-			</div>
-			<Footer />
+	<div className="mt-6 flex items-center justify-between">
+		<button onClick={() => router.back()} className="px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-100">Retour</button>
+		<button type="button" onClick={() => router.back()} className="bg-gray-800 hover:bg-black text-white px-5 py-2 rounded-lg transition-colors">Terminer</button>
+	</div>
+									</div >
+								</div >
+							</main >
+						</div >
+					</div >
+				</div >
+			</div >
+	<Footer />
 		</>
 	);
 }
