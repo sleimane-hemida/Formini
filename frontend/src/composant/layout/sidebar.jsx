@@ -177,15 +177,24 @@ export default function Sidebar({
     return (
         <>
             <style dangerouslySetInnerHTML={{ __html: sliderStyles }} />
-            <div className={`sidebar-container fixed inset-y-0 left-0 z-40 w-80 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out overflow-x-hidden ${
+            <div className={`sidebar-container fixed inset-y-0 left-0 z-[70] w-[85vw] max-w-[320px] bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out overflow-x-hidden ${
                 isOpen ? 'translate-x-0' : '-translate-x-full'
-            } lg:relative lg:translate-x-0 lg:border lg:border-gray-200 lg:rounded-xl lg:h-auto lg:overflow-y-visible`}>
+            } lg:relative lg:w-80 lg:translate-x-0 lg:z-10 lg:border lg:border-gray-200 lg:rounded-xl lg:h-auto lg:overflow-y-visible`}>
             
             <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50">
                 <div className="flex items-center gap-3">
                     <FaFilter className="text-gray-600 text-lg" />
                     <h2 className="text-xl font-bold text-gray-800">Filtres</h2>
                 </div>
+                <button 
+                    onClick={onClose} 
+                    className="lg:hidden w-8 h-8 flex items-center justify-center bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-full transition-all shadow-sm"
+                    aria-label="Fermer les filtres"
+                >
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
 
             <div className="sidebar-scroll-content h-full overflow-y-auto overflow-x-hidden p-6 pb-20 lg:h-auto lg:overflow-y-visible">

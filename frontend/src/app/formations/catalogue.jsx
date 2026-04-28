@@ -284,7 +284,7 @@ export default function Catalogue() {
             />
             
             {/* Barre de catégories fixe avec comportement scroll */}
-            <div className={`fixed left-0 right-0 z-30 bg-white  transition-all duration-700 ease-in-out ${scrolled ? 'top-12 py-1' : 'top-20 sm:top-22 py-3 pb-6'}`}>
+            <div className={`fixed left-0 right-0 z-30 bg-white transition-all duration-700 ease-in-out ${scrolled ? 'top-[44px] sm:top-[46px] py-1 border-b border-gray-100 shadow-sm' : 'top-20 sm:top-22 py-2 pb-2'}`}>
                 <CategorieBar 
                     selectedCategory={selectedCategory}
                     onCategoryChange={(newCat) => {
@@ -298,16 +298,16 @@ export default function Catalogue() {
             {/* Overlay pour mobile uniquement quand sidebar est ouvert */}
             {sidebarOpen && (
                 <div 
-                    className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+                    className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[60] lg:hidden transition-opacity"
                     onClick={() => setSidebarOpen(false)}
                 />
             )}
 
             {/* Section principale avec sidebar et contenu */}
-            <div className={`max-w-[1600px] mx-auto px-6 sm:px-10 py-8 transition-all duration-700 ease-in-out ${scrolled ? 'mt-[4.5rem]' : 'mt-40 sm:mt-44'}`}>
-                <div className="flex gap-10 lg:items-start lg:-ml-12 transition-all duration-500">
+            <div className={`max-w-[1600px] mx-auto px-6 sm:px-10 py-8 transition-all duration-700 ease-in-out ${scrolled ? 'mt-36 sm:mt-40' : 'mt-40 sm:mt-44'}`}>
+                <div className="flex flex-col lg:flex-row lg:gap-10 lg:items-start transition-all duration-500">
                     {/* Sidebar unique - responsive */}
-                    <div className={`lg:sticky ${scrolled ? 'lg:top-24' : 'lg:top-36'} transition-all duration-700 ease-in-out`}>
+                    <div className={`lg:sticky ${scrolled ? 'lg:top-24' : 'lg:top-36'} transition-all duration-700 ease-in-out w-0 lg:w-auto`}>
                         <Sidebar 
                             isOpen={sidebarOpen}
                             onClose={() => setSidebarOpen(false)}
@@ -324,10 +324,18 @@ export default function Catalogue() {
                         {/* Statistiques et informations */}
                         <div className="mb-8">
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-                                <div className="flex items-center gap-4">
+                                <div className="flex items-center justify-between w-full sm:w-auto gap-4">
                                     <h2 className="text-lg font-semibold text-gray-700">
                                         {filteredFormations.length} formation{filteredFormations.length > 1 ? 's' : ''} trouvée{filteredFormations.length > 1 ? 's' : ''}
                                     </h2>
+                                    {/* Bouton Filtres pour mobile */}
+                                    <button 
+                                        className="lg:hidden flex items-center justify-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
+                                        onClick={() => setSidebarOpen(true)}
+                                    >
+                                        <FaFilter className="text-gray-500" />
+                                        Filtres
+                                    </button>
                                 </div>
                             </div>
                             {(selectedCategory !== "foryou" || filters.hasPromotion || filters.isFree || filters.isNew || filters.languages.length > 0 || filters.subcategories.length > 0) && (
@@ -365,7 +373,7 @@ export default function Catalogue() {
                         {filteredFormations.length > 0 ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-20">
                                 {filteredFormations.map((formation) => (
-                                    <div key={formation.id} className="flex justify-center lg:justify-start">
+                                    <div key={formation.id} className="flex justify-center">
                                         <Card
                                             image={formation.image}
                                             category={formation.category}
