@@ -55,7 +55,7 @@ exports.getAllPublishedFormations = async (req, res, next) => {
       ],
       include: [
         { model: Category, attributes: ['id', 'name'] },
-        { model: User, as: 'trainer', attributes: ['id', 'name', 'avatar'] },
+        { model: User, as: 'trainer', attributes: ['id', 'name', 'prenom', 'nom_de_famille', 'avatar'] },
         { model: Subcategory, as: 'subcategory', attributes: ['id', 'name'] },
         { 
           model: Module, 
@@ -89,7 +89,7 @@ exports.getFormations = async (req, res, next) => {
       },
       include: [
         { model: Category },
-        { model: User, as: 'trainer', attributes: ['id', 'name', 'email', 'avatar'] },
+        { model: User, as: 'trainer', attributes: ['id', 'name', 'prenom', 'nom_de_famille', 'email', 'avatar'] },
         { model: Subcategory, as: 'subcategory' }
       ],
       order: [['createdAt', 'DESC']]  // Show most recent first
@@ -114,7 +114,7 @@ exports.getFormationById = async (req, res, next) => {
     const formation = await Formation.findByPk(id, {
       include: [
         { model: Category },
-        { model: User, as: 'trainer', attributes: ['id', 'name', 'email', 'avatar'] },
+        { model: User, as: 'trainer', attributes: ['id', 'name', 'prenom', 'nom_de_famille', 'email', 'avatar'] },
         { model: Subcategory, as: 'subcategory' },
         {
           model: Module,
@@ -277,7 +277,7 @@ exports.updateFormation = async (req, res, next) => {
     const updatedFormation = await Formation.findByPk(id, {
       include: [
         { model: Category },
-        { model: User, as: 'trainer', attributes: ['id', 'name', 'email', 'avatar'] },
+        { model: User, as: 'trainer', attributes: ['id', 'name', 'prenom', 'nom_de_famille', 'email', 'avatar'] },
         { model: Subcategory, as: 'subcategory' }
       ]
     });
@@ -364,7 +364,7 @@ exports.publishFormation = async (req, res, next) => {
     const updatedFormation = await Formation.findByPk(id, {
       include: [
         { model: Category },
-        { model: User, as: 'trainer', attributes: ['id', 'name', 'email', 'avatar'] },
+        { model: User, as: 'trainer', attributes: ['id', 'name', 'prenom', 'nom_de_famille', 'email', 'avatar'] },
         { model: Subcategory, as: 'subcategory' }
       ]
     });

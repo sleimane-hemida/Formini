@@ -163,7 +163,7 @@ const db = require('../models');
 const { Resource } = db;
 const { cloudinary } = require('../config/cloudinary');
 
-// Créer une ressource avec fichier → Cloudinary
+// Créer une ressource avec fichier
 exports.createResource = async (req, res) => {
   try {
     const { lessonId, formationId, moduleId, type, titre, duree_minutes } = req.body;
@@ -182,19 +182,21 @@ exports.createResource = async (req, res) => {
     }
     if (!file) return res.status(400).json({ error: 'Fichier requis' });
 
-    // req.file.path     = URL Cloudinary directe
-    // req.file.filename = public_id Cloudinary
+    // En local, file.path contient C:\...\uploads\resources\nom.mp4
+    // On doit le transformer en URL relative /uploads/resources/nom.mp4
+    const fileUrl = `/uploads/resources/${file.filename}`;
+
     const resource = await Resource.create({
       lessonId,
       type,
-      url:          file.path,      // URL Cloudinary permanente
-      publicId:     file.filename,  // public_id pour suppression future
+      url:          fileUrl,        // URL locale
+      publicId:     `resources/${file.filename}`,  // public_id pour suppression locale
       titre:        titre || file.originalname,
       duree_minutes: duree_minutes ? parseInt(duree_minutes) : null
     });
 
-    console.log('✅ Resource créée sur Cloudinary:', resource.id);
-    console.log('   URL:', file.path);
+    console.log('✅ Resource créée localement:', resource.id);
+    console.log('   URL:', fileUrl);
     res.status(201).json(resource);
   } catch (error) {
     console.error('❌ Error creating resource:', error.message);

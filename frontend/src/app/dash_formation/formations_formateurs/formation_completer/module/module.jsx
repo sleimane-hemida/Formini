@@ -27,6 +27,7 @@ export default function ModuleLecon() {
   const [moduleToDelete, setModuleToDelete] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
   const [message, setMessage] = useState(null);
   const [hasChanges, setHasChanges] = useState(false);
 
@@ -42,12 +43,27 @@ export default function ModuleLecon() {
     setShowConfirmModal(false);
   };
 
-  const confirmDeleteModule = () => {
+  const confirmDeleteModule = async () => {
     const id = moduleToDelete;
     if (id == null) {
       cancelDelete();
       return;
     }
+
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    if (token && id) {
+      try {
+        await fetch(`http://localhost:5000/api/modules/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+      } catch (err) {
+        console.error('❌ Error deleting module from backend:', err);
+      }
+    }
+
     setModules(prev => {
       if (prev.length <= 1) return prev; // always keep at least one
       const next = prev.filter(m => m.id !== id);
@@ -82,7 +98,7 @@ export default function ModuleLecon() {
       }
 
       // Load formation name
-      fetch(`https://formini-yx2w.onrender.com/api/formations/${fId}`, {
+      fetch(`http://localhost:5000/api/formations/${fId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -94,7 +110,7 @@ export default function ModuleLecon() {
         .catch(err => console.error('❌ Error loading formation:', err));
 
       // Load modules from backend
-      fetch(`https://formini-yx2w.onrender.com/api/formations/${fId}/modules`, {
+      fetch(`http://localhost:5000/api/formations/${fId}/modules`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -137,15 +153,17 @@ export default function ModuleLecon() {
   };
 
   const addModule = async () => {
+    if (isAdding) return;
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     if (!token) {
       setMessage('Vous devez être connecté.');
       return;
     }
 
+    setIsAdding(true);
     try {
       const moduleIndex = modules.length + 1;
-      const response = await fetch('https://formini-yx2w.onrender.com/api/modules', {
+      const response = await fetch('http://localhost:5000/api/modules', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -165,14 +183,18 @@ export default function ModuleLecon() {
       const newModule = await response.json();
       console.log('✅ Module created:', newModule);
       
-      const next = [...modules, newModule];
-      setModules(next);
-      setModulesCount(next.length);
+      setModules(prev => {
+        const next = [...prev, newModule];
+        setModulesCount(next.length);
+        return next;
+      });
       setEditingId(newModule.id);
       setHasChanges(true);
     } catch (err) {
       console.error('❌ Error creating module:', err);
       setMessage('Erreur lors de la création du module');
+    } finally {
+      setIsAdding(false);
     }
   };
 
@@ -198,7 +220,7 @@ export default function ModuleLecon() {
       for (const mod of modules) {
         if (!mod.id) {
           // Create new module
-          const res = await fetch('https://formini-yx2w.onrender.com/api/modules', {
+          const res = await fetch('http://localhost:5000/api/modules', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -218,7 +240,7 @@ export default function ModuleLecon() {
           console.log('✅ Module already saved:', mod.id);
         } else if (typeof mod.id === 'number' || typeof mod.id === 'string') {
           // Update existing module
-          const res = await fetch(`https://formini-yx2w.onrender.com/api/modules/${mod.id}`, {
+          const res = await fetch(`http://localhost:5000/api/modules/${mod.id}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
@@ -277,7 +299,9 @@ export default function ModuleLecon() {
                   } />
                   <div className="bg-white p-6 rounded-2xl w-full text-black shadow-sm">
                     <div className="flex items-center justify-between mb-4">
-                      <button type="button" onClick={addModule} className="inline-flex items-center gap-2 px-3 py-2 border rounded text-sm bg-white hover:bg-gray-50">+ Ajouter un module</button>
+                      <button type="button" onClick={addModule} disabled={isAdding} className={`inline-flex items-center gap-2 px-3 py-2 border rounded text-sm bg-white hover:bg-gray-50 ${isAdding ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                        {isAdding ? 'Ajout...' : '+ Ajouter un module'}
+                      </button>
                       <div className="text-sm text-gray-500">{modules.length} module(s)</div>
                     </div>
 
@@ -293,7 +317,7 @@ export default function ModuleLecon() {
                                 {editingId === m.id ? (
                                   <input
                                     autoFocus
-                                    value={m.title}
+                                    value={m.title || m.titre || ''}
                                     onClick={(e) => e.stopPropagation()}
                                     onFocus={(e) => e.stopPropagation()}
                                     onChange={(e) => handleTitleChange(m.id, e.target.value)}
@@ -303,7 +327,7 @@ export default function ModuleLecon() {
                                   />
                                 ) : (
                                   <div className="flex-1">
-                                    <div className="text-lg font-medium">{m.title || `Module ${index + 1}`}</div>
+                                    <div className="text-lg font-medium">{m.title || m.titre || `Module ${index + 1}`}</div>
                                     <div className="text-sm text-gray-500">{m.description || 'Pas de description'}</div>
                                   </div>
                                 )}

@@ -29,7 +29,7 @@ export default function ListeFormation() {
                     return;
                 }
 
-                const response = await fetch('https://formini-yx2w.onrender.com/api/orders/my-formations', {
+                const response = await fetch('http://localhost:5000/api/orders/my-formations', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -41,19 +41,31 @@ export default function ListeFormation() {
 
                 const data = await response.json();
                 
+                const resolveImage = (img) => {
+                    if (!img) return null;
+                    if (img.startsWith('data:') || img.startsWith('http')) return img;
+                    if (img.startsWith('/uploads')) return `http://localhost:5000${img}`;
+                    if (img.length > 500) return `data:image/png;base64,${img}`;
+                    return `http://localhost:5000/uploads/${img}`;
+                };
+
                 // Transformer les données de l'API
                 const formattedFormations = data.map(order => ({
                     id: order.Formation.id,
                     title: order.Formation.name,
                     category: order.Formation.Category?.name || "Non spécifié",
                     categoryIcon: <FaPaintBrush size={18} className="text-[#B1B5C3]" />,
-                    duration: `${order.Formation.duree_totale_minutes || 0} min`,
+                    views: order.Formation.nombre_vues || 0,
                     description: order.Formation.description,
                     author: order.Formation.trainer 
                         ? `${order.Formation.trainer.prenom} ${order.Formation.trainer.nom_de_famille}` 
                         : "Formateur inconnu",
-                    image: order.Formation.image || "/images/users/formation.png",
-                    avatar: null,
+                    image: resolveImage(order.Formation.image) || "/images/users/formation.png",
+                    avatar: order.Formation.trainer?.avatar 
+                        ? (order.Formation.trainer.avatar.startsWith('http') || order.Formation.trainer.avatar.startsWith('data:') 
+                            ? order.Formation.trainer.avatar 
+                            : `http://localhost:5000${order.Formation.trainer.avatar.replace('/api/avatar/', '/uploads/avatars/')}`) 
+                        : null,
                     type: "normal",
                     oldPrice: "",
                     price: `${order.Formation.prix_normal || 0} MRU`,
@@ -159,13 +171,13 @@ export default function ListeFormation() {
                                     <div
                                         key={formation.id}
                                         onClick={() => router.push(`/acheteur/formation/moduleLecon?id=${formation.id}`)}
-                                        className="cursor-pointer"
+                                        className="cursor-pointer h-full"
                                     >
                                         <CardLarge
                                             image={formation.image}
                                             category={formation.category}
                                             categoryIcon={formation.categoryIcon}
-                                            duration={formation.duration}
+                                            views={formation.views}
                                             title={formation.title}
                                             description={formation.description}
                                             avatar={formation.avatar}

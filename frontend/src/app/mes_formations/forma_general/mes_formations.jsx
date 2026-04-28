@@ -24,7 +24,7 @@ export default function MesFormations() {
                     return;
                 }
 
-                const response = await fetch('https://formini-yx2w.onrender.com/api/orders/my-formations', {
+                const response = await fetch('http://localhost:5000/api/orders/my-formations', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }

@@ -43,7 +43,7 @@ export default function TarificationPage() {
       }
 
       // Load data from backend
-      fetch(`https://formini-yx2w.onrender.com/api/formations/${fId}`, {
+      fetch(`http://localhost:5000/api/formations/${fId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -142,7 +142,7 @@ export default function TarificationPage() {
 
       console.log('📤 Saving Tarification payload:', payload);
 
-      const res = await fetch(`https://formini-yx2w.onrender.com/api/formations/${fId}`, {
+      const res = await fetch(`http://localhost:5000/api/formations/${fId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

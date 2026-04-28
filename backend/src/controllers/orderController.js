@@ -60,7 +60,7 @@ exports.getMyFormations = async (req, res, next) => {
             { 
               model: User,
               as: 'trainer',
-              attributes: ['id', 'prenom', 'nom_de_famille']
+              attributes: ['id', 'prenom', 'nom_de_famille', 'avatar']
             },
             { 
               model: Module,

@@ -53,7 +53,7 @@ export default function Profile() {
 				const token = localStorage.getItem('token');
 				if (!token) return;
 
-				const response = await fetch('https://formini-yx2w.onrender.com/api/user/profile', {
+				const response = await fetch('http://localhost:5000/api/user/profile', {
 					headers: { 'Authorization': `Bearer ${token}` }
 				});
 
@@ -63,7 +63,7 @@ export default function Profile() {
 				setUser(userData);
 
 				if (userData.avatar) {
-					setProfileImage(`https://formini-yx2w.onrender.com${userData.avatar}`);
+					setProfileImage(`http://localhost:5000${userData.avatar}`);
 				}
 
 				setFormData({
@@ -99,7 +99,7 @@ export default function Profile() {
 				const formDataUpload = new FormData();
 				formDataUpload.append('avatar', file);
 
-				const response = await fetch('https://formini-yx2w.onrender.com/api/user/avatar', {
+				const response = await fetch('http://localhost:5000/api/user/avatar', {
 					method: 'POST',
 					headers: { 'Authorization': `Bearer ${token}` },
 					body: formDataUpload
@@ -108,7 +108,7 @@ export default function Profile() {
 				if (!response.ok) throw new Error('Erreur upload');
 
 				const result = await response.json();
-				setProfileImage(`https://formini-yx2w.onrender.com${result.avatar}`);
+				setProfileImage(`http://localhost:5000${result.avatar}`);
 			} catch (err) {
 				console.error('❌ Erreur upload avatar:', err);
 			}
@@ -126,7 +126,7 @@ export default function Profile() {
 			const token = localStorage.getItem('token');
 			if (!token) throw new Error('Non authentifié');
 
-			const response = await fetch('https://formini-yx2w.onrender.com/api/user/profile', {
+			const response = await fetch('http://localhost:5000/api/user/profile', {
 				method: 'PUT',
 				headers: {
 					'Authorization': `Bearer ${token}`,

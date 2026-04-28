@@ -13,6 +13,7 @@ export default function PubFormateur() {
 						width={420}
 						height={320}
 						className="w-full max-w-[420px] h-auto"
+						style={{ height: 'auto' }}
 						priority
 					/>
 				</div>

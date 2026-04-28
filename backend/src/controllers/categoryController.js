@@ -1,3 +1,5 @@
+const { Category, Subcategory } = require('../models');
+
 // Supprimer une catégorie
 exports.deleteCategory = async (req, res) => {
   try {
@@ -10,7 +12,6 @@ exports.deleteCategory = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-const { Category } = require('../models');
 
 exports.createCategory = async (req, res, next) => {
   try {
@@ -32,7 +33,16 @@ exports.createCategory = async (req, res, next) => {
 
 exports.getAllCategories = async (req, res, next) => {
   try {
-    const categories = await Category.findAll();
+    const categories = await Category.findAll({
+      include: [
+        {
+          model: Subcategory,
+          as: 'subcategories',
+          attributes: ['id', 'name', 'description']
+        }
+      ],
+      order: [['name', 'ASC']]
+    });
     res.json(categories);
   } catch (error) {
     next(error);

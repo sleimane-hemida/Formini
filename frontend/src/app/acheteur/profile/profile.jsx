@@ -36,7 +36,7 @@ export default function ProfilePage() {
                     return;
                 }
 
-                const response = await fetch('https://formini-yx2w.onrender.com/api/user/profile', {
+                const response = await fetch('http://localhost:5000/api/user/profile', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -57,7 +57,7 @@ export default function ProfilePage() {
                     statut_actuel: user.statut_actuel || 'Étudiant(e)'
                 });
                 if (user.avatar) {
-                    setProfileImage(`https://formini-yx2w.onrender.com${user.avatar}`);
+                    setProfileImage(`http://localhost:5000${user.avatar}`);
                 }
                 setSuccess('Profil chargé avec succès');
                 setTimeout(() => setSuccess(''), 3000);
@@ -87,7 +87,7 @@ export default function ProfilePage() {
             const token = localStorage.getItem('token');
             if (!token) throw new Error('Non authentifié');
 
-            const response = await fetch('https://formini-yx2w.onrender.com/api/user/profile', {
+            const response = await fetch('http://localhost:5000/api/user/profile', {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -124,7 +124,7 @@ export default function ProfilePage() {
                 const formData = new FormData();
                 formData.append('avatar', file);
 
-                const response = await fetch('https://formini-yx2w.onrender.com/api/user/avatar', {
+                const response = await fetch('http://localhost:5000/api/user/avatar', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -137,7 +137,7 @@ export default function ProfilePage() {
                 }
 
                 const result = await response.json();
-                setProfileImage(`https://formini-yx2w.onrender.com${result.avatar}`);
+                setProfileImage(`http://localhost:5000${result.avatar}`);
                 setSuccess('Photo de profil mise à jour!');
                 setTimeout(() => setSuccess(''), 3000);
             } catch (err) {

@@ -8,7 +8,40 @@ import {
     FaFlag
 } from "react-icons/fa";
 import { HiLightBulb } from "react-icons/hi2";
-import { categories as topBarCategories } from "./categorie";
+import { FaGraduationCap, FaBookOpen, FaBullhorn, FaHeartbeat, FaUserGraduate, FaBalanceScale, FaTools, FaLanguage, FaChartLine, FaVideo, FaPaintBrush, FaCode, FaRocket, FaTag } from "react-icons/fa";
+
+// Liste officielle des 12 catégories pour le mapping des icônes
+const getIconForCategory = (name) => {
+    const n = name.toLowerCase();
+    if (n.includes("éducation") || n.includes("soutien")) return <FaBookOpen size={18} />;
+    if (n.includes("marketing") || n.includes("communication")) return <FaBullhorn size={18} />;
+    if (n.includes("santé") || n.includes("bien-être")) return <FaHeartbeat size={18} />;
+    if (n.includes("développement personnel")) return <FaUserGraduate size={18} />;
+    if (n.includes("droit") || n.includes("juridique")) return <FaBalanceScale size={18} />;
+    if (n.includes("métiers pratiques")) return <FaTools size={18} />;
+    if (n.includes("langue")) return <FaLanguage size={18} />;
+    if (n.includes("finance") || n.includes("investissement")) return <FaChartLine size={18} />;
+    if (n.includes("médias") || n.includes("contenu")) return <FaVideo size={18} />;
+    if (n.includes("design") || n.includes("créativité")) return <FaPaintBrush size={18} />;
+    if (n.includes("développement") || n.includes("tech")) return <FaCode size={18} />;
+    if (n.includes("entreprise") || n.includes("startup")) return <FaRocket size={18} />;
+    return <FaGraduationCap size={18} />;
+};
+
+const OFFICIAL_CATEGORIES = [
+    "Éducation & Soutien scolaire",
+    "Marketing & Communication",
+    "Santé & Bien-être",
+    "Développement personnel",
+    "Droit & Juridique",
+    "Métiers pratiques",
+    "Langues",
+    "Finance & Investissement",
+    "Médias & Création de contenu",
+    "Design & Créativité",
+    "Développement & Tech",
+    "Création d'entreprise & Startup"
+];
 
 // Composant interne déplacé à l'extérieur pour éviter les re-montages inutiles
 const FilterSection = ({ title, icon, isExpanded, onToggle, children }) => (
@@ -42,6 +75,7 @@ export default function Sidebar({
 }) {
     const [priceRange, setPriceRange] = useState(filters.priceRange || [0, 30000]);
     const [isDragging, setIsDragging] = useState({ min: false, max: false });
+    const [subcategories, setSubcategories] = useState([]);
     const [expandedSections, setExpandedSections] = useState({
         price: true,
         subcategory: true,
@@ -52,6 +86,24 @@ export default function Sidebar({
 
     const [dateStart, setDateStart] = useState(filters.dateStart || "");
     const [dateEnd, setDateEnd] = useState(filters.dateEnd || "");
+
+    useEffect(() => {
+        const fetchSubcategories = async () => {
+            try {
+                let url = "http://localhost:5000/api/subcategories";
+                if (activeCategory && activeCategory !== "foryou") {
+                    url += `?categoryId=${activeCategory}`;
+                }
+                const response = await fetch(url);
+                if (!response.ok) throw new Error("Erreur sous-catégories");
+                const data = await response.json();
+                setSubcategories(data);
+            } catch (error) {
+                console.error("Erreur Sidebar sous-catégories:", error);
+            }
+        };
+        fetchSubcategories();
+    }, [activeCategory]);
 
     useEffect(() => {
         setDateStart(filters.dateStart || "");
@@ -265,30 +317,58 @@ export default function Sidebar({
                     </div>
                 </FilterSection>
 
-                <FilterSection
-                    title="Catégories"
-                    icon={<FaTags className="text-gray-600" />}
-                    isExpanded={expandedSections.subcategory}
-                    onToggle={() => toggleSection('subcategory')}
-                >
-                    <div className="space-y-2 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
-                        {topBarCategories.map((category, idx) => (
-                            <label 
-                                key={`cat-${category.id || idx}`} 
-                                className={`flex items-center gap-3 py-2 px-3 rounded-xl cursor-pointer transition-all ${
-                                    activeCategory === category.id 
-                                    ? 'bg-blue-50 text-[#0C8CE9] font-bold' 
-                                    : 'hover:bg-gray-50 text-gray-700'
-                                }`}
-                                onClick={() => handleFilterChange('category', category.id)}
-                            >
-                                <span className="text-lg">{category.icon}</span>
-                                <span className="text-sm flex-1">{category.name}</span>
-                                {activeCategory === category.id && <div className="w-2 h-2 rounded-full bg-[#0C8CE9]"></div>}
-                            </label>
-                        ))}
-                    </div>
-                </FilterSection>
+                {activeCategory && activeCategory !== "foryou" && (
+                    <FilterSection
+                        title="Sous-catégories"
+                        icon={<FaTag className="text-gray-600" />}
+                        isExpanded={expandedSections.subcategory}
+                        onToggle={() => toggleSection('subcategory')}
+                    >
+                        <div className="space-y-1 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                            {subcategories.length > 0 ? (
+                                subcategories.map((sub, idx) => (
+                                    <label 
+                                        key={`sub-${sub.id || idx}`} 
+                                        className={`flex items-center gap-3 py-2 px-3 rounded-xl cursor-pointer transition-all ${
+                                            filters.subcategories?.includes(sub.id)
+                                            ? 'bg-blue-50 text-[#0C8CE9] font-bold' 
+                                            : 'hover:bg-gray-50 text-gray-700'
+                                        }`}
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            className="hidden"
+                                            checked={filters.subcategories?.includes(sub.id)}
+                                            onChange={(e) => {
+                                                const current = filters.subcategories || [];
+                                                const next = e.target.checked 
+                                                    ? [...current, sub.id]
+                                                    : current.filter(id => id !== sub.id);
+                                                handleFilterChange('subcategories', next);
+                                            }}
+                                        />
+                                        <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
+                                            filters.subcategories?.includes(sub.id)
+                                            ? 'bg-[#0C8CE9] border-[#0C8CE9]'
+                                            : 'border-gray-300 bg-white'
+                                        }`}>
+                                            {filters.subcategories?.includes(sub.id) && (
+                                                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            )}
+                                        </div>
+                                        <span className="text-sm flex-1">{sub.name}</span>
+                                    </label>
+                                ))
+                            ) : (
+                                <p className="text-xs text-gray-500 py-4 text-center italic">
+                                    Aucune sous-catégorie disponible
+                                </p>
+                            )}
+                        </div>
+                    </FilterSection>
+                )}
 
                 <FilterSection
                     title="Options"

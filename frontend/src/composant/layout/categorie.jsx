@@ -1,158 +1,50 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { 
 	FaCode, FaPaintBrush, FaBriefcase, FaBullhorn, FaChartLine, 
 	FaLanguage, FaUserGraduate, FaBookOpen, FaHeartbeat, FaTools, 
-	FaBalanceScale, FaVideo, FaGraduationCap, FaUser, FaUtensils,
-	FaMusic, FaHeart, FaPlane, FaCamera, FaDumbbell, FaSpa,
-	FaCar, FaBuilding, FaHammer, FaLeaf, FaPaw, FaCalendarAlt, FaGem 
+	FaBalanceScale, FaVideo, FaGraduationCap, FaRocket
 } from "react-icons/fa";
 
-const categories = [
-	{
-		key: "foryou",
-		label: "Pour vous",
-		icon: <FaGraduationCap size={18} />,
-	},
-	{
-		key: "webdev",
-		label: "Développement Web",
-		icon: <FaCode size={18} />,
-	},
-	{
-		key: "design",
-		label: "Design UX/UI",
-		icon: <FaPaintBrush size={18} />,
-	},
-	{
-		key: "business",
-		label: "Business & Marketing",
-		icon: <FaBriefcase size={18} />,
-	},
-	{
-		key: "marketing",
-		label: "Marketing Digital",
-		icon: <FaBullhorn size={18} />,
-	},
-	{
-		key: "data",
-		label: "Data & IA",
-		icon: <FaChartLine size={18} />,
-	},
-	{
-		key: "language",
-		label: "Langues",
-		icon: <FaLanguage size={18} />,
-	},
-	{
-		key: "softskills",
-		label: "Soft Skills",
-		icon: <FaUserGraduate size={18} />,
-	},
-	{
-		key: "it",
-		label: "Informatique & IT",
-		icon: <FaTools size={18} />,
-	},
-	{
-		key: "gaming",
-		label: "Création de Jeux",
-		icon: <FaVideo size={18} />,
-	},
-	{
-		key: "coach",
-		label: "Coaching & Mentoring",
-		icon: <FaUser size={18} />,
-	},
-	{
-		key: "cuisine",
-		label: "Cuisine & Gastronomie",
-		icon: <FaUtensils size={18} />,
-	},
-	{
-		key: "musique",
-		label: "Musique & Arts",
-		icon: <FaMusic size={18} />,
-	},
-	{
-		key: "danse",
-		label: "Danse & Chorégraphie",
-		icon: <FaHeart size={18} />,
-	},
-	{
-		key: "voyage",
-		label: "Voyage & Tourisme",
-		icon: <FaPlane size={18} />,
-	},
-	{
-		key: "photographie",
-		label: "Photographie & Vidéo",
-		icon: <FaCamera size={18} />,
-	},
-	{
-		key: "fitness",
-		label: "Fitness & Bien-être",
-		icon: <FaDumbbell size={18} />,
-	},
-	{
-		key: "yoga",
-		label: "Yoga & Méditation",
-		icon: <FaSpa size={18} />,
-	},
-	{
-		key: "auto",
-		label: "Auto & Moto",
-		icon: <FaCar size={18} />,
-	},
-	{
-		key: "immobilier",
-		label: "Immobilier",
-		icon: <FaBuilding size={18} />,
-	},
-	{
-		key: "legal",
-		label: "Droit & Juridique",
-		icon: <FaBalanceScale size={18} />,
-	},
-	{
-		key: "sante",
-		label: "Santé & Nutrition",
-		icon: <FaHeartbeat size={18} />,
-	},
-	{
-		key: "elearning",
-		label: "E-learning & Éducation",
-		icon: <FaBookOpen size={18} />,
-	},
-	{
-		key: "bricolage",
-		label: "Bricolage & Bricolage",
-		icon: <FaHammer size={18} />,
-	},
-	{
-		key: "jardinage",
-		label: "Jardinage & Paysagisme",
-		icon: <FaLeaf size={18} />,
-	},
-	{
-		key: "animaux",
-		label: "Animaux de Compagnie",
-		icon: <FaPaw size={18} />,
-	},
-	{
-		key: "evenements",
-		label: "Événements & Spectacles",
-		icon: <FaCalendarAlt size={18} />,
-	},
-	{
-		key: "beaute",
-		label: "Beauté & Soins",
-		icon: <FaGem size={18} />,
-	},
+// Liste officielle des 12 catégories pour le mapping des icônes
+const getIconForCategory = (name) => {
+    const n = name.toLowerCase();
+    if (n.includes("éducation") || n.includes("soutien")) return <FaBookOpen size={18} />;
+    if (n.includes("marketing") || n.includes("communication")) return <FaBullhorn size={18} />;
+    if (n.includes("santé") || n.includes("bien-être")) return <FaHeartbeat size={18} />;
+    if (n.includes("développement personnel")) return <FaUserGraduate size={18} />;
+    if (n.includes("droit") || n.includes("juridique")) return <FaBalanceScale size={18} />;
+    if (n.includes("métiers pratiques")) return <FaTools size={18} />;
+    if (n.includes("langue")) return <FaLanguage size={18} />;
+    if (n.includes("finance") || n.includes("investissement")) return <FaChartLine size={18} />;
+    if (n.includes("médias") || n.includes("contenu")) return <FaVideo size={18} />;
+    if (n.includes("design") || n.includes("créativité")) return <FaPaintBrush size={18} />;
+    if (n.includes("développement") || n.includes("tech")) return <FaCode size={18} />;
+    if (n.includes("entreprise") || n.includes("startup")) return <FaRocket size={18} />;
+    
+    return <FaGraduationCap size={18} />;
+};
+
+// Liste des noms officiels attendus
+const OFFICIAL_CATEGORIES = [
+    "Éducation & Soutien scolaire",
+    "Marketing & Communication",
+    "Santé & Bien-être",
+    "Développement personnel",
+    "Droit & Juridique",
+    "Métiers pratiques",
+    "Langues",
+    "Finance & Investissement",
+    "Médias & Création de contenu",
+    "Design & Créativité",
+    "Développement & Tech",
+    "Création d'entreprise & Startup"
 ];
 
 export default function CategorieBar({ selectedCategory = "foryou", onCategoryChange = (categoryKey) => {}, scrolled = false }) {
+    const [categories, setCategories] = useState([
+        { key: "foryou", label: "Pour vous", icon: <FaGraduationCap size={18} /> }
+    ]);
     const [selected, setSelected] = useState(selectedCategory);
     const scrollRef = useRef(null);
     const [isPaused, setIsPaused] = useState(false);
@@ -160,14 +52,45 @@ export default function CategorieBar({ selectedCategory = "foryou", onCategoryCh
     const [startX, setStartX] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
 
-    // Mettre à jour l'état local quand les props changent
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await fetch("http://localhost:5000/api/categories");
+                if (!response.ok) throw new Error("Erreur lors du chargement des catégories");
+                const data = await response.json();
+                
+                // On filtre pour ne garder que les 12 catégories officielles demandées
+                const filteredData = data.filter(cat => 
+                    OFFICIAL_CATEGORIES.some(off => off.toLowerCase() === cat.name.toLowerCase())
+                );
+
+                const dynamicCategories = filteredData.map(cat => ({
+                    key: cat.id,
+                    label: cat.name,
+                    icon: getIconForCategory(cat.name)
+                }));
+
+                setCategories([
+                    { key: "foryou", label: "Pour vous", icon: <FaGraduationCap size={18} /> },
+                    ...dynamicCategories
+                ]);
+            } catch (error) {
+                console.error("Erreur catégories:", error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
     useEffect(() => {
         setSelected(selectedCategory);
     }, [selectedCategory]);
 
-    // Sécurité pour le Drag : relâcher n'importe où
     useEffect(() => {
-        const handleGlobalMouseUp = () => setIsDragging(false);
+        const handleGlobalMouseUp = () => {
+            setIsDragging(false);
+            isDraggingRef.current = false;
+        };
         window.addEventListener("mouseup", handleGlobalMouseUp);
         return () => window.removeEventListener("mouseup", handleGlobalMouseUp);
     }, []);
@@ -177,19 +100,23 @@ export default function CategorieBar({ selectedCategory = "foryou", onCategoryCh
         onCategoryChange(categoryKey);
     };
 
-    // Auto-scroll logic
+    const isPausedRef = useRef(false);
+    const isDraggingRef = useRef(false);
+
     useEffect(() => {
+        if (categories.length <= 1) return;
         let animationFrameId;
-        const speed = 0.6; // Vitesse de l'auto-scroll
+        const speed = 0.6;
 
         const animate = () => {
-            if (!isPaused && !isDragging && scrollRef.current) {
+            if (!isPausedRef.current && !isDraggingRef.current && scrollRef.current) {
                 const el = scrollRef.current;
-                el.scrollLeft += speed;
-
-                // Boucle infinie : si on arrive à la fin du premier set, on revient au début
-                if (el.scrollLeft >= el.scrollWidth / 2) {
-                    el.scrollLeft = 0;
+                
+                if (el.scrollWidth > el.clientWidth) {
+                    el.scrollLeft += speed;
+                    if (el.scrollLeft >= el.scrollWidth / 3) {
+                        el.scrollLeft -= el.scrollWidth / 3;
+                    }
                 }
             }
             animationFrameId = requestAnimationFrame(animate);
@@ -197,17 +124,18 @@ export default function CategorieBar({ selectedCategory = "foryou", onCategoryCh
 
         animationFrameId = requestAnimationFrame(animate);
         return () => cancelAnimationFrame(animationFrameId);
-    }, [isPaused, isDragging]);
+    }, [categories]); // Ne dépend que des catégories
 
-    // Dragging logic
     const onMouseDown = (e) => {
         setIsDragging(true);
+        isDraggingRef.current = true;
         setStartX(e.pageX - scrollRef.current.offsetLeft);
         setScrollLeft(scrollRef.current.scrollLeft);
     };
 
     const onMouseUp = () => {
         setIsDragging(false);
+        isDraggingRef.current = false;
     };
 
     const onMouseMove = (e) => {
@@ -218,12 +146,10 @@ export default function CategorieBar({ selectedCategory = "foryou", onCategoryCh
         scrollRef.current.scrollLeft = scrollLeft - walk;
     };
 
-    // On double les catégories pour créer l'effet de boucle infinie visuelle
-    const doubleCategories = [...categories, ...categories];
+    const tripleCategories = [...categories, ...categories, ...categories];
 
     return (
         <div className="w-full bg-white flex items-center relative overflow-hidden group/bar">
-            {/* Dégradés sur les bords */}
             <div className="absolute left-0 h-full w-24 bg-gradient-to-r from-white via-white/80 to-transparent z-20 pointer-events-none" />
             <div className="absolute right-0 h-full w-24 bg-gradient-to-l from-white via-white/80 to-transparent z-20 pointer-events-none" />
 
@@ -232,17 +158,21 @@ export default function CategorieBar({ selectedCategory = "foryou", onCategoryCh
                 onMouseDown={onMouseDown}
                 onMouseUp={onMouseUp}
                 onMouseMove={onMouseMove}
-                onMouseEnter={() => setIsPaused(true)}
+                onMouseEnter={() => {
+                    setIsPaused(true);
+                    isPausedRef.current = true;
+                }}
                 onMouseLeave={() => {
                     onMouseUp();
                     setIsPaused(false);
+                    isPausedRef.current = false;
                 }}
                 className={`w-full flex items-center overflow-x-auto no-scrollbar cursor-grab active:cursor-grabbing select-none ${
                     scrolled ? "gap-4 sm:gap-6 h-12" : "gap-6 sm:gap-10 h-20"
                 }`}
                 style={{ scrollbarWidth: 'none' }}
             >
-                {doubleCategories.map((cat, idx) => (
+                {tripleCategories.map((cat, idx) => (
                     <button
                         key={`${cat.key}-${idx}`}
                         onClick={() => handleSelect(cat.key)}

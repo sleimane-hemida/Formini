@@ -172,7 +172,7 @@ exports.deleteLesson = async (req, res) => {
   }
 };
 
-// Upload cover image → Cloudinary
+// Upload cover image
 exports.uploadCoverImage = async (req, res) => {
   try {
     const { lessonId } = req.body;
@@ -183,23 +183,14 @@ exports.uploadCoverImage = async (req, res) => {
     const lesson = await Lesson.findByPk(lessonId);
     if (!lesson) return res.status(404).json({ error: 'Leçon non trouvée' });
 
-    // Supprimer l'ancienne couverture Cloudinary si elle existe
-    if (lesson.coverPublicId) {
-      try {
-        await cloudinary.uploader.destroy(lesson.coverPublicId);
-      } catch (err) {
-        console.error('⚠️ Impossible de supprimer l\'ancienne couverture:', err.message);
-      }
-    }
-
-    // req.file.path     = URL Cloudinary
-    // req.file.filename = public_id Cloudinary
-    const coverUrl      = req.file.path;
-    const coverPublicId = req.file.filename;
+    // En local, req.file.path contient C:\...\uploads\lesson-covers\nom.png
+    // On le transforme en URL relative /uploads/lesson-covers/nom.png
+    const coverUrl = `/uploads/lesson-covers/${req.file.filename}`;
+    const coverPublicId = `lesson-covers/${req.file.filename}`;
 
     await lesson.update({ image_couverture: coverUrl, coverPublicId });
 
-    console.log('✅ Cover image uploadée sur Cloudinary, lessonId:', lessonId);
+    console.log('✅ Cover image uploadée localement, lessonId:', lessonId);
     res.status(201).json({ id: lesson.id, url: coverUrl });
   } catch (error) {
     console.error('❌ Error uploading cover image:', error.message);

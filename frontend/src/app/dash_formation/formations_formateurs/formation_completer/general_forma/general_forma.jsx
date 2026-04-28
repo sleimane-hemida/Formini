@@ -41,8 +41,8 @@ export default function GeneralForma() {
 	// Récupérer les catégories et sous-catégories au montage
 	useEffect(() => {
 		Promise.all([
-			fetch('https://formini-yx2w.onrender.com/api/categories').then(res => res.json()),
-			fetch('https://formini-yx2w.onrender.com/api/subcategories').then(res => res.json())
+			fetch('http://localhost:5000/api/categories').then(res => res.json()),
+			fetch('http://localhost:5000/api/subcategories').then(res => res.json())
 		])
 			.then(([cats, subcats]) => {
 				setCategories(cats || []);
@@ -60,7 +60,7 @@ export default function GeneralForma() {
 			}
 
 			// Récupérer les données de la formation depuis le backend
-			fetch(`https://formini-yx2w.onrender.com/api/formations/${fId}`, {
+			fetch(`http://localhost:5000/api/formations/${fId}`, {
 				headers: {
 					'Authorization': `Bearer ${token}`
 				}
@@ -170,7 +170,7 @@ export default function GeneralForma() {
 
 			console.log('📤 Sending payload:', payload);
 
-			const res = await fetch(`https://formini-yx2w.onrender.com/api/formations/${fId}`, {
+			const res = await fetch(`http://localhost:5000/api/formations/${fId}`, {
 				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json',

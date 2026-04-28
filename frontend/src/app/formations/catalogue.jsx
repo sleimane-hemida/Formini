@@ -6,8 +6,29 @@ import Header from "../../composant/layout/header";
 import Footer from "../../composant/layout/footer";
 import Sidebar from "../../composant/layout/sidebar";
 import CategorieBar from "../../composant/layout/categorie";
-import { FaPaintBrush, FaCode, FaChartBar, FaCamera, FaMusic, FaGraduationCap, FaFilter, FaUsers, FaShoppingCart } from "react-icons/fa";
+import { 
+    FaPaintBrush, FaCode, FaChartBar, FaCamera, FaMusic, FaGraduationCap, FaFilter, FaUsers, FaShoppingCart,
+    FaBookOpen, FaBullhorn, FaHeartbeat, FaUserGraduate, FaBalanceScale, FaTools, FaLanguage, FaChartLine, FaVideo, FaRocket
+} from "react-icons/fa";
 import { ROUTES } from "../../utils/routes";
+
+// Helper pour associer une icône en fonction du nom de la catégorie
+const getIconForCategory = (name) => {
+    const n = (name || "").toLowerCase();
+    if (n.includes("éducation") || n.includes("soutien")) return <FaBookOpen size={16} />;
+    if (n.includes("marketing") || n.includes("communication")) return <FaBullhorn size={16} />;
+    if (n.includes("santé") || n.includes("bien-être")) return <FaHeartbeat size={16} />;
+    if (n.includes("développement personnel")) return <FaUserGraduate size={16} />;
+    if (n.includes("droit") || n.includes("juridique")) return <FaBalanceScale size={16} />;
+    if (n.includes("métiers pratiques")) return <FaTools size={16} />;
+    if (n.includes("langue")) return <FaLanguage size={16} />;
+    if (n.includes("finance") || n.includes("investissement")) return <FaChartLine size={16} />;
+    if (n.includes("médias") || n.includes("contenu")) return <FaVideo size={16} />;
+    if (n.includes("design") || n.includes("créativité")) return <FaPaintBrush size={16} />;
+    if (n.includes("développement") || n.includes("tech")) return <FaCode size={16} />;
+    if (n.includes("entreprise") || n.includes("startup")) return <FaRocket size={16} />;
+    return <FaGraduationCap size={16} />;
+};
 
 export default function Catalogue() {
     const [selectedFormation, setSelectedFormation] = useState(null);
@@ -16,6 +37,8 @@ export default function Catalogue() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState("foryou");
     const [scrolled, setScrolled] = useState(false);
+    const [categoriesList, setCategoriesList] = useState([]);
+    const [subcategoriesList, setSubcategoriesList] = useState([]);
     const [formations, setFormations] = useState([]);
     const [filters, setFilters] = useState({
         subcategories: [],
@@ -33,10 +56,18 @@ export default function Catalogue() {
     useEffect(() => {
         const loadFormations = async () => {
             try {
-                const res = await fetch('https://formini-yx2w.onrender.com/api/formations-all');
+                const res = await fetch('http://localhost:5000/api/formations-all');
                 if (!res.ok) throw new Error('Failed to load formations');
                 const data = await res.json();
                 
+                const resolveImage = (img) => {
+                    if (!img) return "/images/users/formation.png";
+                    if (img.startsWith('data:') || img.startsWith('http')) return img;
+                    if (img.startsWith('/uploads')) return `http://localhost:5000${img}`;
+                    if (img.length > 500) return `data:image/png;base64,${img}`;
+                    return `http://localhost:5000${img}`;
+                };
+
                 // Adapter les données du backend au format de l'UI
                 const adaptedFormations = data.map(f => {
                     // Compter les leçons à partir des modules
@@ -49,16 +80,20 @@ export default function Catalogue() {
                     
                     return {
                         id: f.id,
-                        image: f.image || "/images/users/formation.png",
+                        image: resolveImage(f.image),
                         category: f.Category?.name || "Non catégorisé",
                         categoryId: f.categoryId,
                         subcategoryId: f.subcategoryId,
-                        categoryIcon: <FaCode size={16} className="text-[#B1B5C3]" />,
-                        duration: f.duree_totale_minutes ? `${f.duree_totale_minutes} min` : "Durée non définie",
+                        categoryIcon: getIconForCategory(f.Category?.name),
+                        views: f.nombre_vues || 0,
                         title: f.name,
                         description: f.description || "",
                         ce_que_vous_apprendrez: f.ce_que_vous_apprendrez || "",
-                        avatar: "/images/users/profile.jpg",
+                        avatar: f.trainer?.avatar 
+                            ? (f.trainer.avatar.startsWith('http') || f.trainer.avatar.startsWith('data:') 
+                                ? f.trainer.avatar 
+                                : `http://localhost:5000${f.trainer.avatar.replace('/api/avatar/', '/uploads/avatars/')}`) 
+                            : null,
                         author: f.trainer?.name || "Formateur",
                         oldPrice: f.prix_normal ? `${parseFloat(f.prix_normal).toLocaleString('fr-FR')} MRU` : "Gratuit",
                         price: f.est_gratuite ? "Gratuit" : (f.prix_promo ? `${parseFloat(f.prix_promo).toLocaleString('fr-FR')} MRU` : `${parseFloat(f.prix_normal || 0).toLocaleString('fr-FR')} MRU`),
@@ -88,6 +123,23 @@ export default function Catalogue() {
         };
         
         loadFormations();
+    }, []);
+
+    // Charger les catégories pour le mapping des noms
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const [catRes, subRes] = await Promise.all([
+                    fetch("http://localhost:5000/api/categories"),
+                    fetch("http://localhost:5000/api/subcategories")
+                ]);
+                if (catRes.ok) setCategoriesList(await catRes.json());
+                if (subRes.ok) setSubcategoriesList(await subRes.json());
+            } catch (error) {
+                console.error("Erreur chargement mapping noms:", error);
+            }
+        };
+        fetchCategories();
     }, []);
 
     const openModal = (formation) => {
@@ -233,7 +285,7 @@ export default function Catalogue() {
     const handleBuyFormation = async (formationId) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('https://formini-yx2w.onrender.com/api/orders', {
+            const response = await fetch('http://localhost:5000/api/orders', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -347,12 +399,17 @@ export default function Catalogue() {
                                     <div className="flex flex-wrap gap-1">
                                         {selectedCategory !== "foryou" && (
                                             <span className="px-2 py-1 bg-[#0C8CE9] text-white rounded-full text-xs font-medium">
-                                                {selectedCategory}
+                                                {categoriesList.find(c => c.id === selectedCategory)?.name || selectedCategory}
                                             </span>
                                         )}
                                         {filters.languages.map(lang => (
                                             <span key={lang} className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
                                                 {lang}
+                                            </span>
+                                        ))}
+                                        {filters.subcategories?.map(subId => (
+                                            <span key={subId} className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
+                                                {subcategoriesList.find(s => s.id === subId)?.name || subId}
                                             </span>
                                         ))}
                                         {filters.hasPromotion && (
@@ -373,12 +430,12 @@ export default function Catalogue() {
                         {filteredFormations.length > 0 ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-20">
                                 {filteredFormations.map((formation) => (
-                                    <div key={formation.id} className="flex justify-center">
+                                    <div key={formation.id} className="flex justify-center h-full">
                                         <Card
                                             image={formation.image}
                                             category={formation.category}
                                             categoryIcon={formation.categoryIcon}
-                                            duration={formation.duration}
+                                            views={formation.views}
                                             title={formation.title}
                                             description={formation.description}
                                             avatar={formation.avatar}

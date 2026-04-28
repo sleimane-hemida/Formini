@@ -28,6 +28,7 @@ export default function LeconPage() {
 	const [deleteTargetId, setDeleteTargetId] = useState(null);
 	const [hasChanges, setHasChanges] = useState(false);
 	const [saving, setSaving] = useState(false);
+	const [isAdding, setIsAdding] = useState(false);
 
 	const autoSaveTimer = useAutoSave(hasChanges, () => handleSave(), 30);
 
@@ -41,28 +42,50 @@ export default function LeconPage() {
 		setShowDeleteModal(false);
 	};
 
-	const confirmDelete = () => {
+	const confirmDelete = async () => {
+		const id = deleteTargetId;
+		if (!id) {
+			cancelDelete();
+			return;
+		}
+
+		const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+		if (token && id) {
+			try {
+				await fetch(`http://localhost:5000/api/lessons/${id}`, {
+					method: 'DELETE',
+					headers: {
+						'Authorization': `Bearer ${token}`
+					}
+				});
+			} catch (err) {
+				console.error('❌ Error deleting lesson:', err);
+			}
+		}
+
 		setLessons(prev => {
-			const next = prev.filter(x => x.id !== deleteTargetId);
+			const next = prev.filter(x => x.id !== id);
 			saveLessonsDraft(next);
 			return next;
 		});
 		setHasChanges(true);
 		setShowDeleteModal(false);
 		setDeleteTargetId(null);
-		if (editingLessonId === deleteTargetId) setEditingLessonId(null);
+		if (editingLessonId === id) setEditingLessonId(null);
 	};
 
 	const addLesson = async () => {
+		if (isAdding) return;
 		const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 		if (!token) {
 			alert('Vous devez être connecté.');
 			return;
 		}
 
+		setIsAdding(true);
 		try {
 			const nextOrder = lessons.length + 1;
-			const response = await fetch('https://formini-yx2w.onrender.com/api/lessons', {
+			const response = await fetch('http://localhost:5000/api/lessons', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -87,6 +110,8 @@ export default function LeconPage() {
 		} catch (err) {
 			console.error('❌ Error creating lesson:', err);
 			alert('Erreur lors de la création de la leçon');
+		} finally {
+			setIsAdding(false);
 		}
 	};
 
@@ -135,7 +160,7 @@ export default function LeconPage() {
 				formData.append('file', file);
 				formData.append('lessonId', lessonId);
 				
-				const response = await fetch('https://formini-yx2w.onrender.com/api/lesson-cover', {
+				const response = await fetch('http://localhost:5000/api/lesson-cover', {
 					method: 'POST',
 					headers: {
 						'Authorization': `Bearer ${token}`
@@ -152,7 +177,7 @@ export default function LeconPage() {
 				
 				// Update with actual server URL
 				setLessons(prev => {
-					const next = prev.map(x => x.id === lessonId ? { ...x, bg: `https://formini-yx2w.onrender.com${result.url}` } : x);
+					const next = prev.map(x => x.id === lessonId ? { ...x, bg: `http://localhost:5000${result.url}` } : x);
 					return next;
 				});
 			} catch (err) {
@@ -172,7 +197,7 @@ export default function LeconPage() {
 			if (token) {
 				for (const l of lessons) {
 					if (l.title || l.titre) {
-						await fetch(`https://formini-yx2w.onrender.com/api/lessons/${l.id}`, {
+						await fetch(`http://localhost:5000/api/lessons/${l.id}`, {
 							method: 'PUT',
 							headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
 							body: JSON.stringify({ titre: l.title || l.titre })
@@ -200,7 +225,7 @@ export default function LeconPage() {
 		console.log('📥 Loading lessons for module:', moduleId);
 
 		// Load lessons from backend
-		fetch(`https://formini-yx2w.onrender.com/api/modules/${encodeURIComponent(moduleId)}/lessons`, {
+		fetch(`http://localhost:5000/api/modules/${encodeURIComponent(moduleId)}/lessons`, {
 			headers: {
 				'Authorization': `Bearer ${token}`
 			}
@@ -216,14 +241,14 @@ export default function LeconPage() {
 				// Map lessons and set cover images from backend
 				const mappedLessons = lessonsArr.map(lesson => ({
 					...lesson,
-					bg: lesson.image_couverture ? `https://formini-yx2w.onrender.com${lesson.image_couverture}` : undefined
+					bg: lesson.image_couverture ? (lesson.image_couverture.startsWith('http') ? lesson.image_couverture : `http://localhost:5000${lesson.image_couverture}`) : undefined
 				}));
 				
 				setLessons(mappedLessons);
 				setHasChanges(false);
 				
 				// Fetch module title directly from module endpoint
-				fetch(`https://formini-yx2w.onrender.com/api/modules/${encodeURIComponent(moduleId)}`, {
+				fetch(`http://localhost:5000/api/modules/${encodeURIComponent(moduleId)}`, {
 					headers: {
 						'Authorization': `Bearer ${token}`
 					}
@@ -273,7 +298,9 @@ export default function LeconPage() {
 
 									<div className="bg-white p-6 rounded-2xl w-full text-black shadow-sm">
 										<div className="mb-4 flex items-center justify-between">
-											<button type="button" onClick={addLesson} className="inline-flex items-center gap-2 px-3 py-2 border rounded text-sm bg-white hover:bg-gray-50">+ Ajouter une leçon</button>
+											<button type="button" onClick={addLesson} disabled={isAdding} className={`inline-flex items-center gap-2 px-3 py-2 border rounded text-sm bg-white hover:bg-gray-50 ${isAdding ? 'opacity-50 cursor-not-allowed' : ''}`}>
+												{isAdding ? 'Ajout...' : '+ Ajouter une leçon'}
+											</button>
 											<div className="text-sm text-gray-500">{lessons.length} leçon(s)</div>
 										</div>
 
@@ -289,11 +316,11 @@ export default function LeconPage() {
 														{editingLessonId === l.id ? (
 															<input
 																autoFocus
-																value={l.title}
+																value={l.titre || ''}
 																onChange={(e) => {
 																	const val = e.target.value;
 																	setLessons(prev => {
-																		const next = prev.map(x => x.id === l.id ? { ...x, title: val } : x);
+																		const next = prev.map(x => x.id === l.id ? { ...x, titre: val } : x);
 																		saveLessonsDraft(next);
 																		return next;
 																	});

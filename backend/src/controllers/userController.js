@@ -277,7 +277,7 @@ exports.updateProfile = async (req, res, next) => {
   }
 };
 
-// Upload user avatar → Cloudinary
+// Upload user avatar
 exports.uploadAvatar = async (req, res, next) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'Aucun fichier uploadé' });
@@ -285,23 +285,16 @@ exports.uploadAvatar = async (req, res, next) => {
     const user = await User.findByPk(req.user.id);
     if (!user) return res.status(404).json({ error: 'User not found' });
 
-    // Supprimer l'ancien avatar sur Cloudinary si présent
-    if (user.avatarPublicId) {
-      try {
-        await cloudinary.uploader.destroy(user.avatarPublicId);
-      } catch (err) {
-        console.error('⚠️ Impossible de supprimer l\'ancien avatar Cloudinary:', err.message);
-      }
-    }
+    // En local, on utilise une URL relative
+    const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+    const avatarPublicId = `avatars/${req.file.filename}`;
 
-    // req.file.path  = URL Cloudinary (fourni par multer-storage-cloudinary)
-    // req.file.filename = public_id Cloudinary
-    user.avatar        = req.file.path;       // URL directe Cloudinary
-    user.avatarPublicId = req.file.filename;  // public_id pour suppression future
+    user.avatar        = avatarUrl;
+    user.avatarPublicId = avatarPublicId;
 
     await user.save();
 
-    console.log('✅ Avatar uploadé sur Cloudinary:', user.avatar);
+    console.log('✅ Avatar uploadé localement:', user.avatar);
     res.json({
       message: 'Avatar uploadé avec succès',
       avatar: user.avatar,

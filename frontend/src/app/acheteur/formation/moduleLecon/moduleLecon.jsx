@@ -24,7 +24,7 @@ import {
     FaTag,
     FaPaintBrush,
 } from "react-icons/fa";
-import { FiAward, FiBookOpen, FiCalendar, FiBarChart2 } from "react-icons/fi";
+import { FiAward, FiBookOpen, FiCalendar, FiBarChart2, FiEye } from "react-icons/fi";
 
 // ─── Accordéon Module ─────────────────────────────────────────────────────────
 function ModuleAccordion({ module, index, isOpen, onToggle }) {
@@ -50,7 +50,7 @@ function ModuleAccordion({ module, index, isOpen, onToggle }) {
                         {String(index + 1).padStart(2, "0")}
                     </span>
                     <div className="min-w-0">
-                        <p className="font-semibold text-gray-900 text-sm truncate">{module.title}</p>
+                        <p className="font-semibold text-gray-900 text-sm truncate">{module.titre}</p>
                         <p className="text-xs text-gray-400 mt-0.5">
                             {total} leçon{total > 1 ? "s" : ""} · {module.duration}
                             {done > 0 && (
@@ -69,26 +69,51 @@ function ModuleAccordion({ module, index, isOpen, onToggle }) {
                     {lecons.map((lecon) => (
                         <div
                             key={lecon.id}
-                            className={`flex items-center gap-3 px-5 py-3 text-sm ${
+                            className={`flex items-center gap-4 px-5 py-3 text-sm ${
                                 lecon.locked
                                     ? "opacity-50 cursor-not-allowed"
                                     : "hover:bg-white cursor-pointer transition-colors"
                             }`}
                         >
                             <span className="shrink-0">{typeIcon(lecon)}</span>
-                            <span
-                                className={`flex-1 ${
-                                    lecon.done
-                                        ? "line-through text-gray-400"
-                                        : lecon.locked
-                                        ? "text-gray-400"
-                                        : "text-gray-700"
-                                }`}
-                            >
-                                {lecon.title}
-                            </span>
+                            
+                            {/* Image de la leçon */}
+                            <div className="shrink-0 w-20 h-12 bg-gray-200 rounded-lg overflow-hidden relative border border-gray-100 shadow-sm">
+                                <Image 
+                                    src={(() => {
+                                        const img = lecon.image_couverture;
+                                        if (!img) return "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=200&q=80";
+                                        if (img.startsWith('data:') || img.startsWith('http')) return img;
+                                        if (img.startsWith('/')) return `http://localhost:5000${img}`;
+                                        if (img.length > 500) return `data:image/png;base64,${img}`;
+                                        return `http://localhost:5000${img}`;
+                                    })()}
+                                    alt={lecon.titre || "Illustration de la leçon"}
+                                    fill
+                                    className="object-cover"
+                                />
+                                {lecon.locked && (
+                                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                                        <FaLock size={10} className="text-white" />
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="flex flex-col min-w-0 flex-1">
+                                <span
+                                    className={`font-medium ${
+                                        lecon.done
+                                            ? "line-through text-gray-400"
+                                            : lecon.locked
+                                            ? "text-gray-400"
+                                            : "text-gray-700"
+                                    }`}
+                                >
+                                    {lecon.titre}
+                                </span>
+                            </div>
                             {lecon.duration && (
-                                <span className="text-xs text-gray-400 shrink-0 flex items-center gap-1">
+                                <span className="text-xs text-gray-400 shrink-0 flex items-center gap-1 bg-gray-100 px-2 py-1 rounded-md">
                                     <FaRegClock size={10} />
                                     {lecon.duration}
                                 </span>
@@ -121,7 +146,7 @@ export default function ModuleLecon({ formationId }) {
                     return;
                 }
 
-                const response = await fetch(`https://formini-yx2w.onrender.com/api/formations/${id}`, {
+                const response = await fetch(`http://localhost:5000/api/formations/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -140,14 +165,25 @@ export default function ModuleLecon({ formationId }) {
                     title: data.name,
                     category: data.Category?.name || null,
                     description: data.description || null,
-                    image: data.image ? (data.image.startsWith('http') || data.image.startsWith('/') || data.image.startsWith('data:') ? data.image : `https://formini-yx2w.onrender.com/uploads/${data.image}`) : null,
+                    image: (() => {
+                        const img = data.image;
+                        if (!img) return null;
+                        if (img.startsWith('data:') || img.startsWith('http')) return img;
+                        if (img.startsWith('/')) return `http://localhost:5000${img}`;
+                        if (img.length > 500) return `data:image/png;base64,${img}`;
+                        return `http://localhost:5000/uploads/${img}`;
+                    })(),
                     duration: data.duree_totale_minutes ? `${data.duree_totale_minutes} min` : "Durée non définie",
                     rating: data.note_moyenne ? parseFloat(data.note_moyenne) : 0, 
                     students: data.orders_count || 0,
                     type: data.prix_promo ? "promotion" : (data.est_gratuite ? "gratuit" : "normal"),
                     modules: data.Modules || [],
-                    author: data.trainer?.name || null,
-                    avatar: data.trainer?.avatar ? (data.trainer.avatar.startsWith('http') || data.trainer.avatar.startsWith('data:') ? data.trainer.avatar : `https://formini-yx2w.onrender.com${data.trainer.avatar}`) : null,
+                    author: data.trainer ? `${data.trainer.prenom || ''} ${data.trainer.nom_de_famille || data.trainer.name || ''}`.trim() : "Formateur",
+                    avatar: data.trainer?.avatar 
+                        ? (data.trainer.avatar.startsWith('http') || data.trainer.avatar.startsWith('data:') 
+                            ? data.trainer.avatar 
+                            : `http://localhost:5000${data.trainer.avatar.replace('/api/avatar/', '/uploads/avatars/')}`) 
+                        : null,
                     level: data.niveau || null,
                     language: (() => {
                         const langMap = {
@@ -167,6 +203,7 @@ export default function ModuleLecon({ formationId }) {
                     lastUpdated: data.updatedAt ? new Date(data.updatedAt).toLocaleDateString('fr-FR') : null,
                     price: data.est_gratuite ? "Gratuit" : (data.prix_promo ? `${parseFloat(data.prix_promo).toLocaleString('fr-FR')} MRU` : `${parseFloat(data.prix_normal || 0).toLocaleString('fr-FR')} MRU`),
                     oldPrice: data.prix_promo ? `${parseFloat(data.prix_normal).toLocaleString('fr-FR')} MRU` : null,
+                    views: data.nombre_vues || 0,
                     objectives: data.ce_que_vous_apprendrez ? data.ce_que_vous_apprendrez.split(',').map(s => s.trim()) : []
                 };
 
@@ -330,7 +367,7 @@ export default function ModuleLecon({ formationId }) {
                                     {[
                                         { icon: <FiBookOpen size={15} className="text-[#0C8CE9]" />, label: "Modules", value: formation.modules.length },
                                         { icon: <FaPlayCircle size={15} className="text-[#0C8CE9]" />, label: "Leçons", value: totalLecons },
-                                        { icon: <FaRegClock size={15} className="text-[#0C8CE9]" />, label: "Durée", value: formation.duration },
+                                        { icon: <FiEye size={15} className="text-[#0C8CE9]" />, label: "Vues", value: formation.views.toLocaleString() },
                                         { icon: <FaUsers size={15} className="text-[#0C8CE9]" />, label: "Ventes", value: formation.students.toLocaleString() },
                                     ].map((s, i) => (
                                         <div key={i} className="bg-[#F5F8FF] rounded-lg p-3 flex items-center gap-3">
@@ -459,7 +496,7 @@ export default function ModuleLecon({ formationId }) {
                                             width={44}
                                             height={44}
                                             className="rounded-lg object-cover border border-gray-200"
-                                            style={{ width: "44px", height: "44px" }}
+                                            style={{ width: "44px", height: "44px", objectFit: "cover" }}
                                         />
                                     ) : (
                                         <div className="w-11 h-11 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 border border-gray-200">

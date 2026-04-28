@@ -18,7 +18,7 @@ export default function Home() {
   const [formations, setFormations] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch('https://formini-yx2w.onrender.com/api/formations-all')
+    fetch('http://localhost:5000/api/formations-all')
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -58,7 +58,7 @@ export default function Home() {
     if (cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://') || cleanUrl.startsWith('data:')) {
       return cleanUrl;
     }
-    return cleanUrl.startsWith('/') ? `https://formini-yx2w.onrender.com${cleanUrl}` : `https://formini-yx2w.onrender.com/${cleanUrl}`;
+    return cleanUrl.startsWith('/') ? `http://localhost:5000${cleanUrl}` : `http://localhost:5000/${cleanUrl}`;
   };
 
   return (
