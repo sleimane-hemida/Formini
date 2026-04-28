@@ -11,24 +11,8 @@ import {
     FaBookOpen, FaBullhorn, FaHeartbeat, FaUserGraduate, FaBalanceScale, FaTools, FaLanguage, FaChartLine, FaVideo, FaRocket
 } from "react-icons/fa";
 import { ROUTES } from "../../utils/routes";
+import { getIconForCategory } from "../../utils/categoryIcons";
 
-// Helper pour associer une icône en fonction du nom de la catégorie
-const getIconForCategory = (name) => {
-    const n = (name || "").toLowerCase();
-    if (n.includes("éducation") || n.includes("soutien")) return <FaBookOpen size={16} />;
-    if (n.includes("marketing") || n.includes("communication")) return <FaBullhorn size={16} />;
-    if (n.includes("santé") || n.includes("bien-être")) return <FaHeartbeat size={16} />;
-    if (n.includes("développement personnel")) return <FaUserGraduate size={16} />;
-    if (n.includes("droit") || n.includes("juridique")) return <FaBalanceScale size={16} />;
-    if (n.includes("métiers pratiques")) return <FaTools size={16} />;
-    if (n.includes("langue")) return <FaLanguage size={16} />;
-    if (n.includes("finance") || n.includes("investissement")) return <FaChartLine size={16} />;
-    if (n.includes("médias") || n.includes("contenu")) return <FaVideo size={16} />;
-    if (n.includes("design") || n.includes("créativité")) return <FaPaintBrush size={16} />;
-    if (n.includes("développement") || n.includes("tech")) return <FaCode size={16} />;
-    if (n.includes("entreprise") || n.includes("startup")) return <FaRocket size={16} />;
-    return <FaGraduationCap size={16} />;
-};
 
 export default function Catalogue() {
     const [selectedFormation, setSelectedFormation] = useState(null);
@@ -399,7 +383,7 @@ export default function Catalogue() {
                                     <div className="flex flex-wrap gap-1">
                                         {selectedCategory !== "foryou" && (
                                             <span className="px-2 py-1 bg-[#0C8CE9] text-white rounded-full text-xs font-medium">
-                                                {categoriesList.find(c => c.id === selectedCategory)?.name || selectedCategory}
+                                                {categoriesList.find(c => c.id?.toString() === selectedCategory?.toString())?.name || (categoriesList.length > 0 ? selectedCategory : "Chargement...")}
                                             </span>
                                         )}
                                         {filters.languages.map(lang => (
@@ -409,7 +393,7 @@ export default function Catalogue() {
                                         ))}
                                         {filters.subcategories?.map(subId => (
                                             <span key={subId} className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
-                                                {subcategoriesList.find(s => s.id === subId)?.name || subId}
+                                                {subcategoriesList.find(s => s.id?.toString() === subId?.toString())?.name || subId}
                                             </span>
                                         ))}
                                         {filters.hasPromotion && (
@@ -428,7 +412,7 @@ export default function Catalogue() {
 
                         {/* Grille des formations */}
                         {filteredFormations.length > 0 ? (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-20">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 pb-20">
                                 {filteredFormations.map((formation) => (
                                     <div key={formation.id} className="flex justify-center h-full">
                                         <Card

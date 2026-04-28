@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import CardFormateur from "./pages_common/card_formateur";
 import { useRouter } from "next/navigation";
 import { ROUTES, buildRouteWithQuery } from "../utils/routes";
+import { getIconForCategory } from "../utils/categoryIcons";
 
 import Header from "../composant/layout/header";
 import Sidebar from "../composant/layout/sidebar";
@@ -74,8 +75,8 @@ export default function Home() {
         }}
       />
       <HomeCommon />
-      {/* Deux lignes de cartes normales (4 par ligne, 8 sur desktop, 4 sur mobile) */}
-      <div className="flex flex-wrap justify-center gap-6 py-8 md:gap-8 lg:gap-10 xl:gap-12">
+      {/* Deux lignes de cartes normales (4 par ligne sur desktop) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 py-8 px-4 sm:px-6 md:px-8 max-w-7xl mx-auto">
         {/* Show 4 cards on mobile, 8 on md+ */}
         {/* Mobile: first 4 cards only, md+: all 8 cards */}
         {regularCards.map((form: any, i) => {
@@ -93,6 +94,7 @@ export default function Home() {
               key={form.id || `reg-${i}`}
               image={imageUrl}
               category={categoryStr}
+              categoryIcon={getIconForCategory(categoryStr)}
               duration={durationStr}
               title={form.name || form.title}
               description={form.description}
@@ -129,7 +131,7 @@ export default function Home() {
       <PubFormateur />
 
 
-      <div className="flex flex-col md:flex-row justify-center gap-8 py-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 justify-center gap-6 py-8 px-4 sm:px-6 md:px-8 max-w-7xl mx-auto">
         {largeCards.map((form: any, i) => {
           const isMock = form.isMock;
           const authorName = isMock ? form.author : (form.trainer?.name || "Formateur");
@@ -145,6 +147,7 @@ export default function Home() {
               key={form.id || `lrg-${i}`}
               image={imageUrl}
               category={categoryStr}
+              categoryIcon={getIconForCategory(categoryStr, 18)}
               duration={durationStr}
               title={form.name || form.title}
               description={form.description}

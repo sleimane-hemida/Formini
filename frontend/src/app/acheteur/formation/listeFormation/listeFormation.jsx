@@ -9,7 +9,7 @@ import { CardLarge } from "../../../pages_common/card";
 
 // Icônes de filtrage et catégories
 import { FiFilter, FiTag, FiStar, FiGift } from "react-icons/fi";
-import { FaLaptopCode, FaBullhorn, FaCamera, FaBriefcase, FaPaintBrush } from "react-icons/fa";
+import { getIconForCategory } from "../../../../utils/categoryIcons";
 
 export default function ListeFormation() {
     // État pour le filtre actif et la recherche textuelle
@@ -54,7 +54,7 @@ export default function ListeFormation() {
                     id: order.Formation.id,
                     title: order.Formation.name,
                     category: order.Formation.Category?.name || "Non spécifié",
-                    categoryIcon: <FaPaintBrush size={18} className="text-[#B1B5C3]" />,
+                    categoryIcon: getIconForCategory(order.Formation.Category?.name || "Non spécifié"),
                     views: order.Formation.nombre_vues || 0,
                     description: order.Formation.description,
                     author: order.Formation.trainer 

@@ -4,7 +4,7 @@ import { HiBookOpen, HiMagnifyingGlass } from 'react-icons/hi2';
 import { useRouter } from 'next/navigation';
 import Header from '../../../composant/layout/header';
 import { CardLarge } from '../../pages_common/card';
-import { FaPaintBrush, FaCode, FaChartBar, FaCamera } from 'react-icons/fa';
+import { getIconForCategory } from '../../../../utils/categoryIcons';
 
 export default function MesFormations() {
     const [filter, setFilter] = useState('all'); // all, in-progress, completed
@@ -51,7 +51,7 @@ export default function MesFormations() {
                     id: order.Formation.id,
                     image: order.Formation.image || "/images/users/formation.png",
                     category: order.Formation.Category?.name || "Non spécifié",
-                    categoryIcon: <FaCode size={18} className="text-[#B1B5C3]" />,
+                    categoryIcon: getIconForCategory(order.Formation.Category?.name || "Non spécifié"),
                     duration: `${order.Formation.duree_totale_minutes || 0} min`,
                     title: order.Formation.name,
                     description: order.Formation.description,
