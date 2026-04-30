@@ -72,7 +72,7 @@ export default function Dashboard() {
       <Header />
 
       <div className="flex w-full">
-        <div className="pl-[17px] sm:pl-[17px]">
+        <div className="lg:pl-[17px]">
           <Sidebar />
         </div>
 
@@ -81,19 +81,19 @@ export default function Dashboard() {
             <main>
               <PageHeader title="Tableau de bord" subtitle="Vue d'ensemble des performances et statistiques." />
 
-              <div className="dashboard-body space-y-6 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+              <div className="dashboard-body space-y-6 bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200 overflow-hidden">
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
                 {kpis.map((k) => (
-                  <div key={k.id} className="bg-white p-5 rounded-lg shadow-sm border border-gray-200 flex items-center justify-between">
-                    <div>
-                      <p className="text-xs text-gray-400">{k.title}</p>
-                      <p className="mt-1 text-2xl font-bold text-gray-900">{k.value}</p>
+                  <div key={k.id} className="bg-white p-4 sm:p-5 rounded-lg shadow-sm border border-gray-200 flex items-center justify-between">
+                    <div className="min-w-0">
+                      <p className="text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider">{k.title}</p>
+                      <p className="mt-0.5 text-xl sm:text-2xl font-bold text-gray-900 truncate">{k.value}</p>
                     </div>
-                    <div className="flex flex-col items-end">
-                      <div className="text-sm text-green-500">{k.delta}</div>
-                      <div className="mt-2 bg-blue-50 p-2 rounded-md">
-                        <k.icon className="w-5 h-5 text-blue-600" />
+                    <div className="flex flex-col items-end flex-shrink-0">
+                      <div className="text-xs font-semibold text-green-500">{k.delta}</div>
+                      <div className="mt-2 bg-blue-50 p-1.5 sm:p-2 rounded-md">
+                        <k.icon className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
                       </div>
                     </div>
                   </div>
@@ -101,19 +101,21 @@ export default function Dashboard() {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="col-span-1 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                  <h3 className="text-sm font-medium mb-3 text-gray-900">Répartition des types de ventes</h3>
-                  <Chart options={pieOptions} series={pieSeries} type="donut" height={260} />
+                <div className="col-span-1 bg-white p-4 rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                  <h3 className="text-sm font-bold mb-4 text-gray-900">Répartition des types de ventes</h3>
+                  <div className="flex justify-center">
+                    <Chart options={pieOptions} series={pieSeries} type="donut" height={280} width="100%" />
+                  </div>
                 </div>
 
-                <div className="col-span-2 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                  <h3 className="text-sm font-medium mb-3 text-gray-900">Visites</h3>
-                  <Chart options={lineOptions} series={lineSeries} type="line" height={300} />
+                <div className="col-span-2 bg-white p-4 rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                  <h3 className="text-sm font-bold mb-4 text-gray-900">Visites hebdomadaires</h3>
+                  <Chart options={lineOptions} series={lineSeries} type="line" height={300} width="100%" />
                 </div>
 
-                <div className="col-span-3 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                  <h3 className="text-sm font-medium mb-3 text-gray-900">Ventes par mois</h3>
-                  <Chart options={barOptions} series={barSeries} type="bar" height={300} />
+                <div className="col-span-3 bg-white p-4 rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                  <h3 className="text-sm font-bold mb-4 text-gray-900">Ventes par mois</h3>
+                  <Chart options={barOptions} series={barSeries} type="bar" height={300} width="100%" />
                 </div>
               </div>
 

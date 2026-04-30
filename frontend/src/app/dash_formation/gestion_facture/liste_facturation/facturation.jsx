@@ -33,7 +33,7 @@ export default function FacturationPage() {
 				<Header />
 
 				<div className="flex w-full">
-					<div className="pl-[17px] sm:pl-[17px]">
+					<div className="lg:pl-[17px]">
 						<Sidebar />
 					</div>
 
