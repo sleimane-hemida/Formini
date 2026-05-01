@@ -52,7 +52,7 @@ export default function LeconPage() {
 		const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 		if (token && id) {
 			try {
-				await fetch(`http://localhost:5000/api/lessons/${id}`, {
+				await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${id}`, {
 					method: 'DELETE',
 					headers: {
 						'Authorization': `Bearer ${token}`
@@ -85,7 +85,7 @@ export default function LeconPage() {
 		setIsAdding(true);
 		try {
 			const nextOrder = lessons.length + 1;
-			const response = await fetch('http://localhost:5000/api/lessons', {
+			const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -104,7 +104,7 @@ export default function LeconPage() {
 
 			const newLesson = await response.json();
 			console.log('✅ Lesson created:', newLesson);
-			
+
 			setLessons(prev => [...prev, newLesson]);
 			setEditingLessonId(newLesson.id);
 		} catch (err) {
@@ -137,7 +137,7 @@ export default function LeconPage() {
 	const handlePhotoChange = (e, lessonId) => {
 		const file = e.target.files && e.target.files[0];
 		if (!file) return;
-		
+
 		const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 		if (!token) {
 			alert('Vous devez être connecté.');
@@ -147,37 +147,37 @@ export default function LeconPage() {
 		const reader = new FileReader();
 		reader.onload = async () => {
 			const dataUrl = reader.result;
-			
+
 			// Show preview immediately
 			setLessons(prev => {
 				const next = prev.map(x => x.id === lessonId ? { ...x, bg: dataUrl } : x);
 				return next;
 			});
-			
+
 			// Upload to backend
 			try {
 				const formData = new FormData();
 				formData.append('file', file);
 				formData.append('lessonId', lessonId);
-				
-				const response = await fetch('http://localhost:5000/api/lesson-cover', {
+
+				const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lesson-cover`, {
 					method: 'POST',
 					headers: {
 						'Authorization': `Bearer ${token}`
 					},
 					body: formData
 				});
-				
+
 				if (!response.ok) {
 					throw new Error(`HTTP error! status: ${response.status}`);
 				}
-				
+
 				const result = await response.json();
 				console.log('✅ Photo saved:', result);
-				
+
 				// Update with actual server URL
 				setLessons(prev => {
-					const next = prev.map(x => x.id === lessonId ? { ...x, bg: `http://localhost:5000${result.url}` } : x);
+					const next = prev.map(x => x.id === lessonId ? { ...x, bg: `${process.env.NEXT_PUBLIC_API_URL}${result.url}` } : x);
 					return next;
 				});
 			} catch (err) {
@@ -197,11 +197,11 @@ export default function LeconPage() {
 			if (token) {
 				for (const l of lessons) {
 					if (l.title || l.titre) {
-						await fetch(`http://localhost:5000/api/lessons/${l.id}`, {
+						await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${l.id}`, {
 							method: 'PUT',
 							headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
 							body: JSON.stringify({ titre: l.title || l.titre })
-						}).catch(() => {});
+						}).catch(() => { });
 					}
 				}
 			}
@@ -225,7 +225,7 @@ export default function LeconPage() {
 		console.log('📥 Loading lessons for module:', moduleId);
 
 		// Load lessons from backend
-		fetch(`http://localhost:5000/api/modules/${encodeURIComponent(moduleId)}/lessons`, {
+		fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modules/${encodeURIComponent(moduleId)}/lessons`, {
 			headers: {
 				'Authorization': `Bearer ${token}`
 			}
@@ -237,18 +237,18 @@ export default function LeconPage() {
 			.then(data => {
 				console.log('✅ Lessons loaded:', data);
 				const lessonsArr = Array.isArray(data) ? data : [];
-				
+
 				// Map lessons and set cover images from backend
 				const mappedLessons = lessonsArr.map(lesson => ({
 					...lesson,
-					bg: lesson.image_couverture ? (lesson.image_couverture.startsWith('http') ? lesson.image_couverture : `http://localhost:5000${lesson.image_couverture}`) : undefined
+					bg: lesson.image_couverture ? (lesson.image_couverture.startsWith('http') ? lesson.image_couverture : `${process.env.NEXT_PUBLIC_API_URL}${lesson.image_couverture}`) : undefined
 				}));
-				
+
 				setLessons(mappedLessons);
 				setHasChanges(false);
-				
+
 				// Fetch module title directly from module endpoint
-				fetch(`http://localhost:5000/api/modules/${encodeURIComponent(moduleId)}`, {
+				fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modules/${encodeURIComponent(moduleId)}`, {
 					headers: {
 						'Authorization': `Bearer ${token}`
 					}
@@ -310,7 +310,7 @@ export default function LeconPage() {
 													key={l.id}
 													onClick={() => router.push(`/dash_formation/formations_formateurs/formation_completer/contenue_lecon?fId=${fId || ''}&moduleId=${moduleId || ''}&lessonId=${l.id}`)}
 													className={`relative border border-blue-200 rounded-md p-4 ${l.bg ? 'bg-cover bg-center' : 'bg-white'} shadow-sm hover:shadow-md cursor-pointer min-h-[120px] flex flex-col justify-between min-w-0 overflow-hidden`}
-													style={ l.bg ? { backgroundImage: `url(${l.bg})` } : undefined }
+													style={l.bg ? { backgroundImage: `url(${l.bg})` } : undefined}
 												>
 													<div className="min-w-0">
 														{editingLessonId === l.id ? (
@@ -329,7 +329,7 @@ export default function LeconPage() {
 																onBlur={() => setEditingLessonId(null)}
 																onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
 																className={`w-full text-sm font-semibold focus:outline-none truncate bg-transparent ${l.bg ? 'text-white' : 'text-gray-900'}`}
-																/>
+															/>
 														) : (
 															<div className={`text-sm font-semibold truncate ${l.bg ? 'text-white' : 'text-gray-900'}`} title={l.titre || `Leçon ${lessons.indexOf(l) + 1}`}>{l.titre || `Leçon ${lessons.indexOf(l) + 1}`}</div>
 														)}

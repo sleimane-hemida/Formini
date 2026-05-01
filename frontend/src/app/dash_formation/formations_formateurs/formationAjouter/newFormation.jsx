@@ -25,7 +25,7 @@ export default function NewFormation() {
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
-  
+
   const [form, setForm] = useState({
     name: '',
     descriptionCourt: '',
@@ -43,7 +43,7 @@ export default function NewFormation() {
 
   // Récupérer les catégories au montage du composant
   useEffect(() => {
-    fetch('http://localhost:5000/api/categories')
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`)
       .then(res => res.json())
       .then(data => {
         setCategories(data);
@@ -65,8 +65,8 @@ export default function NewFormation() {
       setSubcategories([]);
       return;
     }
-    
-    fetch(`http://localhost:5000/api/subcategories?categoryId=${form.categoryId}`)
+
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/subcategories?categoryId=${form.categoryId}`)
       .then(res => res.json())
       .then(data => {
         setSubcategories(data);
@@ -139,7 +139,7 @@ export default function NewFormation() {
         price: form.price || null
       };
 
-      const res = await fetch('http://localhost:5000/api/formations', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -168,7 +168,7 @@ export default function NewFormation() {
       }
 
       setSuccess(true);
-      
+
       // Redirect to step 1 (general_forma) to complete the formation
       setTimeout(() => {
         const redirectUrl = `/dash_formation/formations_formateurs/formation_completer/general_forma?fId=${encodeURIComponent(newFormationId)}`;
@@ -202,96 +202,96 @@ export default function NewFormation() {
                   <PageHeader title="Ajouter une formation" actions={(<></>)} />
 
                   <form onSubmit={handleSubmit} className="bg-white p-4 sm:p-8 rounded-2xl shadow-lg w-full text-black overflow-hidden">
-          {error && <div className="mb-4 text-sm text-red-600">{error}</div>}
-          {success && <div className="mb-4 text-sm text-green-600">Formation créée avec succès.</div>}
+                    {error && <div className="mb-4 text-sm text-red-600">{error}</div>}
+                    {success && <div className="mb-4 text-sm text-green-600">Formation créée avec succès.</div>}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-            <div>
-              <label className="block text-sm font-semibold mb-2">Titre <span className="text-gray-400 text-xs">({form.name.length}/40)</span></label>
-              <input name="name" maxLength={40} value={form.name} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-shadow shadow-sm" placeholder="Titre de la formation" />
-            </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                      <div>
+                        <label className="block text-sm font-semibold mb-2">Titre <span className="text-gray-400 text-xs">({form.name.length}/40)</span></label>
+                        <input name="name" maxLength={40} value={form.name} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-shadow shadow-sm" placeholder="Titre de la formation" />
+                      </div>
 
-            <div>
-              <label className="block text-sm font-semibold mb-2">Langue</label>
-              <select name="language" value={form.language} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-shadow shadow-sm">
-                <option value="en">🇬🇧 English</option>
-                <option value="fr">🇫🇷 Français</option>
-                <option value="ar">🇸🇦 العربية</option>
-              </select>
-            </div>
+                      <div>
+                        <label className="block text-sm font-semibold mb-2">Langue</label>
+                        <select name="language" value={form.language} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-shadow shadow-sm">
+                          <option value="en">🇬🇧 English</option>
+                          <option value="fr">🇫🇷 Français</option>
+                          <option value="ar">🇸🇦 العربية</option>
+                        </select>
+                      </div>
 
-            <div className="md:col-span-2">
-              <label className="block text-sm font-semibold mb-2">Description courte <span className="text-gray-400 text-xs">({form.descriptionCourt.length}/70)</span></label>
-              <textarea name="descriptionCourt" maxLength={70} value={form.descriptionCourt} onChange={handleChange} rows={3} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-shadow shadow-sm resize-none" placeholder="Courte description (70 caractères max)" />
-            </div>
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-semibold mb-2">Description courte <span className="text-gray-400 text-xs">({form.descriptionCourt.length}/70)</span></label>
+                        <textarea name="descriptionCourt" maxLength={70} value={form.descriptionCourt} onChange={handleChange} rows={3} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-shadow shadow-sm resize-none" placeholder="Courte description (70 caractères max)" />
+                      </div>
 
-            <div className="md:col-span-2">
-              <label className="block text-sm font-semibold mb-2">Description détaillée</label>
-              <textarea name="descriptionLong" value={form.descriptionLong} onChange={handleChange} rows={6} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200" placeholder="Entrez la description complète de la formation..." />
-              <div className={`text-xs mt-1 ${form.descriptionLong.length >= 500 ? 'text-green-600' : 'text-red-600'}`}>{form.descriptionLong.length} caractères (minimum 500)</div>
-            </div>
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-semibold mb-2">Description détaillée</label>
+                        <textarea name="descriptionLong" value={form.descriptionLong} onChange={handleChange} rows={6} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200" placeholder="Entrez la description complète de la formation..." />
+                        <div className={`text-xs mt-1 ${form.descriptionLong.length >= 500 ? 'text-green-600' : 'text-red-600'}`}>{form.descriptionLong.length} caractères (minimum 500)</div>
+                      </div>
 
-            <div className="md:col-span-2">
-              <label className="block text-sm font-semibold mb-2">Images de couverture</label>
-              <input id="coverUpload" type="file" accept="image/*" multiple onChange={handleCoverImagesUpload} className="hidden" />
-              <label htmlFor="coverUpload" className="w-full block cursor-pointer border-dashed border-2 border-gray-200 hover:border-blue-300 transition-colors rounded-lg p-4 text-center text-sm text-gray-600">
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                  <span className="text-2xl">📤</span>
-                  <div>
-                    <div className="font-medium">Cliquez pour ajouter des images</div>
-                    <div className="text-xs text-gray-400">ou glissez-déposez ici (PNG, JPG). Max 5 images.</div>
-                  </div>
-                </div>
-              </label>
-              <div className="flex gap-3 flex-wrap mt-3">
-                {form.coverImages.map((img, idx) => (
-                  <div key={idx} className="relative w-24 h-16 sm:w-32 sm:h-20 bg-gray-100 rounded overflow-hidden transform hover:scale-105 transition-shadow duration-150 shadow-sm hover:shadow-md">
-                    <img src={img} alt={`cover-${idx}`} className="w-full h-full object-cover" />
-                    <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/90 rounded-full p-1 text-red-600 hover:bg-red-50">✕</button>
-                  </div>
-                ))}
-              </div>
-            </div>
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-semibold mb-2">Images de couverture</label>
+                        <input id="coverUpload" type="file" accept="image/*" multiple onChange={handleCoverImagesUpload} className="hidden" />
+                        <label htmlFor="coverUpload" className="w-full block cursor-pointer border-dashed border-2 border-gray-200 hover:border-blue-300 transition-colors rounded-lg p-4 text-center text-sm text-gray-600">
+                          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                            <span className="text-2xl">📤</span>
+                            <div>
+                              <div className="font-medium">Cliquez pour ajouter des images</div>
+                              <div className="text-xs text-gray-400">ou glissez-déposez ici (PNG, JPG). Max 5 images.</div>
+                            </div>
+                          </div>
+                        </label>
+                        <div className="flex gap-3 flex-wrap mt-3">
+                          {form.coverImages.map((img, idx) => (
+                            <div key={idx} className="relative w-24 h-16 sm:w-32 sm:h-20 bg-gray-100 rounded overflow-hidden transform hover:scale-105 transition-shadow duration-150 shadow-sm hover:shadow-md">
+                              <img src={img} alt={`cover-${idx}`} className="w-full h-full object-cover" />
+                              <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/90 rounded-full p-1 text-red-600 hover:bg-red-50">✕</button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
 
-            <div>
-              <label className="block text-sm font-semibold mb-2">Niveau</label>
-              <select name="niveau" value={form.niveau} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-shadow shadow-sm">
-                <option value="debutant">Débutant</option>
-                <option value="intermediaire">Intermédiaire</option>
-                <option value="avance">Avancé</option>
-              </select>
-            </div>
+                      <div>
+                        <label className="block text-sm font-semibold mb-2">Niveau</label>
+                        <select name="niveau" value={form.niveau} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-shadow shadow-sm">
+                          <option value="debutant">Débutant</option>
+                          <option value="intermediaire">Intermédiaire</option>
+                          <option value="avance">Avancé</option>
+                        </select>
+                      </div>
 
-            <div>
-              <label className="block text-sm font-semibold mb-2">Catégorie</label>
-              <select value={form.categoryId} onChange={handleCategoryChange} disabled={loadingCategories} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-shadow shadow-sm disabled:bg-gray-100 disabled:cursor-not-allowed">
-                {loadingCategories ? (
-                  <option>Chargement...</option>
-                ) : (
-                  categories.map(cat => (
-                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                  ))
-                )}
-              </select>
-            </div>
+                      <div>
+                        <label className="block text-sm font-semibold mb-2">Catégorie</label>
+                        <select value={form.categoryId} onChange={handleCategoryChange} disabled={loadingCategories} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-shadow shadow-sm disabled:bg-gray-100 disabled:cursor-not-allowed">
+                          {loadingCategories ? (
+                            <option>Chargement...</option>
+                          ) : (
+                            categories.map(cat => (
+                              <option key={cat.id} value={cat.id}>{cat.name}</option>
+                            ))
+                          )}
+                        </select>
+                      </div>
 
-            <div>
-              <label className="block text-sm font-semibold mb-2">Sous-catégorie</label>
-              <select name="subcategoryId" value={form.subcategoryId} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-shadow shadow-sm">
-                <option value="">-- Aucune --</option>
-                {subcategories.map(sub => (
-                  <option key={sub.id} value={sub.id}>{sub.name}</option>
-                ))}
-              </select>
-            </div>
-          </div>
+                      <div>
+                        <label className="block text-sm font-semibold mb-2">Sous-catégorie</label>
+                        <select name="subcategoryId" value={form.subcategoryId} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-shadow shadow-sm">
+                          <option value="">-- Aucune --</option>
+                          {subcategories.map(sub => (
+                            <option key={sub.id} value={sub.id}>{sub.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
 
-          <div className="mt-8 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
-            <button type="button" onClick={() => router.push('/dash_formation/formations_formateurs/formations_liste')} className="w-full sm:w-auto px-6 py-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition font-semibold text-gray-700 text-center">Annuler</button>
-            <button type="submit" disabled={isSubmitting} className="w-full sm:w-auto bg-[#0C8CE9] hover:bg-[#096bb3] active:scale-95 transform text-white px-8 py-3 rounded-lg shadow hover:shadow-md transition font-bold text-center">
-              {isSubmitting ? 'Enregistrement...' : 'Enregistrer la formation'}
-            </button>
-          </div>
+                    <div className="mt-8 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
+                      <button type="button" onClick={() => router.push('/dash_formation/formations_formateurs/formations_liste')} className="w-full sm:w-auto px-6 py-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition font-semibold text-gray-700 text-center">Annuler</button>
+                      <button type="submit" disabled={isSubmitting} className="w-full sm:w-auto bg-[#0C8CE9] hover:bg-[#096bb3] active:scale-95 transform text-white px-8 py-3 rounded-lg shadow hover:shadow-md transition font-bold text-center">
+                        {isSubmitting ? 'Enregistrement...' : 'Enregistrer la formation'}
+                      </button>
+                    </div>
                   </form>
                 </div>
               </main>

@@ -53,7 +53,7 @@ export default function ModuleLecon() {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     if (token && id) {
       try {
-        await fetch(`http://localhost:5000/api/modules/${id}`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modules/${id}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`
@@ -98,7 +98,7 @@ export default function ModuleLecon() {
       }
 
       // Load formation name
-      fetch(`http://localhost:5000/api/formations/${fId}`, {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations/${fId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -110,7 +110,7 @@ export default function ModuleLecon() {
         .catch(err => console.error('❌ Error loading formation:', err));
 
       // Load modules from backend
-      fetch(`http://localhost:5000/api/formations/${fId}/modules`, {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations/${fId}/modules`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -163,7 +163,7 @@ export default function ModuleLecon() {
     setIsAdding(true);
     try {
       const moduleIndex = modules.length + 1;
-      const response = await fetch('http://localhost:5000/api/modules', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modules`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -182,7 +182,7 @@ export default function ModuleLecon() {
 
       const newModule = await response.json();
       console.log('✅ Module created:', newModule);
-      
+
       setModules(prev => {
         const next = [...prev, newModule];
         setModulesCount(next.length);
@@ -220,7 +220,7 @@ export default function ModuleLecon() {
       for (const mod of modules) {
         if (!mod.id) {
           // Create new module
-          const res = await fetch('http://localhost:5000/api/modules', {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modules`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -240,7 +240,7 @@ export default function ModuleLecon() {
           console.log('✅ Module already saved:', mod.id);
         } else if (typeof mod.id === 'number' || typeof mod.id === 'string') {
           // Update existing module
-          const res = await fetch(`http://localhost:5000/api/modules/${mod.id}`, {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modules/${mod.id}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
@@ -371,9 +371,9 @@ export default function ModuleLecon() {
                       <button type="button" onClick={() => router.back()} className="w-full sm:w-auto px-6 py-3 rounded-lg border border-gray-200 text-sm text-gray-700 font-semibold hover:bg-gray-100 hover:text-gray-800 transition text-center">Retour</button>
                       <div className="flex flex-col items-center sm:items-end gap-3 w-full sm:w-auto">
                         {message && <div className="text-sm text-center w-full">{message}</div>}
-                        <button 
+                        <button
                           type="button"
-                          onClick={() => router.push(`/dash_formation/formations_formateurs/formation_completer/tarification?page=1${fId?`&fId=${fId}`:''}`)}
+                          onClick={() => router.push(`/dash_formation/formations_formateurs/formation_completer/tarification?page=1${fId ? `&fId=${fId}` : ''}`)}
                           className="w-full sm:w-auto bg-gray-800 hover:bg-black text-white px-8 py-3 rounded-lg transition-colors font-bold text-center"
                         >
                           Suivant

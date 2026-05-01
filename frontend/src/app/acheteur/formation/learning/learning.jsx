@@ -113,17 +113,17 @@
 //             try {
 //                 setLoadingFormation(true);
 //                 // 1. Formation
-//                 const fRes = await fetch(`http://localhost:5000/api/formations/${formationId}`, { headers });
+//                 const fRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations/${formationId}`, { headers });
 //                 const fData = await fRes.json();
 
 //                 // 2. Modules
-//                 const mRes = await fetch(`http://localhost:5000/api/formations/${formationId}/modules`, { headers });
+//                 const mRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations/${formationId}/modules`, { headers });
 //                 const modulesData = await mRes.json();
 
 //                 // 3. Leçons de chaque module
 //                 const modulesWithLecons = await Promise.all(
 //                     (Array.isArray(modulesData) ? modulesData : []).map(async (mod) => {
-//                         const lRes = await fetch(`http://localhost:5000/api/modules/${mod.id}/lessons`, { headers });
+//                         const lRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modules/${mod.id}/lessons`, { headers });
 //                         const lessonsData = await lRes.json();
 //                         return {
 //                             ...mod,
@@ -166,14 +166,14 @@
 //         setVideoUrl(null);
 //         setPdfUrl(null);
 //         setLoadingResources(true);
-//         fetch(`http://localhost:5000/api/lessons/${activeLecon.id}/resources`, { headers })
+//         fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${activeLecon.id}/resources`, { headers })
 //             .then(r => r.json())
 //             .then(resources => {
 //                 if (Array.isArray(resources)) {
 //                     const video = resources.find(r => r.type === 'video');
 //                     const pdf = resources.find(r => r.type === 'pdf');
-//                     if (video) setVideoUrl(`http://localhost:5000${video.url}`);
-//                     if (pdf) setPdfUrl(`http://localhost:5000${pdf.url}`);
+//                     if (video) setVideoUrl(`${process.env.NEXT_PUBLIC_API_URL}${video.url}`);
+//                     if (pdf) setPdfUrl(`${process.env.NEXT_PUBLIC_API_URL}${pdf.url}`);
 //                 }
 //             })
 //             .catch(err => console.error('❌ Erreur ressources:', err))
@@ -264,7 +264,7 @@
 //     useEffect(() => {
 //         const handleKeyDown = (e) => {
 //             if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
-            
+
 //             if (e.key === 'ArrowRight') {
 //                 skipForward();
 //             } else if (e.key === 'ArrowLeft') {
@@ -419,7 +419,7 @@
 //                                             <p className="text-sm">Aucune vidéo disponible pour cette leçon</p>
 //                                         </div>
 //                                     )}
-                                    
+
 //                                     {/* Overlay de lecture au centre */}
 //                                     {!isPlaying && videoUrl && (
 //                                         <div 
@@ -434,7 +434,7 @@
 
 //                                     {/* Barre de contrôles Custom (Glassmorphism) */}
 //                                     <div className={`absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`}>
-                                        
+
 //                                         {/* Barre de progression */}
 //                                         <div className="relative flex items-center gap-4 mb-4">
 //                                             <span className="text-[10px] font-bold text-white/80 tabular-nums w-8 text-right">{currentTime}</span>
@@ -550,7 +550,7 @@
 //                                     <FaCheckCircle /> Complété
 //                                 </div>
 //                             </div>
-                            
+
 //                             <p className="text-slate-500 text-sm leading-relaxed mb-10 border-l-4 border-[#0C8CE9] pl-6 py-1">
 //                                 Dans cette leçon, nous allons explorer en détail les principes fondamentaux de la thématique. 
 //                                 Prenez des notes et n'hésitez pas à poser vos questions dans l'espace commentaires ci-dessous.
@@ -563,7 +563,7 @@
 //                                 <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-3">
 //                                     Discussion <span className="text-sm font-normal text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md">12</span>
 //                                 </h3>
-                                
+
 //                                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-8">
 //                                     <div className="flex gap-4">
 //                                         <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-md">M</div>
@@ -612,7 +612,7 @@
 //                         <h2 className="text-sm font-bold text-slate-800 mb-1 uppercase tracking-tight">Sommaire du cours</h2>
 //                         <p className="text-[10px] text-slate-400 font-medium">Parcourez les modules et progressez à votre rythme</p>
 //                     </div>
-                    
+
 //                     <div className="flex-1 overflow-y-auto hide-scrollbar">
 //                         {formation.modules.map((module, i) => (
 //                             <SidebarModule
@@ -626,7 +626,7 @@
 //                             />
 //                         ))}
 //                     </div>
-                    
+
 //                     <div className="p-4 border-t border-slate-100 bg-slate-50">
 //                         <button 
 //                             onClick={() => setShowRatingModal(true)}
@@ -676,13 +676,13 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { 
-    FaPlay, 
-    FaPause, 
-    FaCheckCircle, 
-    FaChevronDown, 
-    FaChevronUp, 
-    FaClock, 
+import {
+    FaPlay,
+    FaPause,
+    FaCheckCircle,
+    FaChevronDown,
+    FaChevronUp,
+    FaClock,
     FaArrowLeft,
     FaRegClock,
     FaPaperPlane,
@@ -701,7 +701,7 @@ import {
 const resolveUrl = (url) => {
     if (!url) return null;
     if (url.startsWith('http://') || url.startsWith('https://')) return url;
-    return `http://localhost:5000${url}`;
+    return `${process.env.NEXT_PUBLIC_API_URL}${url}`;
 };
 
 // ─── Sidebar Module Accordion ─────────────────────────────────────────────────
@@ -739,9 +739,8 @@ function SidebarModule({ module, moduleIndex, isOpen, onToggle, activeLeconId, o
                             <button
                                 key={lecon.id}
                                 onClick={() => !lecon.locked && onSelectLecon(lecon)}
-                                className={`w-full flex items-center gap-3 px-8 py-2.5 text-xs transition-colors ${
-                                    isActive ? "bg-blue-50 text-[#0C8CE9] font-bold" : "text-slate-500 hover:text-slate-800"
-                                } ${lecon.locked ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
+                                className={`w-full flex items-center gap-3 px-8 py-2.5 text-xs transition-colors ${isActive ? "bg-blue-50 text-[#0C8CE9] font-bold" : "text-slate-500 hover:text-slate-800"
+                                    } ${lecon.locked ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
                             >
                                 {lecon.locked ? (
                                     <FaLock size={10} className="shrink-0" />
@@ -791,15 +790,15 @@ export default function Learning() {
         const loadAll = async () => {
             try {
                 setLoadingFormation(true);
-                const fRes = await fetch(`http://localhost:5000/api/formations/${formationId}`, { headers });
+                const fRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations/${formationId}`, { headers });
                 const fData = await fRes.json();
 
-                const mRes = await fetch(`http://localhost:5000/api/formations/${formationId}/modules`, { headers });
+                const mRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations/${formationId}/modules`, { headers });
                 const modulesData = await mRes.json();
 
                 const modulesWithLecons = await Promise.all(
                     (Array.isArray(modulesData) ? modulesData : []).map(async (mod) => {
-                        const lRes = await fetch(`http://localhost:5000/api/modules/${mod.id}/lessons`, { headers });
+                        const lRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modules/${mod.id}/lessons`, { headers });
                         const lessonsData = await lRes.json();
                         return {
                             ...mod,
@@ -841,7 +840,7 @@ export default function Learning() {
         setVideoUrl(null);
         setPdfUrl(null);
         setLoadingResources(true);
-        fetch(`http://localhost:5000/api/lessons/${activeLecon.id}/resources`, { headers })
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/${activeLecon.id}/resources`, { headers })
             .then(r => r.json())
             .then(resources => {
                 if (Array.isArray(resources)) {
@@ -1042,17 +1041,15 @@ export default function Learning() {
                         <div className="flex items-center gap-1 mb-4 bg-white/50 p-1 rounded-xl w-fit border border-slate-200 shadow-sm">
                             <button
                                 onClick={() => setContentType("video")}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[11px] font-bold transition-all ${
-                                    contentType === "video" ? "bg-white text-[#0C8CE9] shadow-sm" : "text-slate-400 hover:text-slate-600"
-                                }`}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[11px] font-bold transition-all ${contentType === "video" ? "bg-white text-[#0C8CE9] shadow-sm" : "text-slate-400 hover:text-slate-600"
+                                    }`}
                             >
                                 <FaPlay size={10} /> Vidéo
                             </button>
                             <button
                                 onClick={() => setContentType("pdf")}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[11px] font-bold transition-all ${
-                                    contentType === "pdf" ? "bg-white text-emerald-600 shadow-sm" : "text-slate-400 hover:text-slate-600"
-                                }`}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[11px] font-bold transition-all ${contentType === "pdf" ? "bg-white text-emerald-600 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                                    }`}
                             >
                                 <FaFilePdf size={11} /> Support PDF
                             </button>
@@ -1192,18 +1189,16 @@ export default function Learning() {
                                 <button
                                     disabled={!hasPrev}
                                     onClick={() => setActiveLecon(unlocked[activeIndex - 1])}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-                                        hasPrev ? "bg-slate-100 text-slate-700 hover:bg-slate-200" : "opacity-30 cursor-not-allowed"
-                                    }`}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${hasPrev ? "bg-slate-100 text-slate-700 hover:bg-slate-200" : "opacity-30 cursor-not-allowed"
+                                        }`}
                                 >
                                     Précédent
                                 </button>
                                 <button
                                     disabled={!hasNext}
                                     onClick={() => setActiveLecon(unlocked[activeIndex + 1])}
-                                    className={`flex items-center gap-2 px-6 py-2 rounded-lg text-xs font-bold transition-all ${
-                                        hasNext ? "bg-[#0C8CE9] text-white hover:bg-blue-600 shadow-md shadow-blue-100" : "opacity-30 cursor-not-allowed"
-                                    }`}
+                                    className={`flex items-center gap-2 px-6 py-2 rounded-lg text-xs font-bold transition-all ${hasNext ? "bg-[#0C8CE9] text-white hover:bg-blue-600 shadow-md shadow-blue-100" : "opacity-30 cursor-not-allowed"
+                                        }`}
                                 >
                                     Suivant
                                 </button>

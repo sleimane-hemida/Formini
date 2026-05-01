@@ -1,9 +1,9 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
-import { 
-	FaCode, FaPaintBrush, FaBriefcase, FaBullhorn, FaChartLine, 
-	FaLanguage, FaUserGraduate, FaBookOpen, FaHeartbeat, FaTools, 
-	FaBalanceScale, FaVideo, FaGraduationCap, FaRocket
+import {
+    FaCode, FaPaintBrush, FaBriefcase, FaBullhorn, FaChartLine,
+    FaLanguage, FaUserGraduate, FaBookOpen, FaHeartbeat, FaTools,
+    FaBalanceScale, FaVideo, FaGraduationCap, FaRocket
 } from "react-icons/fa";
 
 // Liste officielle des 12 catégories pour le mapping des icônes
@@ -21,7 +21,7 @@ const getIconForCategory = (name) => {
     if (n.includes("design") || n.includes("créativité")) return <FaPaintBrush size={18} />;
     if (n.includes("développement") || n.includes("tech")) return <FaCode size={18} />;
     if (n.includes("entreprise") || n.includes("startup")) return <FaRocket size={18} />;
-    
+
     return <FaGraduationCap size={18} />;
 };
 
@@ -41,7 +41,7 @@ const OFFICIAL_CATEGORIES = [
     "Création d'entreprise & Startup"
 ];
 
-export default function CategorieBar({ selectedCategory = "foryou", onCategoryChange = (categoryKey) => {}, scrolled = false }) {
+export default function CategorieBar({ selectedCategory = "foryou", onCategoryChange = (categoryKey) => { }, scrolled = false }) {
     const [categories, setCategories] = useState([
         { key: "foryou", label: "Pour vous", icon: <FaGraduationCap size={18} /> }
     ]);
@@ -55,12 +55,12 @@ export default function CategorieBar({ selectedCategory = "foryou", onCategoryCh
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch("http://localhost:5000/api/categories");
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`);
                 if (!response.ok) throw new Error("Erreur lors du chargement des catégories");
                 const data = await response.json();
-                
+
                 // On filtre pour ne garder que les 12 catégories officielles demandées
-                const filteredData = data.filter(cat => 
+                const filteredData = data.filter(cat =>
                     OFFICIAL_CATEGORIES.some(off => off.toLowerCase() === cat.name.toLowerCase())
                 );
 
@@ -111,7 +111,7 @@ export default function CategorieBar({ selectedCategory = "foryou", onCategoryCh
         const animate = () => {
             if (!isPausedRef.current && !isDraggingRef.current && scrollRef.current) {
                 const el = scrollRef.current;
-                
+
                 if (el.scrollWidth > el.clientWidth) {
                     el.scrollLeft += speed;
                     if (el.scrollLeft >= el.scrollWidth / 3) {
@@ -167,9 +167,8 @@ export default function CategorieBar({ selectedCategory = "foryou", onCategoryCh
                     setIsPaused(false);
                     isPausedRef.current = false;
                 }}
-                className={`w-full flex items-center overflow-x-auto no-scrollbar cursor-grab active:cursor-grabbing select-none ${
-                    scrolled ? "gap-4 sm:gap-6 h-12" : "gap-6 sm:gap-10 h-20"
-                }`}
+                className={`w-full flex items-center overflow-x-auto no-scrollbar cursor-grab active:cursor-grabbing select-none ${scrolled ? "gap-4 sm:gap-6 h-12" : "gap-6 sm:gap-10 h-20"
+                    }`}
                 style={{ scrollbarWidth: 'none' }}
             >
                 {tripleCategories.map((cat, idx) => (
@@ -181,26 +180,23 @@ export default function CategorieBar({ selectedCategory = "foryou", onCategoryCh
                             ${scrolled ? "px-3" : "px-4"}
                         `}
                     >
-                        <div className={`flex items-center justify-center rounded-2xl transition-all duration-300 ${
-                            selected === cat.key 
-                                ? "bg-blue-50 text-[#0C8CE9] scale-110 shadow-sm" 
-                                : "group-hover/btn:bg-blue-100/50 group-hover/btn:text-[#0C8CE9] group-hover/btn:scale-110"
-                        } ${scrolled ? "p-1.5" : "p-3 mb-1"}`}>
+                        <div className={`flex items-center justify-center rounded-2xl transition-all duration-300 ${selected === cat.key
+                            ? "bg-blue-50 text-[#0C8CE9] scale-110 shadow-sm"
+                            : "group-hover/btn:bg-blue-100/50 group-hover/btn:text-[#0C8CE9] group-hover/btn:scale-110"
+                            } ${scrolled ? "p-1.5" : "p-3 mb-1"}`}>
                             {cat.icon}
                         </div>
-                        
+
                         {!scrolled && (
-                            <span className={`text-[11px] font-medium leading-tight text-center whitespace-nowrap transition-all duration-300 ${
-                                selected === cat.key ? "opacity-100 font-bold" : "opacity-70 group-hover/btn:opacity-100"
-                            }`}>
+                            <span className={`text-[11px] font-medium leading-tight text-center whitespace-nowrap transition-all duration-300 ${selected === cat.key ? "opacity-100 font-bold" : "opacity-70 group-hover/btn:opacity-100"
+                                }`}>
                                 {cat.label}
                             </span>
                         )}
 
                         {selected === cat.key && (
-                            <div className={`bg-[#0C8CE9] rounded-full mt-1.5 transition-all duration-300 animate-pulse ${
-                                scrolled ? "w-1 h-1" : "w-1.5 h-1.5"
-                            }`} />
+                            <div className={`bg-[#0C8CE9] rounded-full mt-1.5 transition-all duration-300 animate-pulse ${scrolled ? "w-1 h-1" : "w-1.5 h-1.5"
+                                }`} />
                         )}
                     </button>
                 ))}

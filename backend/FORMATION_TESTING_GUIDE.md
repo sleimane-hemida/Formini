@@ -1,14 +1,14 @@
 # Formation Management Testing Guide
 
 ## Prerequisites
-- Backend running on http://localhost:5000
+- Backend running on ${process.env.NEXT_PUBLIC_API_URL}
 - Valid JWT token for formateur (or admin for rejection endpoints)
 
 ## Test Steps
 
 ### Step 1: Get Available Options
 ```
-GET http://localhost:5000/api/formations/options
+GET ${process.env.NEXT_PUBLIC_API_URL}/api/formations/options
 ```
 
 Expected Response:
@@ -37,7 +37,7 @@ Expected Response:
 
 ### Step 2: Create Formation with Niveau & Public Cible
 ```
-POST http://localhost:5000/api/formations
+POST ${process.env.NEXT_PUBLIC_API_URL}/api/formations
 Authorization: Bearer {FORMATEUR_TOKEN}
 Content-Type: application/json
 
@@ -70,7 +70,7 @@ Expected Response (201):
 
 ### Step 3: Add Pricing - Free Formation
 ```
-PUT http://localhost:5000/api/formations/692e19fb-7b37-444f-ab2a-82ad2b572930
+PUT ${process.env.NEXT_PUBLIC_API_URL}/api/formations/692e19fb-7b37-444f-ab2a-82ad2b572930
 Authorization: Bearer {FORMATEUR_TOKEN}
 Content-Type: application/json
 
@@ -87,7 +87,7 @@ Content-Type: application/json
 
 ### Step 4: Add Pricing - Paid with Promo
 ```
-PUT http://localhost:5000/api/formations/692e19fb-7b37-444f-ab2a-82ad2b572930
+PUT ${process.env.NEXT_PUBLIC_API_URL}/api/formations/692e19fb-7b37-444f-ab2a-82ad2b572930
 Authorization: Bearer {FORMATEUR_TOKEN}
 Content-Type: application/json
 
@@ -126,7 +126,7 @@ Expected Response (200):
 
 ### Step 5: Validation Test - Invalid Pricing
 ```
-PUT http://localhost:5000/api/formations/692e19fb-7b37-444f-ab2a-82ad2b572930
+PUT ${process.env.NEXT_PUBLIC_API_URL}/api/formations/692e19fb-7b37-444f-ab2a-82ad2b572930
 Authorization: Bearer {FORMATEUR_TOKEN}
 Content-Type: application/json
 
@@ -151,7 +151,7 @@ Expected Error Response (400):
 
 ### Step 6: Validation Test - Missing Promo Dates
 ```
-PUT http://localhost:5000/api/formations/692e19fb-7b37-444f-ab2a-82ad2b572930
+PUT ${process.env.NEXT_PUBLIC_API_URL}/api/formations/692e19fb-7b37-444f-ab2a-82ad2b572930
 Authorization: Bearer {FORMATEUR_TOKEN}
 Content-Type: application/json
 
@@ -176,7 +176,7 @@ Expected Error Response (400):
 
 ### Step 7: Create Modules (After Steps 1-6)
 ```
-POST http://localhost:5000/api/modules
+POST ${process.env.NEXT_PUBLIC_API_URL}/api/modules
 Authorization: Bearer {FORMATEUR_TOKEN}
 Content-Type: application/json
 
@@ -203,7 +203,7 @@ Expected Response (201):
 
 ### Step 8: Publish Formation (After adding Modules)
 ```
-PATCH http://localhost:5000/api/formations/692e19fb-7b37-444f-ab2a-82ad2b572930/publish
+PATCH ${process.env.NEXT_PUBLIC_API_URL}/api/formations/692e19fb-7b37-444f-ab2a-82ad2b572930/publish
 Authorization: Bearer {FORMATEUR_TOKEN}
 ```
 
@@ -231,7 +231,7 @@ Expected Response (200):
 
 ### Step 9: Try Publish Without Pricing
 ```
-PUT http://localhost:5000/api/formations/692e19fb-7b37-444f-ab2a-82ad2b572930
+PUT ${process.env.NEXT_PUBLIC_API_URL}/api/formations/692e19fb-7b37-444f-ab2a-82ad2b572930
 Authorization: Bearer {FORMATEUR_TOKEN}
 Content-Type: application/json
 
@@ -243,7 +243,7 @@ Content-Type: application/json
 
 Then try to publish - should fail:
 ```
-PATCH http://localhost:5000/api/formations/692e19fb-7b37-444f-ab2a-82ad2b572930/publish
+PATCH ${process.env.NEXT_PUBLIC_API_URL}/api/formations/692e19fb-7b37-444f-ab2a-82ad2b572930/publish
 Authorization: Bearer {FORMATEUR_TOKEN}
 ```
 
@@ -258,7 +258,7 @@ Expected Error (400):
 
 ### Step 10: Admin Rejection
 ```
-PATCH http://localhost:5000/api/formations/692e19fb-7b37-444f-ab2a-82ad2b572930/reject
+PATCH ${process.env.NEXT_PUBLIC_API_URL}/api/formations/692e19fb-7b37-444f-ab2a-82ad2b572930/reject
 Authorization: Bearer {ADMIN_TOKEN}
 Content-Type: application/json
 
@@ -284,7 +284,7 @@ Expected Response (200):
 
 ### Step 11: Validation Test - Invalid Niveau
 ```
-PUT http://localhost:5000/api/formations/692e19fb-7b37-444f-ab2a-82ad2b572930
+PUT ${process.env.NEXT_PUBLIC_API_URL}/api/formations/692e19fb-7b37-444f-ab2a-82ad2b572930
 Authorization: Bearer {FORMATEUR_TOKEN}
 Content-Type: application/json
 
@@ -305,7 +305,7 @@ Expected Error Response (400):
 
 ### Step 12: Validation Test - Invalid Public Cible
 ```
-PUT http://localhost:5000/api/formations/692e19fb-7b37-444f-ab2a-82ad2b572930
+PUT ${process.env.NEXT_PUBLIC_API_URL}/api/formations/692e19fb-7b37-444f-ab2a-82ad2b572930
 Authorization: Bearer {FORMATEUR_TOKEN}
 Content-Type: application/json
 
@@ -383,7 +383,7 @@ Save this as a Thunder Client collection for easy testing:
 ## Environment Variables for Thunder Client
 
 ```
-BASE_URL = http://localhost:5000
+BASE_URL = ${process.env.NEXT_PUBLIC_API_URL}
 TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImM0ZjU1YTBkLTc2YWYtNDg0My04ZGEyLWQ1MDhjMDU1NzBiMyIsImVtYWlsIjoib3Vtb3VAZ21haWwuY29tIiwicm9sZSI6ImZvcm1hdGV1ciIsImlhdCI6MTc3NTk1OTg4NywiZXhwIjoxNzc2NTY0Njg3fQ.VU3MVQfY17Qrb0loTPU32WjoGzOWNl-NykHOFPVEuQY
 ADMIN_TOKEN = {ADMIN_JWT_TOKEN}
 FORMATION_ID = 692e19fb-7b37-444f-ab2a-82ad2b572930

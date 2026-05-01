@@ -24,21 +24,21 @@ export default function MesFormations() {
                     return;
                 }
 
-                const response = await fetch('http://localhost:5000/api/orders/my-formations', {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/my-formations`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
 
                 console.log('Response status:', response.status);
-                
+
                 if (!response.ok) {
                     throw new Error(`Erreur ${response.status}: ${response.statusText}`);
                 }
 
                 const data = await response.json();
                 console.log('Formations reçues:', data);
-                
+
                 if (!data || data.length === 0) {
                     console.log('Aucune formation achetée');
                     setFormations([]);
@@ -81,11 +81,11 @@ export default function MesFormations() {
     // Filtrer les formations
     const filteredFormations = formations.filter(formation => {
         const matchesFilter = filter === 'all' || formation.status === filter;
-        const matchesSearch = !searchTerm || 
+        const matchesSearch = !searchTerm ||
             formation.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             formation.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
             formation.category.toLowerCase().includes(searchTerm.toLowerCase());
-        
+
         return matchesFilter && matchesSearch;
     });
 
@@ -97,7 +97,7 @@ export default function MesFormations() {
     return (
         <div className="min-h-screen bg-gray-50">
             <Header />
-            
+
             <div className="container mx-auto px-6 py-8">
                 {/* Header simple */}
                 <div className="mb-8">
@@ -110,33 +110,30 @@ export default function MesFormations() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Filtres */}
                         <div className="flex gap-2">
-                            <button 
+                            <button
                                 onClick={() => setFilter('all')}
-                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                    filter === 'all' 
-                                        ? 'bg-[#0C8CE9] text-white' 
+                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === 'all'
+                                        ? 'bg-[#0C8CE9] text-white'
                                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                }`}
+                                    }`}
                             >
                                 Toutes
                             </button>
-                            <button 
+                            <button
                                 onClick={() => setFilter('in-progress')}
-                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                    filter === 'in-progress' 
-                                        ? 'bg-[#0C8CE9] text-white' 
+                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === 'in-progress'
+                                        ? 'bg-[#0C8CE9] text-white'
                                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                }`}
+                                    }`}
                             >
                                 En cours
                             </button>
-                            <button 
+                            <button
                                 onClick={() => setFilter('completed')}
-                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                    filter === 'completed' 
-                                        ? 'bg-[#0C8CE9] text-white' 
+                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === 'completed'
+                                        ? 'bg-[#0C8CE9] text-white'
                                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                }`}
+                                    }`}
                             >
                                 Terminées
                             </button>
@@ -177,8 +174,8 @@ export default function MesFormations() {
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {filteredFormations.map((formation) => (
-                                <div 
-                                    key={formation.id} 
+                                <div
+                                    key={formation.id}
                                     onClick={() => handleFormationClick(formation.id)}
                                     className="cursor-pointer hover:scale-105 transition-transform duration-200"
                                 >

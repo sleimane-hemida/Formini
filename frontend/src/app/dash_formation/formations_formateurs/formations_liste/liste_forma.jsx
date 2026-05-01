@@ -48,7 +48,7 @@ export default function ListeForma() {
 
     console.log('🔄 Fetching formations for current user...');
 
-    fetch('http://localhost:5000/api/formations', {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -70,7 +70,7 @@ export default function ListeForma() {
           } else if (formation.prix_normal) {
             priceDisplay = `${Number(formation.prix_normal).toFixed(2)} MRU`;
           }
-          
+
           return {
             id: formation.id,
             name: formation.name,
@@ -78,8 +78,8 @@ export default function ListeForma() {
             price: priceDisplay,
             status: formation.statut || 'brouillon',
             active: formation.statut === 'en_ligne' || formation.isActive,
-            image: formation.cover_images && formation.cover_images.length > 0 
-              ? formation.cover_images[0] 
+            image: formation.cover_images && formation.cover_images.length > 0
+              ? formation.cover_images[0]
               : '/images/users/formation.png'
           };
         });
@@ -110,7 +110,7 @@ export default function ListeForma() {
 
     // Optimistic update
     setFormations(prev => prev.map(f => f.id === id ? { ...f, active: !f.active } : f));
-    
+
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     if (!token) {
       alert('Vous devez être connecté.');
@@ -122,8 +122,8 @@ export default function ListeForma() {
     try {
       // formation.active is current state (before toggle), so we need opposite
       const endpoint = formation.active ? '/disable' : '/enable';
-      
-      const res = await fetch(`http://localhost:5000/api/formations/${id}${endpoint}`, {
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations/${id}${endpoint}`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -155,7 +155,7 @@ export default function ListeForma() {
     }
 
     try {
-      const res = await fetch(`http://localhost:5000/api/formations/${formationId}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations/${formationId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -188,7 +188,7 @@ export default function ListeForma() {
       const img = new Image();
       img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
       e.dataTransfer.setDragImage(img, 0, 0);
-    } catch (err) {}
+    } catch (err) { }
     // measure the article width to match preview width
     try {
       const btn = e.currentTarget;
@@ -319,97 +319,97 @@ export default function ListeForma() {
                       <div className="text-center py-8 text-gray-500">Aucune formation trouvée</div>
                     ) : (
                       formations.map((f, idx) => (
-                      <article
-                        key={f.id || idx}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => { if (e.key === 'Enter') router.push(`/dash_formation/formations_formateurs/formation_completer/general_forma?fId=${f.id}`); }}
-                        onClick={() => router.push(`/dash_formation/formations_formateurs/formation_completer/general_forma?fId=${f.id}`)}
-                        onDragOver={(e) => handleDragOver(e, idx)}
-                        onDrop={(e) => handleDrop(e, idx)}
-                        className={`relative bg-[#F8F8FA] p-4 rounded-lg border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 cursor-pointer hover:shadow-md hover:bg-white transition ${dragOverIndex === idx ? 'border-dashed border-gray-400' : ''} ${draggedIndex === idx ? 'opacity-40' : ''}`}
-                      >
-                        {(() => {
-                          const pStatus = (f && f.promotionStatus) || (promotionStatuses && promotionStatuses[f.id]);
-                          if (!pStatus) return null;
-                          return (
-                            <span
-                              className={`${pStatus === 'approved' ? 'bg-[#0C8CE9]' : 'bg-gray-400'} text-white rounded-full flex items-center justify-center w-[30px] h-[30px] absolute top-[10px] left-[10px] -translate-x-1/2 -translate-y-1/2 z-20 ring-2 ring-white shadow`}
-                              title={pStatus === 'approved' ? 'Propulsé' : 'En attente de paiement'}
-                              aria-hidden="true"
-                            >
-                              {pStatus === 'approved' ? (<FiTrendingUp className="w-4 h-4" />) : (<span className="text-sm font-semibold">!</span>)}
-                            </span>
-                          );
-                        })()}
-                        <div className="flex items-center gap-4 min-w-0">
-                          <button
-                            draggable
-                            onClick={(e) => e.stopPropagation()}
-                            onDragStart={(e) => handleDragStart(e, idx)}
-                            onDragEnd={handleDragEnd}
-                            className="cursor-grab p-1 text-gray-600 hover:text-gray-800 mr-1 font-semibold"
-                            title="Déplacer"
-                          >
-                            <BsGripVertical className="w-6 h-6" />
-                          </button>
-                          <img src={f.image} alt={f.name} className="w-20 h-12 object-cover rounded-md" />
-                          <div className="min-w-0">
-                            <div className="font-medium truncate text-gray-900">{f.name}</div>
-                            <div className="text-xs text-gray-500 mt-1 truncate">{f.description}</div>
-                            <div className="text-xs text-gray-500 mt-1">{f.price}</div>
-                          </div>
-                        </div>
-
-                        {/* price moved under title; thumbnail on the left */}
-
-                        <div className="flex items-center justify-between w-full sm:w-auto gap-4 mt-2 sm:mt-0 pt-3 sm:pt-0 border-t border-gray-200 sm:border-none">
-                          <span className={`px-3 py-1 rounded-md text-sm font-medium ${f.active ? 'bg-green-900 text-white' : 'bg-gray-100 text-gray-700'}`}>
-                            {f.active ? (<><FiTrendingUp className="inline-block mr-1 w-4 h-4"/>En vente</>) : 'Désactivée'}
-                          </span>
-
-                          <div className="flex items-center gap-4">
+                        <article
+                          key={f.id || idx}
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={(e) => { if (e.key === 'Enter') router.push(`/dash_formation/formations_formateurs/formation_completer/general_forma?fId=${f.id}`); }}
+                          onClick={() => router.push(`/dash_formation/formations_formateurs/formation_completer/general_forma?fId=${f.id}`)}
+                          onDragOver={(e) => handleDragOver(e, idx)}
+                          onDrop={(e) => handleDrop(e, idx)}
+                          className={`relative bg-[#F8F8FA] p-4 rounded-lg border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 cursor-pointer hover:shadow-md hover:bg-white transition ${dragOverIndex === idx ? 'border-dashed border-gray-400' : ''} ${draggedIndex === idx ? 'opacity-40' : ''}`}
+                        >
+                          {(() => {
+                            const pStatus = (f && f.promotionStatus) || (promotionStatuses && promotionStatuses[f.id]);
+                            if (!pStatus) return null;
+                            return (
+                              <span
+                                className={`${pStatus === 'approved' ? 'bg-[#0C8CE9]' : 'bg-gray-400'} text-white rounded-full flex items-center justify-center w-[30px] h-[30px] absolute top-[10px] left-[10px] -translate-x-1/2 -translate-y-1/2 z-20 ring-2 ring-white shadow`}
+                                title={pStatus === 'approved' ? 'Propulsé' : 'En attente de paiement'}
+                                aria-hidden="true"
+                              >
+                                {pStatus === 'approved' ? (<FiTrendingUp className="w-4 h-4" />) : (<span className="text-sm font-semibold">!</span>)}
+                              </span>
+                            );
+                          })()}
+                          <div className="flex items-center gap-4 min-w-0">
                             <button
-                              onClick={(e) => { e.stopPropagation(); toggleActive(f.id); }}
-                              aria-pressed={f.active}
-                              className={`relative inline-flex items-center h-6 w-12 rounded-full p-1 transition-colors ${f.active ? 'bg-black' : 'bg-gray-200'}`}
+                              draggable
+                              onClick={(e) => e.stopPropagation()}
+                              onDragStart={(e) => handleDragStart(e, idx)}
+                              onDragEnd={handleDragEnd}
+                              className="cursor-grab p-1 text-gray-600 hover:text-gray-800 mr-1 font-semibold"
+                              title="Déplacer"
                             >
-                              <span className={`h-4 w-4 bg-white rounded-full shadow transform transition-transform ${f.active ? 'translate-x-6' : 'translate-x-0'}`} />
+                              <BsGripVertical className="w-6 h-6" />
                             </button>
+                            <img src={f.image} alt={f.name} className="w-20 h-12 object-cover rounded-md" />
+                            <div className="min-w-0">
+                              <div className="font-medium truncate text-gray-900">{f.name}</div>
+                              <div className="text-xs text-gray-500 mt-1 truncate">{f.description}</div>
+                              <div className="text-xs text-gray-500 mt-1">{f.price}</div>
+                            </div>
+                          </div>
 
-                          {/* Action menu */}
-                          <div className="relative">
-                            <button onClick={(e) => { e.stopPropagation(); setMenuOpen(menuOpen === f.id ? null : f.id); }} className="p-2 rounded hover:bg-gray-50">
-                              <FiMoreVertical className="w-5 h-5 text-gray-600" />
-                            </button>
-                            {menuOpen === f.id && (
-                              <div data-menu-id={f.id} onClick={(e) => e.stopPropagation()} className="absolute right-0 top-10 z-50 w-48 bg-white border border-gray-200 rounded-md shadow-sm py-1">
-                                <button onClick={(e) => { e.stopPropagation(); router.push('/dash_formation/abonnement/notdisponiblenow'); setMenuOpen(null); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 text-black">
-                                  <FiSend className="w-4 h-4 text-gray-500" />
-                                  <span>Propulser</span>
+                          {/* price moved under title; thumbnail on the left */}
+
+                          <div className="flex items-center justify-between w-full sm:w-auto gap-4 mt-2 sm:mt-0 pt-3 sm:pt-0 border-t border-gray-200 sm:border-none">
+                            <span className={`px-3 py-1 rounded-md text-sm font-medium ${f.active ? 'bg-green-900 text-white' : 'bg-gray-100 text-gray-700'}`}>
+                              {f.active ? (<><FiTrendingUp className="inline-block mr-1 w-4 h-4" />En vente</>) : 'Désactivée'}
+                            </span>
+
+                            <div className="flex items-center gap-4">
+                              <button
+                                onClick={(e) => { e.stopPropagation(); toggleActive(f.id); }}
+                                aria-pressed={f.active}
+                                className={`relative inline-flex items-center h-6 w-12 rounded-full p-1 transition-colors ${f.active ? 'bg-black' : 'bg-gray-200'}`}
+                              >
+                                <span className={`h-4 w-4 bg-white rounded-full shadow transform transition-transform ${f.active ? 'translate-x-6' : 'translate-x-0'}`} />
+                              </button>
+
+                              {/* Action menu */}
+                              <div className="relative">
+                                <button onClick={(e) => { e.stopPropagation(); setMenuOpen(menuOpen === f.id ? null : f.id); }} className="p-2 rounded hover:bg-gray-50">
+                                  <FiMoreVertical className="w-5 h-5 text-gray-600" />
                                 </button>
-                                <button onClick={(e) => { e.stopPropagation(); router.push(`/dash_formation/formations_formateurs/formationAjouter?edit=${f.id}`); setMenuOpen(null); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 text-black">
-                                  <FiEdit className="w-4 h-4 text-gray-500" />
-                                  <span>Modifier</span>
-                                </button>
-                                <button onClick={(e) => { e.stopPropagation(); setFormations(prev => prev.map(x => x.id === f.id ? { ...x, status: 'Brouillon', active: false } : x)); setMenuOpen(null); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 text-black">
-                                  <FiFileText className="w-4 h-4 text-gray-500" />
-                                  <span>Brouillons</span>
-                                </button>
-                                <button onClick={(e) => { e.stopPropagation(); router.push(`/formation/${f.id}`); setMenuOpen(null); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 text-black">
-                                  <FiExternalLink className="w-4 h-4 text-gray-500" />
-                                  <span>Voir en ligne</span>
-                                </button>
-                                <button onClick={(e) => { e.stopPropagation(); handleDeleteFormation(f.id); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-red-50 text-red-600">
-                                  <FiTrash2 className="w-4 h-4 text-red-600" />
-                                  <span className="text-red-600">Supprimer</span>
-                                </button>
+                                {menuOpen === f.id && (
+                                  <div data-menu-id={f.id} onClick={(e) => e.stopPropagation()} className="absolute right-0 top-10 z-50 w-48 bg-white border border-gray-200 rounded-md shadow-sm py-1">
+                                    <button onClick={(e) => { e.stopPropagation(); router.push('/dash_formation/abonnement/notdisponiblenow'); setMenuOpen(null); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 text-black">
+                                      <FiSend className="w-4 h-4 text-gray-500" />
+                                      <span>Propulser</span>
+                                    </button>
+                                    <button onClick={(e) => { e.stopPropagation(); router.push(`/dash_formation/formations_formateurs/formationAjouter?edit=${f.id}`); setMenuOpen(null); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 text-black">
+                                      <FiEdit className="w-4 h-4 text-gray-500" />
+                                      <span>Modifier</span>
+                                    </button>
+                                    <button onClick={(e) => { e.stopPropagation(); setFormations(prev => prev.map(x => x.id === f.id ? { ...x, status: 'Brouillon', active: false } : x)); setMenuOpen(null); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 text-black">
+                                      <FiFileText className="w-4 h-4 text-gray-500" />
+                                      <span>Brouillons</span>
+                                    </button>
+                                    <button onClick={(e) => { e.stopPropagation(); router.push(`/formation/${f.id}`); setMenuOpen(null); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 text-black">
+                                      <FiExternalLink className="w-4 h-4 text-gray-500" />
+                                      <span>Voir en ligne</span>
+                                    </button>
+                                    <button onClick={(e) => { e.stopPropagation(); handleDeleteFormation(f.id); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-red-50 text-red-600">
+                                      <FiTrash2 className="w-4 h-4 text-red-600" />
+                                      <span className="text-red-600">Supprimer</span>
+                                    </button>
+                                  </div>
+                                )}
                               </div>
-                            )}
+                            </div>
                           </div>
-                          </div>
-                        </div>
-                      </article>
+                        </article>
                       ))
                     )}
                   </div>
@@ -425,28 +425,28 @@ export default function ListeForma() {
       {draggingItem && (() => {
         const pos = computePreviewPosition();
         return (
-                <div style={{ position: 'fixed', left: pos.left, top: pos.top, pointerEvents: 'none', zIndex: 60, width: pos.width }}>
-          <article className="bg-[#F8F8FA] p-4 rounded-lg border border-gray-200 flex items-center justify-between gap-6 shadow-lg opacity-95">
-            <div className="flex items-center gap-4 min-w-0">
-              <div className="p-1 text-gray-600 font-semibold">
-                <BsGripVertical className="w-6 h-6" />
+          <div style={{ position: 'fixed', left: pos.left, top: pos.top, pointerEvents: 'none', zIndex: 60, width: pos.width }}>
+            <article className="bg-[#F8F8FA] p-4 rounded-lg border border-gray-200 flex items-center justify-between gap-6 shadow-lg opacity-95">
+              <div className="flex items-center gap-4 min-w-0">
+                <div className="p-1 text-gray-600 font-semibold">
+                  <BsGripVertical className="w-6 h-6" />
+                </div>
+                <img src={draggingItem.image} alt={draggingItem.name} className="w-20 h-12 object-cover rounded-md" />
+                <div className="text-sm text-gray-500 w-20">{draggingItem.id}</div>
+                <div className="min-w-0">
+                  <div className="font-medium truncate text-gray-900">{draggingItem.name}</div>
+                  <div className="text-xs text-gray-500 mt-1 truncate">{draggingItem.description}</div>
+                  <div className="text-xs text-gray-500 mt-1">{draggingItem.price}</div>
+                </div>
               </div>
-              <img src={draggingItem.image} alt={draggingItem.name} className="w-20 h-12 object-cover rounded-md" />
-              <div className="text-sm text-gray-500 w-20">{draggingItem.id}</div>
-              <div className="min-w-0">
-                <div className="font-medium truncate text-gray-900">{draggingItem.name}</div>
-                <div className="text-xs text-gray-500 mt-1 truncate">{draggingItem.description}</div>
-                <div className="text-xs text-gray-500 mt-1">{draggingItem.price}</div>
-              </div>
-            </div>
 
-            <div className="flex items-center gap-4">
-              <span className={`px-3 py-1 rounded-md text-sm font-medium ${draggingItem.active ? 'bg-green-900 text-white' : 'bg-gray-100 text-gray-700'}`}>
-                {draggingItem.active ? (<><FiTrendingUp className="inline-block mr-1 w-4 h-4"/>En vente</>) : 'Désactivée'}
-              </span>
-            </div>
-          </article>
-        </div>
+              <div className="flex items-center gap-4">
+                <span className={`px-3 py-1 rounded-md text-sm font-medium ${draggingItem.active ? 'bg-green-900 text-white' : 'bg-gray-100 text-gray-700'}`}>
+                  {draggingItem.active ? (<><FiTrendingUp className="inline-block mr-1 w-4 h-4" />En vente</>) : 'Désactivée'}
+                </span>
+              </div>
+            </article>
+          </div>
         );
       })()}
     </>

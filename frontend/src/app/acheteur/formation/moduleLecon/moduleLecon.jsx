@@ -69,24 +69,23 @@ function ModuleAccordion({ module, index, isOpen, onToggle }) {
                     {lecons.map((lecon) => (
                         <div
                             key={lecon.id}
-                            className={`flex items-center gap-4 px-5 py-3 text-sm ${
-                                lecon.locked
+                            className={`flex items-center gap-4 px-5 py-3 text-sm ${lecon.locked
                                     ? "opacity-50 cursor-not-allowed"
                                     : "hover:bg-white cursor-pointer transition-colors"
-                            }`}
+                                }`}
                         >
                             <span className="shrink-0">{typeIcon(lecon)}</span>
-                            
+
                             {/* Image de la leçon */}
                             <div className="shrink-0 w-20 h-12 bg-gray-200 rounded-lg overflow-hidden relative border border-gray-100 shadow-sm">
-                                <Image 
+                                <Image
                                     src={(() => {
                                         const img = lecon.image_couverture;
                                         if (!img) return "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=200&q=80";
                                         if (img.startsWith('data:') || img.startsWith('http')) return img;
-                                        if (img.startsWith('/')) return `http://localhost:5000${img}`;
+                                        if (img.startsWith('/')) return `${process.env.NEXT_PUBLIC_API_URL}${img}`;
                                         if (img.length > 500) return `data:image/png;base64,${img}`;
-                                        return `http://localhost:5000${img}`;
+                                        return `${process.env.NEXT_PUBLIC_API_URL}${img}`;
                                     })()}
                                     alt={lecon.titre || "Illustration de la leçon"}
                                     fill
@@ -101,13 +100,12 @@ function ModuleAccordion({ module, index, isOpen, onToggle }) {
 
                             <div className="flex flex-col min-w-0 flex-1">
                                 <span
-                                    className={`font-medium ${
-                                        lecon.done
+                                    className={`font-medium ${lecon.done
                                             ? "line-through text-gray-400"
                                             : lecon.locked
-                                            ? "text-gray-400"
-                                            : "text-gray-700"
-                                    }`}
+                                                ? "text-gray-400"
+                                                : "text-gray-700"
+                                        }`}
                                 >
                                     {lecon.titre}
                                 </span>
@@ -131,7 +129,7 @@ export default function ModuleLecon({ formationId }) {
     const router = useRouter();
     const searchParams = useSearchParams();
     const id = searchParams.get('id') || formationId;
-    
+
     const [formation, setFormation] = useState(null);
     const [loading, setLoading] = useState(true);
     const [openModules, setOpenModules] = useState([0]);
@@ -146,7 +144,7 @@ export default function ModuleLecon({ formationId }) {
                     return;
                 }
 
-                const response = await fetch(`http://localhost:5000/api/formations/${id}`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -157,7 +155,7 @@ export default function ModuleLecon({ formationId }) {
                 }
 
                 const data = await response.json();
-                
+
                 // Formater les données
                 // Formater les données avec les vrais champs de la BDD
                 const formattedFormation = {
@@ -169,20 +167,20 @@ export default function ModuleLecon({ formationId }) {
                         const img = data.image;
                         if (!img) return null;
                         if (img.startsWith('data:') || img.startsWith('http')) return img;
-                        if (img.startsWith('/')) return `http://localhost:5000${img}`;
+                        if (img.startsWith('/')) return `${process.env.NEXT_PUBLIC_API_URL}${img}`;
                         if (img.length > 500) return `data:image/png;base64,${img}`;
-                        return `http://localhost:5000/uploads/${img}`;
+                        return `${process.env.NEXT_PUBLIC_API_URL}/uploads/${img}`;
                     })(),
                     duration: data.duree_totale_minutes ? `${data.duree_totale_minutes} min` : "Durée non définie",
-                    rating: data.note_moyenne ? parseFloat(data.note_moyenne) : 0, 
+                    rating: data.note_moyenne ? parseFloat(data.note_moyenne) : 0,
                     students: data.orders_count || 0,
                     type: data.prix_promo ? "promotion" : (data.est_gratuite ? "gratuit" : "normal"),
                     modules: data.Modules || [],
                     author: data.trainer ? `${data.trainer.prenom || ''} ${data.trainer.nom_de_famille || data.trainer.name || ''}`.trim() : "Formateur",
-                    avatar: data.trainer?.avatar 
-                        ? (data.trainer.avatar.startsWith('http') || data.trainer.avatar.startsWith('data:') 
-                            ? data.trainer.avatar 
-                            : `http://localhost:5000${data.trainer.avatar.replace('/api/avatar/', '/uploads/avatars/')}`) 
+                    avatar: data.trainer?.avatar
+                        ? (data.trainer.avatar.startsWith('http') || data.trainer.avatar.startsWith('data:')
+                            ? data.trainer.avatar
+                            : `${process.env.NEXT_PUBLIC_API_URL}${data.trainer.avatar.replace('/api/avatar/', '/uploads/avatars/')}`)
                         : null,
                     level: data.niveau || null,
                     language: (() => {
@@ -247,7 +245,7 @@ export default function ModuleLecon({ formationId }) {
                     <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
                         <div className="text-center py-12">
                             <h1 className="text-2xl font-bold text-gray-900 mb-4">Formation non trouvée</h1>
-                            <button 
+                            <button
                                 onClick={() => router.back()}
                                 className="text-blue-600 hover:text-blue-700 font-medium"
                             >

@@ -18,7 +18,7 @@ export default function GeneralForma() {
 	const router = useRouter();
 	const params = useSearchParams();
 	const fId = params ? params.get('fId') : null;
-	
+
 	const [categories, setCategories] = useState([]);
 	const [subcategories, setSubcategories] = useState([]);
 
@@ -41,8 +41,8 @@ export default function GeneralForma() {
 	// Récupérer les catégories et sous-catégories au montage
 	useEffect(() => {
 		Promise.all([
-			fetch('http://localhost:5000/api/categories').then(res => res.json()),
-			fetch('http://localhost:5000/api/subcategories').then(res => res.json())
+			fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`).then(res => res.json()),
+			fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/subcategories`).then(res => res.json())
 		])
 			.then(([cats, subcats]) => {
 				setCategories(cats || []);
@@ -60,7 +60,7 @@ export default function GeneralForma() {
 			}
 
 			// Récupérer les données de la formation depuis le backend
-			fetch(`http://localhost:5000/api/formations/${fId}`, {
+			fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations/${fId}`, {
 				headers: {
 					'Authorization': `Bearer ${token}`
 				}
@@ -80,12 +80,12 @@ export default function GeneralForma() {
 						description_longue: data.description_longue,
 						niveau: data.niveau
 					});
-					
+
 					// Gérer les images: si cover_images existe et est un array, l'utiliser; sinon utiliser image
 					const images = data.cover_images && Array.isArray(data.cover_images) && data.cover_images.length > 0
 						? data.cover_images
 						: (data.image ? [data.image] : []);
-					
+
 					setForm(prev => ({
 						...prev,
 						name: data.name || '',
@@ -98,7 +98,7 @@ export default function GeneralForma() {
 						coverImages: images
 					}));
 					setHasChanges(false);
-					
+
 					console.log('✅ Form updated:', {
 						description_longue: data.description_longue,
 						niveau: data.niveau,
@@ -156,7 +156,7 @@ export default function GeneralForma() {
 			// Séparer les images existantes (URLs) des nouvelles (base64)
 			const existingImages = form.coverImages.filter(img => !img.startsWith('data:'));
 			const newImages = form.coverImages.filter(img => img.startsWith('data:'));
-			
+
 			// Pour l'instant, on envoie juste les URLs existantes
 			const payload = {
 				description: form.descriptionCourt,
@@ -170,7 +170,7 @@ export default function GeneralForma() {
 
 			console.log('📤 Sending payload:', payload);
 
-			const res = await fetch(`http://localhost:5000/api/formations/${fId}`, {
+			const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations/${fId}`, {
 				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json',
@@ -193,7 +193,7 @@ export default function GeneralForma() {
 
 			setMessage('✅ Modifications enregistrées avec succès!');
 			setHasChanges(false);
-			
+
 			// Clear message after 3 seconds
 			setTimeout(() => {
 				setMessage(null);
@@ -232,7 +232,7 @@ export default function GeneralForma() {
 			}));
 			const images = await Promise.all(promises);
 			// Garder les images existantes et ajouter les nouvelles
-			setForm(prev => ({ ...prev, coverImages: [...prev.coverImages, ...images].slice(0,5) }));
+			setForm(prev => ({ ...prev, coverImages: [...prev.coverImages, ...images].slice(0, 5) }));
 			setHasChanges(true);
 		} catch (err) {
 			console.error('Image read error', err);

@@ -14,10 +14,10 @@ export default function ProfileDropdown({ isOpen, onClose, user, onLogout }) {
             <div className="p-4 border-b border-gray-100 bg-gray-50">
                 <div className="flex items-center gap-3">
                     {user?.avatar ? (
-                        <img 
-                            src={user.avatar.startsWith('http') ? user.avatar : `http://localhost:5000${user.avatar.startsWith('/') ? '' : '/'}${user.avatar.replace(/\\/g, '/')}`} 
-                            alt="Profil" 
-                            className="w-10 h-10 object-cover rounded-full shadow-sm" 
+                        <img
+                            src={user.avatar.startsWith('http') ? user.avatar : `${process.env.NEXT_PUBLIC_API_URL}${user.avatar.startsWith('/') ? '' : '/'}${user.avatar.replace(/\\/g, '/')}`}
+                            alt="Profil"
+                            className="w-10 h-10 object-cover rounded-full shadow-sm"
                         />
                     ) : (
                         <div className="w-10 h-10 bg-[#0C8CE9] rounded-full flex items-center justify-center text-white text-lg font-bold shadow-sm">
@@ -37,7 +37,7 @@ export default function ProfileDropdown({ isOpen, onClose, user, onLogout }) {
 
             {/* Menu options */}
             <div className="py-2">
-                <button 
+                <button
                     className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center gap-3 text-gray-700 hover:text-[#0C8CE9]"
                     onClick={() => {
                         // Redirige selon le rôle : formateur -> profile formateur, acheteur -> page acceuil (avec nav), sinon profile générique
@@ -56,7 +56,7 @@ export default function ProfileDropdown({ isOpen, onClose, user, onLogout }) {
                     <span>Mon profil</span>
                 </button>
 
-                <button 
+                <button
                     className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center gap-3 text-gray-700 hover:text-[#0C8CE9]"
                     onClick={() => {
                         const target = user?.role === 'formateur' ? ROUTES.TRAINER_FORMATIONS_LIST : ROUTES.MES_FORMATIONS_GENERAL;
@@ -68,7 +68,7 @@ export default function ProfileDropdown({ isOpen, onClose, user, onLogout }) {
                     <span>Mes formations</span>
                 </button>
 
-                <button 
+                <button
                     className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center gap-3 text-gray-700 hover:text-[#0C8CE9]"
                     onClick={() => {
                         router.push(ROUTES.SETTINGS);
@@ -82,7 +82,7 @@ export default function ProfileDropdown({ isOpen, onClose, user, onLogout }) {
                 {/* Séparateur */}
                 <div className="border-t border-gray-100 my-2"></div>
 
-                <button 
+                <button
                     className="w-full px-4 py-3 text-left hover:bg-red-50 transition-colors flex items-center gap-3 text-gray-700 hover:text-red-600"
                     onClick={() => {
                         onLogout();

@@ -29,7 +29,7 @@ export default function ListeFormation() {
                     return;
                 }
 
-                const response = await fetch('http://localhost:5000/api/orders/my-formations', {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/my-formations`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -40,13 +40,13 @@ export default function ListeFormation() {
                 }
 
                 const data = await response.json();
-                
+
                 const resolveImage = (img) => {
                     if (!img) return null;
                     if (img.startsWith('data:') || img.startsWith('http')) return img;
-                    if (img.startsWith('/uploads')) return `http://localhost:5000${img}`;
+                    if (img.startsWith('/uploads')) return `${process.env.NEXT_PUBLIC_API_URL}${img}`;
                     if (img.length > 500) return `data:image/png;base64,${img}`;
-                    return `http://localhost:5000/uploads/${img}`;
+                    return `${process.env.NEXT_PUBLIC_API_URL}/uploads/${img}`;
                 };
 
                 // Transformer les données de l'API
@@ -57,14 +57,14 @@ export default function ListeFormation() {
                     categoryIcon: getIconForCategory(order.Formation.Category?.name || "Non spécifié"),
                     views: order.Formation.nombre_vues || 0,
                     description: order.Formation.description,
-                    author: order.Formation.trainer 
-                        ? `${order.Formation.trainer.prenom} ${order.Formation.trainer.nom_de_famille}` 
+                    author: order.Formation.trainer
+                        ? `${order.Formation.trainer.prenom} ${order.Formation.trainer.nom_de_famille}`
                         : "Formateur inconnu",
                     image: resolveImage(order.Formation.image) || "/images/users/formation.png",
-                    avatar: order.Formation.trainer?.avatar 
-                        ? (order.Formation.trainer.avatar.startsWith('http') || order.Formation.trainer.avatar.startsWith('data:') 
-                            ? order.Formation.trainer.avatar 
-                            : `http://localhost:5000${order.Formation.trainer.avatar.replace('/api/avatar/', '/uploads/avatars/')}`) 
+                    avatar: order.Formation.trainer?.avatar
+                        ? (order.Formation.trainer.avatar.startsWith('http') || order.Formation.trainer.avatar.startsWith('data:')
+                            ? order.Formation.trainer.avatar
+                            : `${process.env.NEXT_PUBLIC_API_URL}${order.Formation.trainer.avatar.replace('/api/avatar/', '/uploads/avatars/')}`)
                         : null,
                     type: "normal",
                     oldPrice: "",
@@ -96,13 +96,13 @@ export default function ListeFormation() {
             <Header searchValue={searchQuery} onSearchChange={setSearchQuery} />
             <div className="pt-24">
                 <Nav />
-                
+
                 {/* Conteneur principal (Même design que l'accueil et le profil) */}
                 <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-                    
+
                     {/* Le grand wrapper demandé avec border et shadow */}
                     <div className="bg-white border border-slate-200 shadow-xl shadow-slate-200/40 rounded-[2rem] p-6 lg:p-10 mb-8 min-h-[70vh]">
-                        
+
                         {/* En-tête du catalogue */}
                         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-6 border-b border-slate-100">
                             <div className="flex-1 w-full max-w-xl">
@@ -118,41 +118,37 @@ export default function ListeFormation() {
                             <div className="flex flex-wrap items-center gap-2 bg-slate-50 p-1.5 rounded-xl border border-slate-200 shadow-sm w-fit">
                                 <button
                                     onClick={() => setActiveFilter("tous")}
-                                    className={`px-4 py-2 rounded-lg text-[13px] font-bold transition-all duration-200 flex items-center gap-2 ${
-                                        activeFilter === "tous" 
-                                        ? "bg-slate-900 text-white shadow-md" 
-                                        : "text-slate-600 hover:bg-white hover:text-slate-900"
-                                    }`}
+                                    className={`px-4 py-2 rounded-lg text-[13px] font-bold transition-all duration-200 flex items-center gap-2 ${activeFilter === "tous"
+                                            ? "bg-slate-900 text-white shadow-md"
+                                            : "text-slate-600 hover:bg-white hover:text-slate-900"
+                                        }`}
                                 >
                                     <FiFilter className="w-4 h-4" /> Tous
                                 </button>
                                 <button
                                     onClick={() => setActiveFilter("gratuit")}
-                                    className={`px-4 py-2 rounded-lg text-[13px] font-bold transition-all duration-200 flex items-center gap-2 ${
-                                        activeFilter === "gratuit" 
-                                        ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/20" 
-                                        : "text-slate-600 hover:bg-white hover:text-slate-900"
-                                    }`}
+                                    className={`px-4 py-2 rounded-lg text-[13px] font-bold transition-all duration-200 flex items-center gap-2 ${activeFilter === "gratuit"
+                                            ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/20"
+                                            : "text-slate-600 hover:bg-white hover:text-slate-900"
+                                        }`}
                                 >
                                     <FiGift className="w-4 h-4" /> Gratuit
                                 </button>
                                 <button
                                     onClick={() => setActiveFilter("promotion")}
-                                    className={`px-4 py-2 rounded-lg text-[13px] font-bold transition-all duration-200 flex items-center gap-2 ${
-                                        activeFilter === "promotion" 
-                                        ? "bg-amber-500 text-white shadow-md shadow-amber-500/20" 
-                                        : "text-slate-600 hover:bg-white hover:text-slate-900"
-                                    }`}
+                                    className={`px-4 py-2 rounded-lg text-[13px] font-bold transition-all duration-200 flex items-center gap-2 ${activeFilter === "promotion"
+                                            ? "bg-amber-500 text-white shadow-md shadow-amber-500/20"
+                                            : "text-slate-600 hover:bg-white hover:text-slate-900"
+                                        }`}
                                 >
                                     <FiStar className="w-4 h-4" /> Promotions
                                 </button>
                                 <button
                                     onClick={() => setActiveFilter("normal")}
-                                    className={`px-4 py-2 rounded-lg text-[13px] font-bold transition-all duration-200 flex items-center gap-2 ${
-                                        activeFilter === "normal" 
-                                        ? "bg-blue-600 text-white shadow-md shadow-blue-600/20" 
-                                        : "text-slate-600 hover:bg-white hover:text-slate-900"
-                                    }`}
+                                    className={`px-4 py-2 rounded-lg text-[13px] font-bold transition-all duration-200 flex items-center gap-2 ${activeFilter === "normal"
+                                            ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
+                                            : "text-slate-600 hover:bg-white hover:text-slate-900"
+                                        }`}
                                 >
                                     <FiTag className="w-4 h-4" /> Payant
                                 </button>
@@ -196,7 +192,7 @@ export default function ListeFormation() {
                                 </div>
                                 <h3 className="text-lg font-bold text-slate-900 mb-1">Aucune formation trouvée</h3>
                                 <p className="text-slate-500 text-sm">Nous n'avons trouvé aucune formation correspondant à ce filtre.</p>
-                                <button 
+                                <button
                                     onClick={() => {
                                         setActiveFilter("tous");
                                         setSearchQuery("");

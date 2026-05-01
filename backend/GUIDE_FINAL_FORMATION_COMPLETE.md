@@ -26,7 +26,7 @@ node src/app.js
 # ou avec nodemon si vous fixez package.json
 ```
 
-Le serveur lancera sur `http://localhost:5000`
+Le serveur lancera sur `${process.env.NEXT_PUBLIC_API_URL}`
 
 ---
 
@@ -34,7 +34,7 @@ Le serveur lancera sur `http://localhost:5000`
 
 ### **ÉTAPE 1: POST Créer Formation**
 ```http
-POST http://localhost:5000/api/formations
+POST ${process.env.NEXT_PUBLIC_API_URL}/api/formations
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ5N2E5ODdmLTE4YmEtNDFiMS04MmQ4LTgwZjAzMjcxMmUwYSIsImVtYWlsIjoiZm9ybWF0ZXVyQGdtYWlsLmNvbSIsInJvbGUiOiJmb3JtYXRldXIiLCJpYXQiOjE3NzU5NTI5MTQsImV4cCI6MTc3NjU1NzcxNH0.9hw4LFS3s7ec2p0PXAx4YbrH1oNOo3BhGTBAfDbB2vw
 Content-Type: application/json
 
@@ -56,7 +56,7 @@ Content-Type: application/json
 
 ### **ÉTAPE 2: PUT Ajouter Contenu**
 ```http
-PUT http://localhost:5000/api/formations/{FORMATION_ID}
+PUT ${process.env.NEXT_PUBLIC_API_URL}/api/formations/{FORMATION_ID}
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ5N2E5ODdmLTE4YmEtNDFiMS04MmQ4LTgwZjAzMjcxMmUwYSIsImVtYWlsIjoiZm9ybWF0ZXVyQGdtYWlsLmNvbSIsInJvbGUiOiJmb3JtYXRldXIiLCJpYXQiOjE3NzU5NTI5MTQsImV4cCI6MTc3NjU1NzcxNH0.9hw4LFS3s7ec2p0PXAx4YbrH1oNOo3BhGTBAfDbB2vw
 Content-Type: application/json
 
@@ -72,7 +72,7 @@ Content-Type: application/json
 
 ### **ÉTAPE 3: POST Créer Module 1**
 ```http
-POST http://localhost:5000/api/modules
+POST ${process.env.NEXT_PUBLIC_API_URL}/api/modules
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ5N2E5ODdmLTE4YmEtNDFiMS04MmQ4LTgwZjAzMjcxMmUwYSIsImVtYWlsIjoiZm9ybWF0ZXVyQGdtYWlsLmNvbSIsInJvbGUiOiJmb3JtYXRldXIiLCJpYXQiOjE3NzU5NTI5MTQsImV4cCI6MTc3NjU1NzcxNH0.9hw4LFS3s7ec2p0PXAx4YbrH1oNOo3BhGTBAfDbB2vw
 Content-Type: application/json
 
@@ -88,7 +88,7 @@ Content-Type: application/json
 
 ### **ÉTAPE 4: POST Créer Module 2**
 ```http
-POST http://localhost:5000/api/modules
+POST ${process.env.NEXT_PUBLIC_API_URL}/api/modules
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ5N2E5ODdmLTE4YmEtNDFiMS04MmQ4LTgwZjAzMjcxMmUwYSIsImVtYWlsIjoiZm9ybWF0ZXVyQGdtYWlsLmNvbSIsInJvbGUiOiJmb3JtYXRldXIiLCJpYXQiOjE3NzU5NTI5MTQsImV4cCI6MTc3NjU1NzcxNH0.9hw4LFS3s7ec2p0PXAx4YbrH1oNOo3BhGTBAfDbB2vw
 Content-Type: application/json
 
@@ -104,7 +104,7 @@ Content-Type: application/json
 
 ### **ÉTAPE 5: POST Créer Leçon 1.1**
 ```http
-POST http://localhost:5000/api/lessons
+POST ${process.env.NEXT_PUBLIC_API_URL}/api/lessons
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ5N2E5ODdmLTE4YmEtNDFiMS04MmQ4LTgwZjAzMjcxMmUwYSIsImVtYWlsIjoiZm9ybWF0ZXVyQGdtYWlsLmNvbSIsInJvbGUiOiJmb3JtYXRldXIiLCJpYXQiOjE3NzU5NTI5MTQsImV4cCI6MTc3NjU1NzcxNH0.9hw4LFS3s7ec2p0PXAx4YbrH1oNOo3BhGTBAfDbB2vw
 Content-Type: application/json
 
@@ -121,7 +121,7 @@ Content-Type: application/json
 
 ### **ÉTAPE 6: POST Créer Leçon 1.2**
 ```http
-POST http://localhost:5000/api/lessons
+POST ${process.env.NEXT_PUBLIC_API_URL}/api/lessons
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ5N2E5ODdmLTE4YmEtNDFiMS04MmQ4LTgwZjAzMjcxMmUwYSIsImVtYWlsIjoiZm9ybWF0ZXVyQGdtYWlsLmNvbSIsInJvbGUiOiJmb3JtYXRldXIiLCJpYXQiOjE3NzU5NTI5MTQsImV4cCI6MTc3NjU1NzcxNH0.9hw4LFS3s7ec2p0PXAx4YbrH1oNOo3BhGTBAfDbB2vw
 Content-Type: application/json
 
@@ -138,7 +138,7 @@ Content-Type: application/json
 
 ### **ÉTAPE 7: POST Créer Leçon 2.1**
 ```http
-POST http://localhost:5000/api/lessons
+POST ${process.env.NEXT_PUBLIC_API_URL}/api/lessons
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ5N2E5ODdmLTE4YmEtNDFiMS04MmQ4LTgwZjAzMjcxMmUwYSIsImVtYWlsIjoiZm9ybWF0ZXVyQGdtYWlsLmNvbSIsInJvbGUiOiJmb3JtYXRldXIiLCJpYXQiOjE3NzU5NTI5MTQsImV4cCI6MTc3NjU1NzcxNH0.9hw4LFS3s7ec2p0PXAx4YbrH1oNOo3BhGTBAfDbB2vw
 Content-Type: application/json
 
@@ -157,7 +157,7 @@ Content-Type: application/json
 
 #### Ressource 1 (Vidéo Leçon 1.1):
 ```http
-POST http://localhost:5000/api/resources
+POST ${process.env.NEXT_PUBLIC_API_URL}/api/resources
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ5N2E5ODdmLTE4YmEtNDFiMS04MmQ4LTgwZjAzMjcxMmUwYSIsImVtYWlsIjoiZm9ybWF0ZXVyQGdtYWlsLmNvbSIsInJvbGUiOiJmb3JtYXRldXIiLCJpYXQiOjE3NzU5NTI5MTQsImV4cCI6MTc3NjU1NzcxNH0.9hw4LFS3s7ec2p0PXAx4YbrH1oNOo3BhGTBAfDbB2vw
 Content-Type: application/json
 
@@ -172,7 +172,7 @@ Content-Type: application/json
 
 #### Ressource 2 (PDF Leçon 1.1):
 ```http
-POST http://localhost:5000/api/resources
+POST ${process.env.NEXT_PUBLIC_API_URL}/api/resources
 
 {
   "lessonId": "{LESSON_1_1_ID}",
@@ -185,7 +185,7 @@ POST http://localhost:5000/api/resources
 
 #### Ressource 3 (Vidéo Leçon 1.2):
 ```http
-POST http://localhost:5000/api/resources
+POST ${process.env.NEXT_PUBLIC_API_URL}/api/resources
 
 {
   "lessonId": "{LESSON_1_2_ID}",
@@ -198,7 +198,7 @@ POST http://localhost:5000/api/resources
 
 #### Ressource 4 (Vidéo Leçon 2.1):
 ```http
-POST http://localhost:5000/api/resources
+POST ${process.env.NEXT_PUBLIC_API_URL}/api/resources
 
 {
   "lessonId": "{LESSON_2_1_ID}",
@@ -213,7 +213,7 @@ POST http://localhost:5000/api/resources
 
 ### **ÉTAPE 12: PUT Finaliser (TARIFICATION + STATUT)**
 ```http
-PUT http://localhost:5000/api/formations/{FORMATION_ID}
+PUT ${process.env.NEXT_PUBLIC_API_URL}/api/formations/{FORMATION_ID}
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ5N2E5ODdmLTE4YmEtNDFiMS04MmQ4LTgwZjAzMjcxMmUwYSIsImVtYWlsIjoiZm9ybWF0ZXVyQGdtYWlsLmNvbSIsInJvbGUiOiJmb3JtYXRldXIiLCJpYXQiOjE3NzU5NTI5MTQsImV4cCI6MTc3NjU1NzcxNH0.9hw4LFS3s7ec2p0PXAx4YbrH1oNOo3BhGTBAfDbB2vw
 Content-Type: application/json
 
@@ -236,22 +236,22 @@ Content-Type: application/json
 
 #### Vérif 1: Récupérer formation
 ```http
-GET http://localhost:5000/api/formations/{FORMATION_ID}
+GET ${process.env.NEXT_PUBLIC_API_URL}/api/formations/{FORMATION_ID}
 ```
 
 #### Vérif 2: Lister modules
 ```http
-GET http://localhost:5000/api/formations/{FORMATION_ID}/modules
+GET ${process.env.NEXT_PUBLIC_API_URL}/api/formations/{FORMATION_ID}/modules
 ```
 
 #### Vérif 3: Lister leçons
 ```http
-GET http://localhost:5000/api/modules/{MODULE_1_ID}/lessons
+GET ${process.env.NEXT_PUBLIC_API_URL}/api/modules/{MODULE_1_ID}/lessons
 ```
 
 #### Vérif 4: Lister ressources
 ```http
-GET http://localhost:5000/api/lessons/{LESSON_1_1_ID}/resources
+GET ${process.env.NEXT_PUBLIC_API_URL}/api/lessons/{LESSON_1_1_ID}/resources
 ```
 
 ---

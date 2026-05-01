@@ -8,7 +8,7 @@
       "id": "1",
       "name": "1. CREATE MODULE",
       "method": "POST",
-      "url": "http://localhost:5000/api/modules",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/modules`,
       "headers": [
         {
           "key": "Content-Type",
@@ -28,7 +28,7 @@
       "id": "2",
       "name": "2. GET MODULES BY FORMATION",
       "method": "GET",
-      "url": "http://localhost:5000/api/formations/INSERT_FORMATION_ID/modules",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/formations/INSERT_FORMATION_ID/modules`,
       "headers": [],
       "notes": "Récupérer tous les modules d'une formation. Remplacez INSERT_FORMATION_ID par l'ID de la formation."
     },
@@ -36,7 +36,7 @@
       "id": "3",
       "name": "3. GET MODULE BY ID",
       "method": "GET",
-      "url": "http://localhost:5000/api/modules/INSERT_MODULE_ID",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/modules/INSERT_MODULE_ID`,
       "headers": [],
       "notes": "Récupérer un module spécifique par son ID"
     },
@@ -44,7 +44,7 @@
       "id": "4",
       "name": "4. UPDATE MODULE",
       "method": "PUT",
-      "url": "http://localhost:5000/api/modules/INSERT_MODULE_ID",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/modules/INSERT_MODULE_ID`,
       "headers": [
         {
           "key": "Content-Type",
@@ -64,7 +64,7 @@
       "id": "5",
       "name": "5. CREATE LESSON",
       "method": "POST",
-      "url": "http://localhost:5000/api/lessons",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/lessons`,
       "headers": [
         {
           "key": "Content-Type",
@@ -84,7 +84,7 @@
       "id": "6",
       "name": "6. GET LESSONS BY MODULE",
       "method": "GET",
-      "url": "http://localhost:5000/api/modules/INSERT_MODULE_ID/lessons",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/modules/INSERT_MODULE_ID/lessons`,
       "headers": [],
       "notes": "Récupérer toutes les leçons d'un module"
     },
@@ -92,7 +92,7 @@
       "id": "7",
       "name": "7. GET LESSON BY ID",
       "method": "GET",
-      "url": "http://localhost:5000/api/lessons/INSERT_LESSON_ID",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/lessons/INSERT_LESSON_ID`,
       "headers": [],
       "notes": "Récupérer une leçon spécifique par son ID"
     },
@@ -100,7 +100,7 @@
       "id": "8",
       "name": "8. UPDATE LESSON",
       "method": "PUT",
-      "url": "http://localhost:5000/api/lessons/INSERT_LESSON_ID",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/lessons/INSERT_LESSON_ID`,
       "headers": [
         {
           "key": "Content-Type",
@@ -120,7 +120,7 @@
       "id": "9",
       "name": "9. CREATE RESOURCE (VIDEO)",
       "method": "POST",
-      "url": "http://localhost:5000/api/resources",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/resources`,
       "headers": [
         {
           "key": "Content-Type",
@@ -140,7 +140,7 @@
       "id": "10",
       "name": "10. CREATE RESOURCE (PDF)",
       "method": "POST",
-      "url": "http://localhost:5000/api/resources",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/resources`,
       "headers": [
         {
           "key": "Content-Type",
@@ -160,7 +160,7 @@
       "id": "11",
       "name": "11. GET RESOURCES BY LESSON",
       "method": "GET",
-      "url": "http://localhost:5000/api/lessons/INSERT_LESSON_ID/resources",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/lessons/INSERT_LESSON_ID/resources`,
       "headers": [],
       "notes": "Récupérer toutes les ressources d'une leçon"
     },
@@ -168,7 +168,7 @@
       "id": "12",
       "name": "12. GET RESOURCE BY ID",
       "method": "GET",
-      "url": "http://localhost:5000/api/resources/INSERT_RESOURCE_ID",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/resources/INSERT_RESOURCE_ID`,
       "headers": [],
       "notes": "Récupérer une ressource spécifique par son ID"
     },
@@ -176,7 +176,7 @@
       "id": "13",
       "name": "13. UPDATE RESOURCE",
       "method": "PUT",
-      "url": "http://localhost:5000/api/resources/INSERT_RESOURCE_ID",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/resources/INSERT_RESOURCE_ID`,
       "headers": [
         {
           "key": "Content-Type",
@@ -196,7 +196,7 @@
       "id": "14",
       "name": "14. DELETE RESOURCE",
       "method": "DELETE",
-      "url": "http://localhost:5000/api/resources/INSERT_RESOURCE_ID",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/resources/INSERT_RESOURCE_ID`,
       "headers": [
         {
           "key": "Authorization",
@@ -209,7 +209,7 @@
       "id": "15",
       "name": "15. DELETE LESSON",
       "method": "DELETE",
-      "url": "http://localhost:5000/api/lessons/INSERT_LESSON_ID",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/lessons/INSERT_LESSON_ID`,
       "headers": [
         {
           "key": "Authorization",
@@ -222,7 +222,7 @@
       "id": "16",
       "name": "16. DELETE MODULE",
       "method": "DELETE",
-      "url": "http://localhost:5000/api/modules/INSERT_MODULE_ID",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/modules/INSERT_MODULE_ID`,
       "headers": [
         {
           "key": "Authorization",
@@ -269,7 +269,7 @@
     }
   ],
   "setup": {
-    "baseUrl": "http://localhost:5000/api",
+    "baseUrl": `${process.env.NEXT_PUBLIC_API_URL}/api`,
     "authToken": "Récupérez un JWT token depuis POST /api/auth/login avec un utilisateur de type 'formateur'",
     "database": "foumini_db - PostgreSQL sur localhost:5432",
     "defaultFormateur": {

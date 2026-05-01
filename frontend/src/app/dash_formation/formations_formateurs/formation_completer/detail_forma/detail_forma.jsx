@@ -55,7 +55,7 @@ export default function DetailForma() {
       }
 
       // Load existing data from backend
-      fetch(`http://localhost:5000/api/formations/${fId}`, {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations/${fId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -121,7 +121,7 @@ export default function DetailForma() {
 
       console.log('📤 Saving DetailForma payload:', payload);
 
-      const res = await fetch(`http://localhost:5000/api/formations/${fId}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations/${fId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -140,7 +140,7 @@ export default function DetailForma() {
 
       setMessage('✅ Détails enregistrés avec succès!');
       setHasChanges(false);
-      
+
       // Clear message after 3 seconds
       setTimeout(() => {
         setMessage(null);

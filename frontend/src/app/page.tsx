@@ -19,7 +19,7 @@ export default function Home() {
   const [formations, setFormations] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/formations-all')
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations-all`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -29,13 +29,13 @@ export default function Home() {
       .catch(err => console.error("Error fetching formations:", err));
   }, []);
 
-  const mockItems = Array.from({length: 10}).map((_, i) => ({
+  const mockItems = Array.from({ length: 10 }).map((_, i) => ({
     isMock: true,
     id: `mock-${i}`,
     image: "/images/users/formation.png",
     category: i < 4 ? "Design" : "Dev",
     durationString: i < 4 ? "3 mois" : "2 mois",
-    title: i < 8 ? `Card normale ${i+1}` : (i === 8 ? "Class adds $30 million to its balance sheet for a Zoom-friendly edtech solution" : "AWS Certified solutions Architect"),
+    title: i < 8 ? `Card normale ${i + 1}` : (i === 8 ? "Class adds $30 million to its balance sheet for a Zoom-friendly edtech solution" : "AWS Certified solutions Architect"),
     description: i < 4 ? "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor" : (i === 8 ? "Class, launched less than a year ago by Blackboard co-founder Michael Chasen, integrates exclusively..." : "Autre description pour la deuxième ligne."),
     avatar: "/images/users/profile.jpg",
     author: "Lina",
@@ -52,19 +52,19 @@ export default function Home() {
   const getValidImageUrl = (url: string | null | undefined, isMock: boolean, fallback: string | undefined) => {
     if (!url) return fallback;
     if (isMock) return url; // Image locale du frontend (ex: /images/...)
-    
+
     // Remplacer les antislashs par des slashs (chemins Windows)
     const cleanUrl = url.replace(/\\/g, '/');
-    
+
     if (cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://') || cleanUrl.startsWith('data:')) {
       return cleanUrl;
     }
-    return cleanUrl.startsWith('/') ? `http://localhost:5000${cleanUrl}` : `http://localhost:5000/${cleanUrl}`;
+    return cleanUrl.startsWith('/') ? `${process.env.NEXT_PUBLIC_API_URL}${cleanUrl}` : `${process.env.NEXT_PUBLIC_API_URL}/${cleanUrl}`;
   };
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      <Header 
+      <Header
         searchValue={searchValue}
         onSearchChange={(val: string) => setSearchValue(val)}
       />
@@ -111,7 +111,7 @@ export default function Home() {
 
       {/* Lien vers le catalogue complet */}
       <div className="flex justify-center mt-6 mb-8">
-        <button 
+        <button
           onClick={() => router.push(ROUTES.BROWSE_COURSES)}
           className="inline-flex items-center gap-2 bg-gradient-to-r from-[#0C8CE9] to-[#00A3FF] text-white font-semibold px-8 py-3 rounded-xl hover:from-[#0A71BC] hover:to-[#0080CC] transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
         >

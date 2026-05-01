@@ -43,7 +43,7 @@ export default function TarificationPage() {
       }
 
       // Load data from backend
-      fetch(`http://localhost:5000/api/formations/${fId}`, {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations/${fId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -104,13 +104,13 @@ export default function TarificationPage() {
 
   const handleSave = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
-    
+
     // Validation: si pas gratuit, le prix normal est OBLIGATOIRE
     if (!isFree && !price) {
       setPromoError('❌ Le prix normal est obligatoire pour une formation payante.');
       return;
     }
-    
+
     // Validation: if promo price is set, validate it and optionally require dates
     if (!isFree && promoPrice) {
       const p = toNumber(price);
@@ -121,7 +121,7 @@ export default function TarificationPage() {
       }
       // Note: Backend will validate dates if prix_promo is set, so we don't need to check here
     }
-    
+
     setSaving(true);
     setMessage(null);
     try {
@@ -142,7 +142,7 @@ export default function TarificationPage() {
 
       console.log('📤 Saving Tarification payload:', payload);
 
-      const res = await fetch(`http://localhost:5000/api/formations/${fId}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations/${fId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -169,12 +169,12 @@ export default function TarificationPage() {
       }
 
       setMessage('✅ Tarification enregistrée avec succès!');
-      
+
       // Save draft locally for reference
       const draftPayload = { price: price, promoPrice: promoPrice, isFree };
       saveDraft(draftPayload);
       setHasChanges(false);
-      
+
       // Clear message after 3 seconds
       setTimeout(() => {
         setMessage(null);
@@ -311,20 +311,20 @@ export default function TarificationPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-6">
                         <div>
                           <label className="block text-sm font-semibold mb-2">Date début promo</label>
-                          <input 
-                            type="date" 
-                            value={dateDebutPromo} 
+                          <input
+                            type="date"
+                            value={dateDebutPromo}
                             onChange={(e) => { setDateDebutPromo(e.target.value); setHasChanges(true); }}
-                            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200" 
+                            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                           />
                         </div>
                         <div>
                           <label className="block text-sm font-semibold mb-2">Date fin promo</label>
-                          <input 
-                            type="date" 
-                            value={dateFinPromo} 
+                          <input
+                            type="date"
+                            value={dateFinPromo}
                             onChange={(e) => { setDateFinPromo(e.target.value); setHasChanges(true); }}
-                            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200" 
+                            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                           />
                         </div>
                       </div>
@@ -332,7 +332,7 @@ export default function TarificationPage() {
 
                     <div className="mt-8 flex flex-col-reverse sm:flex-row items-center justify-between gap-6 sm:gap-4">
                       <button type="button" onClick={() => router.back()} className="w-full sm:w-auto px-6 py-3 rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-gray-800 transition font-semibold text-center">Retour</button>
-                      
+
                       <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
                         <div className="flex items-center justify-between w-full sm:w-auto gap-3 p-3 sm:p-0 bg-gray-50 sm:bg-transparent rounded-lg border sm:border-none border-gray-200">
                           <span className="text-sm font-medium text-gray-700">{isFree ? 'Formation gratuite' : 'Rendre gratuite'}</span>

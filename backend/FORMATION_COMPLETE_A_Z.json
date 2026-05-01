@@ -11,7 +11,7 @@
       "id": "001",
       "name": "ÉTAPE 1: Récupérer les Catégories",
       "method": "GET",
-      "url": "http://localhost:5000/api/categories",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/categories`,
       "headers": [],
       "notes": "Récupérez une categoryId (ex: React, Python, etc.)"
     },
@@ -19,7 +19,7 @@
       "id": "002",
       "name": "ÉTAPE 2: Récupérer les Sous-Catégories",
       "method": "GET",
-      "url": "http://localhost:5000/api/subcategories?categoryId=CATEGORY_ID_FROM_STEP1",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/subcategories?categoryId=CATEGORY_ID_FROM_STEP1`,
       "headers": [],
       "notes": "Remplacez CATEGORY_ID_FROM_STEP1 par l'ID reçu à l'étape 1. Récupérez un subcategoryId"
     },
@@ -27,7 +27,7 @@
       "id": "003",
       "name": "ÉTAPE 3: Créer la Formation (STEP 1 - Infos de base)",
       "method": "POST",
-      "url": "http://localhost:5000/api/formations",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/formations`,
       "headers": [
         {
           "key": "Content-Type",
@@ -47,7 +47,7 @@
       "id": "004",
       "name": "ÉTAPE 4: Mettre à jour la Formation (STEP 2 - Contenu)",
       "method": "PUT",
-      "url": "http://localhost:5000/api/formations/FORMATION_ID_FROM_STEP3",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/formations/FORMATION_ID_FROM_STEP3`,
       "headers": [
         {
           "key": "Content-Type",
@@ -67,7 +67,7 @@
       "id": "005",
       "name": "ÉTAPE 5: Créer le Module 1",
       "method": "POST",
-      "url": "http://localhost:5000/api/modules",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/modules`,
       "headers": [
         {
           "key": "Content-Type",
@@ -87,7 +87,7 @@
       "id": "006",
       "name": "ÉTAPE 6: Créer le Module 2",
       "method": "POST",
-      "url": "http://localhost:5000/api/modules",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/modules`,
       "headers": [
         {
           "key": "Content-Type",
@@ -107,7 +107,7 @@
       "id": "007",
       "name": "ÉTAPE 7: Créer Leçon 1.1 (dans Module 1)",
       "method": "POST",
-      "url": "http://localhost:5000/api/lessons",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/lessons`,
       "headers": [
         {
           "key": "Content-Type",
@@ -127,7 +127,7 @@
       "id": "008",
       "name": "ÉTAPE 8: Créer Leçon 1.2 (dans Module 1)",
       "method": "POST",
-      "url": "http://localhost:5000/api/lessons",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/lessons`,
       "headers": [
         {
           "key": "Content-Type",
@@ -147,7 +147,7 @@
       "id": "009",
       "name": "ÉTAPE 9: Créer Leçon 2.1 (dans Module 2)",
       "method": "POST",
-      "url": "http://localhost:5000/api/lessons",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/lessons`,
       "headers": [
         {
           "key": "Content-Type",
@@ -167,7 +167,7 @@
       "id": "010",
       "name": "ÉTAPE 10: Ajouter Ressource VIDÉO à Leçon 1.1",
       "method": "POST",
-      "url": "http://localhost:5000/api/resources",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/resources`,
       "headers": [
         {
           "key": "Content-Type",
@@ -187,7 +187,7 @@
       "id": "011",
       "name": "ÉTAPE 11: Ajouter Ressource PDF à Leçon 1.1",
       "method": "POST",
-      "url": "http://localhost:5000/api/resources",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/resources`,
       "headers": [
         {
           "key": "Content-Type",
@@ -207,7 +207,7 @@
       "id": "012",
       "name": "ÉTAPE 12: Ajouter Ressources à Leçon 1.2",
       "method": "POST",
-      "url": "http://localhost:5000/api/resources",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/resources`,
       "headers": [
         {
           "key": "Content-Type",
@@ -227,7 +227,7 @@
       "id": "013",
       "name": "ÉTAPE 13: Ajouter Ressources à Leçon 2.1",
       "method": "POST",
-      "url": "http://localhost:5000/api/resources",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/resources`,
       "headers": [
         {
           "key": "Content-Type",
@@ -247,7 +247,7 @@
       "id": "014",
       "name": "ÉTAPE 14: Finaliser la Formation (STEP 5 - Tarification)",
       "method": "PUT",
-      "url": "http://localhost:5000/api/formations/FORMATION_ID_FROM_STEP3",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/formations/FORMATION_ID_FROM_STEP3`,
       "headers": [
         {
           "key": "Content-Type",
@@ -267,7 +267,7 @@
       "id": "015",
       "name": "VÉRIFICATION: Récupérer la Formation Créée",
       "method": "GET",
-      "url": "http://localhost:5000/api/formations/FORMATION_ID_FROM_STEP3",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/formations/FORMATION_ID_FROM_STEP3`,
       "headers": [],
       "notes": "Vérifier que la formation a été créée avec tous les champs"
     },
@@ -275,7 +275,7 @@
       "id": "016",
       "name": "VÉRIFICATION: Lister tous les Modules",
       "method": "GET",
-      "url": "http://localhost:5000/api/formations/FORMATION_ID_FROM_STEP3/modules",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/formations/FORMATION_ID_FROM_STEP3/modules`,
       "headers": [],
       "notes": "Vérifier que les 2 modules sont créés"
     },
@@ -283,7 +283,7 @@
       "id": "017",
       "name": "VÉRIFICATION: Lister toutes les Leçons du Module 1",
       "method": "GET",
-      "url": "http://localhost:5000/api/modules/MODULE_1_ID_FROM_STEP5/lessons",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/modules/MODULE_1_ID_FROM_STEP5/lessons`,
       "headers": [],
       "notes": "Vérifier que les 2 leçons du module 1 sont créées"
     },
@@ -291,7 +291,7 @@
       "id": "018",
       "name": "VÉRIFICATION: Lister les Ressources de Leçon 1.1",
       "method": "GET",
-      "url": "http://localhost:5000/api/lessons/LESSON_1_1_ID_FROM_STEP7/resources",
+      "url": `${process.env.NEXT_PUBLIC_API_URL}/api/lessons/LESSON_1_1_ID_FROM_STEP7/resources`,
       "headers": [],
       "notes": "Vérifier que 2 ressources (vidéo + PDF) sont créées"
     }

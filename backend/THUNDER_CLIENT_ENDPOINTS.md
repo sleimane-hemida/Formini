@@ -1,6 +1,6 @@
 # 🧪 THUNDER CLIENT - TOUS LES 44 ENDPOINTS
 
-**Base URL:** `http://localhost:5000/api`
+**Base URL:** `${process.env.NEXT_PUBLIC_API_URL}/api`
 
 ---
 

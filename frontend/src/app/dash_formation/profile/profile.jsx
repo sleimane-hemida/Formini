@@ -36,7 +36,7 @@ export default function Profile() {
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
 	const [isEditing, setIsEditing] = useState(false);
-	
+
 	const [formData, setFormData] = useState({
 		prenom: '',
 		nom_de_famille: '',
@@ -53,7 +53,7 @@ export default function Profile() {
 				const token = localStorage.getItem('token');
 				if (!token) return;
 
-				const response = await fetch('http://localhost:5000/api/user/profile', {
+				const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/profile`, {
 					headers: { 'Authorization': `Bearer ${token}` }
 				});
 
@@ -63,7 +63,7 @@ export default function Profile() {
 				setUser(userData);
 
 				if (userData.avatar) {
-					setProfileImage(`http://localhost:5000${userData.avatar}`);
+					setProfileImage(`${process.env.NEXT_PUBLIC_API_URL}${userData.avatar}`);
 				}
 
 				setFormData({
@@ -99,7 +99,7 @@ export default function Profile() {
 				const formDataUpload = new FormData();
 				formDataUpload.append('avatar', file);
 
-				const response = await fetch('http://localhost:5000/api/user/avatar', {
+				const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/avatar`, {
 					method: 'POST',
 					headers: { 'Authorization': `Bearer ${token}` },
 					body: formDataUpload
@@ -108,7 +108,7 @@ export default function Profile() {
 				if (!response.ok) throw new Error('Erreur upload');
 
 				const result = await response.json();
-				setProfileImage(`http://localhost:5000${result.avatar}`);
+				setProfileImage(`${process.env.NEXT_PUBLIC_API_URL}${result.avatar}`);
 			} catch (err) {
 				console.error('❌ Erreur upload avatar:', err);
 			}
@@ -126,7 +126,7 @@ export default function Profile() {
 			const token = localStorage.getItem('token');
 			if (!token) throw new Error('Non authentifié');
 
-			const response = await fetch('http://localhost:5000/api/user/profile', {
+			const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/profile`, {
 				method: 'PUT',
 				headers: {
 					'Authorization': `Bearer ${token}`,
@@ -281,83 +281,83 @@ export default function Profile() {
 												{/* Prénom */}
 												<div>
 													<label className="block text-sm font-bold text-gray-700 mb-2 px-1">Prénom</label>
-													<input 
-														type="text" 
-														name="prenom" 
-														value={formData.prenom} 
-														onChange={handleInputChange} 
+													<input
+														type="text"
+														name="prenom"
+														value={formData.prenom}
+														onChange={handleInputChange}
 														disabled={!isEditing}
-														className={`w-full px-4 py-3.5 border rounded-xl outline-none transition-all font-medium ${isEditing ? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900' : 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed'}`} 
-														placeholder="Votre prénom" 
+														className={`w-full px-4 py-3.5 border rounded-xl outline-none transition-all font-medium ${isEditing ? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900' : 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed'}`}
+														placeholder="Votre prénom"
 													/>
 												</div>
 
 												{/* Nom */}
 												<div>
 													<label className="block text-sm font-bold text-gray-700 mb-2 px-1">Nom de famille</label>
-													<input 
-														type="text" 
-														name="nom_de_famille" 
-														value={formData.nom_de_famille} 
-														onChange={handleInputChange} 
+													<input
+														type="text"
+														name="nom_de_famille"
+														value={formData.nom_de_famille}
+														onChange={handleInputChange}
 														disabled={!isEditing}
-														className={`w-full px-4 py-3.5 border rounded-xl outline-none transition-all font-medium ${isEditing ? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900' : 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed'}`} 
-														placeholder="Votre nom" 
+														className={`w-full px-4 py-3.5 border rounded-xl outline-none transition-all font-medium ${isEditing ? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900' : 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed'}`}
+														placeholder="Votre nom"
 													/>
 												</div>
 
 												{/* Email */}
 												<div>
 													<label className="block text-sm font-bold text-gray-700 mb-2 px-1">Adresse email</label>
-													<input 
-														type="email" 
-														name="email" 
-														value={formData.email} 
-														onChange={handleInputChange} 
+													<input
+														type="email"
+														name="email"
+														value={formData.email}
+														onChange={handleInputChange}
 														disabled={!isEditing}
-														className={`w-full px-4 py-3.5 border rounded-xl outline-none transition-all font-medium ${isEditing ? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900' : 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed'}`} 
-														placeholder="votre@email.com" 
+														className={`w-full px-4 py-3.5 border rounded-xl outline-none transition-all font-medium ${isEditing ? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900' : 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed'}`}
+														placeholder="votre@email.com"
 													/>
 												</div>
 
 												{/* Téléphone */}
 												<div>
 													<label className="block text-sm font-bold text-gray-700 mb-2 px-1">Téléphone</label>
-													<input 
-														type="tel" 
-														name="telephone" 
-														value={formData.telephone} 
-														onChange={handleInputChange} 
+													<input
+														type="tel"
+														name="telephone"
+														value={formData.telephone}
+														onChange={handleInputChange}
 														disabled={!isEditing}
-														className={`w-full px-4 py-3.5 border rounded-xl outline-none transition-all font-medium ${isEditing ? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900' : 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed'}`} 
-														placeholder="+222 00 00 00 00" 
+														className={`w-full px-4 py-3.5 border rounded-xl outline-none transition-all font-medium ${isEditing ? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900' : 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed'}`}
+														placeholder="+222 00 00 00 00"
 													/>
 												</div>
 
 												{/* Date de naissance */}
 												<div>
 													<label className="block text-sm font-bold text-gray-700 mb-2 px-1">Date de naissance</label>
-													<input 
-														type="date" 
-														name="date_naissance" 
-														value={formData.date_naissance} 
-														onChange={handleInputChange} 
+													<input
+														type="date"
+														name="date_naissance"
+														value={formData.date_naissance}
+														onChange={handleInputChange}
 														disabled={!isEditing}
-														className={`w-full px-4 py-3.5 border rounded-xl outline-none transition-all font-medium ${isEditing ? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900' : 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed'}`} 
+														className={`w-full px-4 py-3.5 border rounded-xl outline-none transition-all font-medium ${isEditing ? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900' : 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed'}`}
 													/>
 												</div>
 
 												{/* Localisation */}
 												<div>
 													<label className="block text-sm font-bold text-gray-700 mb-2 px-1">Localisation</label>
-													<input 
-														type="text" 
-														name="localisation" 
-														value={formData.localisation} 
-														onChange={handleInputChange} 
+													<input
+														type="text"
+														name="localisation"
+														value={formData.localisation}
+														onChange={handleInputChange}
 														disabled={!isEditing}
-														className={`w-full px-4 py-3.5 border rounded-xl outline-none transition-all font-medium ${isEditing ? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900' : 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed'}`} 
-														placeholder="Nouakchott, Mauritanie" 
+														className={`w-full px-4 py-3.5 border rounded-xl outline-none transition-all font-medium ${isEditing ? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900' : 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed'}`}
+														placeholder="Nouakchott, Mauritanie"
 													/>
 												</div>
 											</div>
@@ -365,19 +365,19 @@ export default function Profile() {
 											{/* Bio */}
 											<div className="mt-8">
 												<label className="block text-sm font-bold text-gray-700 mb-2 px-1">Biographie</label>
-												<textarea 
-													name="biographie" 
-													value={formData.biographie} 
-													onChange={handleInputChange} 
-													rows={4} 
+												<textarea
+													name="biographie"
+													value={formData.biographie}
+													onChange={handleInputChange}
+													rows={4}
 													disabled={!isEditing}
-													className={`w-full px-4 py-4 border rounded-xl outline-none transition-all resize-none font-medium leading-relaxed ${isEditing ? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900' : 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed'}`} 
-													placeholder="Parlez-nous de vous, vos compétences, vos passions..." 
+													className={`w-full px-4 py-4 border rounded-xl outline-none transition-all resize-none font-medium leading-relaxed ${isEditing ? 'bg-white border-[#0C8CE9] ring-2 ring-blue-100 text-gray-900' : 'bg-gray-50 border-gray-100 text-gray-700 cursor-not-allowed'}`}
+													placeholder="Parlez-nous de vous, vos compétences, vos passions..."
 												/>
 											</div>
 
 											<div className="mt-12 flex justify-end">
-												<button 
+												<button
 													onClick={handleNext}
 													className="flex items-center gap-2 bg-[#0C8CE9] text-white px-10 py-4 rounded-xl font-bold hover:bg-[#0A71BC] hover:shadow-xl hover:translate-x-1 transition-all active:scale-95"
 												>
@@ -395,7 +395,7 @@ export default function Profile() {
 			</div>
 			<Footer />
 
-			<CustomModal 
+			<CustomModal
 				isOpen={modalConfig.isOpen}
 				onClose={closeModal}
 				title={modalConfig.title}
