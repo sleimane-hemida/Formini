@@ -82,8 +82,8 @@ export default function PropulseurValid() {
                 <div className="max-w-3xl mx-auto">
                   <h2 className="text-lg font-semibold">Vous allez propulser :</h2>
                   <div className="mt-3 p-4 border border-[#0C8CE9] rounded-md bg-gray-50">
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="min-w-0 w-full sm:w-auto">
                         <div className="font-semibold text-gray-900">{formation?.title}</div>
                         {formation?.description && <div className="text-sm text-gray-600 mt-1 truncate">{formation.description}</div>}
                         <div className="text-sm text-gray-600 mt-2">Durée : <span className="font-medium">{durationDays || '—'}</span> jours — Prix : <span className="font-medium">200 MRU par mois</span></div>
@@ -132,9 +132,9 @@ export default function PropulseurValid() {
                       </div>
                     </div>
 
-                    <div className="mt-6 flex justify-end">
-                      <button onClick={() => router.back()} className="mr-3 px-4 py-2 bg-gray-200 rounded">Annuler</button>
-                      <button disabled={!checked} onClick={handleConfirm} className={`px-4 py-2 rounded text-white ${checked ? 'bg-[#0C8CE9] hover:bg-[#096bb3]' : 'bg-[#0C8CE9]/40 cursor-not-allowed'}`}>
+                    <div className="mt-6 flex flex-col-reverse sm:flex-row justify-end gap-3 sm:gap-0">
+                      <button onClick={() => router.back()} className="sm:mr-3 px-4 py-3 sm:py-2 bg-gray-200 rounded w-full sm:w-auto font-semibold text-center">Annuler</button>
+                      <button disabled={!checked} onClick={handleConfirm} className={`px-4 py-3 sm:py-2 rounded text-white w-full sm:w-auto font-bold text-center ${checked ? 'bg-[#0C8CE9] hover:bg-[#096bb3]' : 'bg-[#0C8CE9]/40 cursor-not-allowed'}`}>
                         Propulser
                       </button>
                     </div>

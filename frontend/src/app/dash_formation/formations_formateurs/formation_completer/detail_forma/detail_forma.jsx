@@ -200,7 +200,7 @@ export default function DetailForma() {
             <Sidebar />
           </div>
 
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <div className="max-w-7xl mx-auto px-4 sm:px-6">
               <main>
                 <div className="container mx-auto px-4 py-8 pt-6 max-w-6xl">
@@ -220,10 +220,10 @@ export default function DetailForma() {
                     ) : <></>
                   } />
 
-                  <form onSubmit={handleSave} className="bg-white p-8 rounded-2xl shadow-sm w-full text-black">
+                  <form onSubmit={handleSave} className="bg-white p-4 sm:p-8 rounded-2xl shadow-sm w-full text-black overflow-hidden">
                     {message && <div className="mb-4 text-sm text-gray-700">{message}</div>}
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                       <div className="md:col-span-1">
                         <label className="block text-sm font-semibold mb-2">Durée (minutes) <span className="text-red-600 ml-1">*</span></label>
                         <input name="minutes" type="number" min={1} value={form.minutes} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200" aria-required="true" />
@@ -271,12 +271,10 @@ export default function DetailForma() {
 
                     {errors.duration && <div className="text-xs text-red-600 mt-4">{errors.duration}</div>}
 
-                    <div className="mt-6 flex items-center justify-between">
-                      <div>
-                        <button type="button" onClick={() => router.back()} className="px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-gray-800 transition">Retour</button>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <button type="button" onClick={() => router.push(`/dash_formation/formations_formateurs/formation_completer/module?fId=${fId}`)} className="bg-gray-800 hover:bg-black text-white px-5 py-2 rounded-lg transition-colors">Suivant</button>
+                    <div className="mt-8 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
+                      <button type="button" onClick={() => router.back()} className="w-full sm:w-auto px-6 py-3 rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-gray-800 transition font-semibold text-center">Retour</button>
+                      <div className="w-full sm:w-auto flex flex-col sm:flex-row items-center gap-3">
+                        <button type="button" onClick={() => router.push(`/dash_formation/formations_formateurs/formation_completer/module?fId=${fId}`)} className="w-full sm:w-auto bg-gray-800 hover:bg-black text-white px-8 py-3 rounded-lg transition-colors font-bold text-center">Suivant</button>
                       </div>
                     </div>
                   </form>

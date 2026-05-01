@@ -101,19 +101,19 @@ export default function Dashboard() {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="col-span-1 bg-white p-4 rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div className="lg:col-span-1 bg-white p-4 rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                   <h3 className="text-sm font-bold mb-4 text-gray-900">Répartition des types de ventes</h3>
                   <div className="flex justify-center">
                     <Chart options={pieOptions} series={pieSeries} type="donut" height={280} width="100%" />
                   </div>
                 </div>
 
-                <div className="col-span-2 bg-white p-4 rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div className="lg:col-span-2 bg-white p-4 rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                   <h3 className="text-sm font-bold mb-4 text-gray-900">Visites hebdomadaires</h3>
                   <Chart options={lineOptions} series={lineSeries} type="line" height={300} width="100%" />
                 </div>
 
-                <div className="col-span-3 bg-white p-4 rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div className="lg:col-span-3 bg-white p-4 rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                   <h3 className="text-sm font-bold mb-4 text-gray-900">Ventes par mois</h3>
                   <Chart options={barOptions} series={barSeries} type="bar" height={300} width="100%" />
                 </div>

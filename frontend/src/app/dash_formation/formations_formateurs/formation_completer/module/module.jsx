@@ -278,7 +278,7 @@ export default function ModuleLecon() {
             <Sidebar />
           </div>
 
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <div className="max-w-7xl mx-auto px-4 sm:px-6">
               <main>
                 <div className="container mx-auto px-4 py-8 pt-6 max-w-6xl">
@@ -297,7 +297,7 @@ export default function ModuleLecon() {
                       </div>
                     ) : <></>
                   } />
-                  <div className="bg-white p-6 rounded-2xl w-full text-black shadow-sm">
+                  <div className="bg-white p-4 sm:p-6 rounded-2xl w-full text-black shadow-sm overflow-hidden">
                     <div className="flex items-center justify-between mb-4">
                       <button type="button" onClick={addModule} disabled={isAdding} className={`inline-flex items-center gap-2 px-3 py-2 border rounded text-sm bg-white hover:bg-gray-50 ${isAdding ? 'opacity-50 cursor-not-allowed' : ''}`}>
                         {isAdding ? 'Ajout...' : '+ Ajouter un module'}
@@ -311,9 +311,9 @@ export default function ModuleLecon() {
                       <ol className="divide-y divide-gray-100">
                         {modules.map((m, index) => (
                           <li key={m.id} className="py-3">
-                            <div className={`border-2 rounded-lg p-4 transition-shadow flex items-center justify-between ${editingId === m.id ? 'border-blue-300 shadow-md' : 'border-gray-200 hover:border-blue-300'}`}>
-                              <div className="flex items-center gap-4 flex-1">
-                                <div className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white font-medium">{index + 1}</div>
+                            <div className={`border-2 rounded-lg p-4 transition-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${editingId === m.id ? 'border-blue-300 shadow-md' : 'border-gray-200 hover:border-blue-300'}`}>
+                              <div className="flex items-center gap-3 sm:gap-4 flex-1 w-full min-w-0">
+                                <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-full bg-blue-500 text-white font-medium">{index + 1}</div>
                                 {editingId === m.id ? (
                                   <input
                                     autoFocus
@@ -323,23 +323,23 @@ export default function ModuleLecon() {
                                     onChange={(e) => handleTitleChange(m.id, e.target.value)}
                                     onBlur={() => setEditingId(null)}
                                     onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
-                                    className="flex-1 text-lg font-medium focus:outline-none"
+                                    className="flex-1 text-base sm:text-lg font-medium focus:outline-none min-w-0"
                                   />
                                 ) : (
-                                  <div className="flex-1">
-                                    <div className="text-lg font-medium">{m.title || m.titre || `Module ${index + 1}`}</div>
-                                    <div className="text-sm text-gray-500">{m.description || 'Pas de description'}</div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="text-base sm:text-lg font-medium truncate">{m.title || m.titre || `Module ${index + 1}`}</div>
+                                    <div className="text-xs sm:text-sm text-gray-500 truncate">{m.description || 'Pas de description'}</div>
                                   </div>
                                 )}
                               </div>
-                              <div className="flex-shrink-0 flex items-center gap-2">
+                              <div className="flex-shrink-0 flex items-center gap-2 w-full sm:w-auto justify-end border-t border-gray-100 sm:border-none pt-3 sm:pt-0">
                                 <button
                                   type="button"
                                   onClick={() => {
                                     const modulePath = `/dash_formation/formations_formateurs/formation_completer/lecon?fId=${encodeURIComponent(fId)}&moduleId=${encodeURIComponent(m.id)}`;
                                     router.push(modulePath);
                                   }}
-                                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded text-sm"
+                                  className="flex-1 sm:flex-none px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded text-sm text-center"
                                 >
                                   Voir les leçons
                                 </button>
@@ -349,7 +349,7 @@ export default function ModuleLecon() {
                                   title="Modifier le nom du module"
                                   className="p-2 rounded hover:bg-gray-100"
                                 >
-                                  <FiEdit className="w-4 h-4 text-gray-600" />
+                                  <FiEdit className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
                                 </button>
                                 <button
                                   type="button"
@@ -358,7 +358,7 @@ export default function ModuleLecon() {
                                   aria-label={`Supprimer le module ${m.title || m.id}`}
                                   className="p-2 rounded text-red-500 hover:text-red-700"
                                 >
-                                  <FiTrash2 className="w-4 h-4" />
+                                  <FiTrash2 className="w-4 h-4 sm:w-5 sm:h-5" />
                                 </button>
                               </div>
                             </div>
@@ -367,21 +367,17 @@ export default function ModuleLecon() {
                       </ol>
                     )}
 
-                    <div className="mt-6 flex items-center justify-between">
-                      <div>
-                        <button type="button" onClick={() => router.back()} className="px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-800 transition">Retour</button>
-                      </div>
-                      <div className="flex flex-col items-end gap-3">
+                    <div className="mt-8 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
+                      <button type="button" onClick={() => router.back()} className="w-full sm:w-auto px-6 py-3 rounded-lg border border-gray-200 text-sm text-gray-700 font-semibold hover:bg-gray-100 hover:text-gray-800 transition text-center">Retour</button>
+                      <div className="flex flex-col items-center sm:items-end gap-3 w-full sm:w-auto">
                         {message && <div className="text-sm text-center w-full">{message}</div>}
-                        <div className="flex items-center gap-3">
-                          <button 
-                            type="button"
-                            onClick={() => router.push(`/dash_formation/formations_formateurs/formation_completer/tarification?page=1${fId?`&fId=${fId}`:''}`)}
-                            className="bg-gray-800 hover:bg-black text-white px-5 py-2 rounded-lg transition-colors"
-                          >
-                            Suivant
-                          </button>
-                        </div>
+                        <button 
+                          type="button"
+                          onClick={() => router.push(`/dash_formation/formations_formateurs/formation_completer/tarification?page=1${fId?`&fId=${fId}`:''}`)}
+                          className="w-full sm:w-auto bg-gray-800 hover:bg-black text-white px-8 py-3 rounded-lg transition-colors font-bold text-center"
+                        >
+                          Suivant
+                        </button>
                       </div>
                     </div>
                   </div>

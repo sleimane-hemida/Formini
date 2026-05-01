@@ -124,7 +124,7 @@ export default function InfoCompte() {
 						<Sidebar />
 					</div>
 
-					<div className="flex-1">
+					<div className="flex-1 min-w-0">
 						<div className="max-w-7xl mx-auto px-4 sm:px-6">
 							<main>
 								<div className="container mx-auto px-4 py-8 pt-6 max-w-6xl">
@@ -153,19 +153,19 @@ export default function InfoCompte() {
 													</div>
 												</div>
 
-												<div className="ml-auto">
+												<div className="w-full md:w-auto mt-4 md:mt-0 flex justify-center md:justify-end">
 													{!isEditing ? (
-														<button onClick={() => setIsEditing(true)} className="bg-white text-[#0C8CE9] px-6 py-2.5 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+														<button onClick={() => setIsEditing(true)} className="w-full sm:w-auto justify-center bg-white text-[#0C8CE9] px-6 py-2.5 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2">
 															<HiPencil className="w-5 h-5" />
 															Modifier
 														</button>
 													) : (
-														<div className="flex gap-3">
-															<button onClick={handleSave} disabled={saving} className="bg-white text-green-600 px-6 py-2.5 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+														<div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+															<button onClick={handleSave} disabled={saving} className="w-full sm:w-auto justify-center bg-white text-green-600 px-6 py-2.5 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2">
 																<HiCheck className="w-5 h-5" />
 																{saving ? '...' : 'Valider'}
 															</button>
-															<button onClick={handleCancel} className="bg-white/20 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-white/30 transition-all flex items-center gap-2 backdrop-blur-sm">
+															<button onClick={handleCancel} className="w-full sm:w-auto justify-center bg-white/20 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-white/30 transition-all flex items-center gap-2 backdrop-blur-sm">
 																<HiXMark className="w-5 h-5" />
 																Annuler
 															</button>
@@ -219,17 +219,17 @@ export default function InfoCompte() {
 												</div>
 											</div>
 
-											<div className="mt-12 flex justify-between">
+											<div className="mt-12 flex flex-col-reverse sm:flex-row justify-between gap-4">
 												<button 
 													onClick={() => router.push('/dash_formation/profile/info_sup')}
-													className="flex items-center gap-2 bg-gray-100 text-gray-700 px-8 py-3.5 rounded-xl font-bold hover:bg-gray-200 transition-all active:scale-95"
+													className="w-full sm:w-auto flex justify-center items-center gap-2 bg-gray-100 text-gray-700 px-8 py-3.5 rounded-xl font-bold hover:bg-gray-200 transition-all active:scale-95"
 												>
 													<HiArrowLeft className="w-5 h-5" />
 													Précédent
 												</button>
 												<button 
 													onClick={handleFinish}
-													className="flex items-center gap-2 bg-[#0C8CE9] text-white px-10 py-4 rounded-xl font-bold hover:bg-[#0A71BC] hover:shadow-xl hover:translate-x-1 transition-all active:scale-95"
+													className="w-full sm:w-auto flex justify-center items-center gap-2 bg-[#0C8CE9] text-white px-10 py-4 rounded-xl font-bold hover:bg-[#0A71BC] hover:shadow-xl hover:translate-x-1 transition-all active:scale-95"
 												>
 													Terminer
 													<HiCheck className="w-5 h-5" />

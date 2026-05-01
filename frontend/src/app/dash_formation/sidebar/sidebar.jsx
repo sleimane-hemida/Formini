@@ -119,7 +119,7 @@ export default function Sidebar() {
 			</aside>
 
 			{/* Bottom Navigation Mobile - Visible only on Mobile */}
-			<nav className="lg:hidden fixed bottom-0 inset-x-0 w-full bg-white border-t border-gray-100 flex justify-around items-center h-16 z-[9999] shadow-[0_-4px_12px_rgba(0,0,0,0.08)] rounded-t-[20px] select-none" style={{ touchAction: 'manipulation' }}>
+			<nav className="lg:hidden fixed bottom-0 inset-x-0 w-full bg-white border-t border-gray-100 flex justify-around items-center h-14 z-[9999] shadow-[0_-4px_12px_rgba(0,0,0,0.08)] rounded-t-[5px] select-none" style={{ touchAction: 'manipulation' }}>
 				{nav.map((item) => {
 					const Icon = item.icon;
 					const active = isActive(item.href);
@@ -132,8 +132,8 @@ export default function Sidebar() {
 							}}
 							className={`flex flex-col items-center justify-center flex-1 h-full gap-0.5 transition-colors duration-200 ${active ? 'text-[#0C8CE9]' : 'text-gray-400 hover:text-gray-600'}`}
 						>
-							<div className={`p-1.5 rounded-xl transition-all ${active ? 'bg-blue-50' : ''}`}>
-								<Icon className={`w-6 h-6 ${active ? 'stroke-[2.5px]' : 'stroke-[1.8px]'}`} />
+							<div className={`p-1 rounded-xl transition-all ${active ? 'bg-blue-50' : ''}`}>
+								<Icon className={`w-5 h-5 ${active ? 'stroke-[2.5px]' : 'stroke-[1.8px]'}`} />
 							</div>
 							<span className={`text-[10px] font-bold tracking-tight ${active ? 'text-[#0C8CE9]' : 'text-gray-500'}`}>
 								{item.id === "dashboard" ? "Dashboard" : 
@@ -148,7 +148,7 @@ export default function Sidebar() {
 			</nav>
 
 			{/* Spacer to avoid content being hidden behind bottom nav */}
-			<div className="lg:hidden h-20 w-full pointer-events-none"></div>
+			<div className="lg:hidden h-16 w-full pointer-events-none"></div>
 		</>
 	);
 }

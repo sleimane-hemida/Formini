@@ -294,7 +294,7 @@ export default function ListeForma() {
             <Sidebar />
           </div>
 
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <div className="max-w-7xl mx-auto px-4 sm:px-6">
               <main>
                 <div ref={containerRef} className="container mx-auto px-4 py-8 pt-6 max-w-6xl">
@@ -327,7 +327,7 @@ export default function ListeForma() {
                         onClick={() => router.push(`/dash_formation/formations_formateurs/formation_completer/general_forma?fId=${f.id}`)}
                         onDragOver={(e) => handleDragOver(e, idx)}
                         onDrop={(e) => handleDrop(e, idx)}
-                        className={`relative bg-[#F8F8FA] p-4 rounded-lg border border-gray-200 flex items-center justify-between gap-6 cursor-pointer hover:shadow-md hover:bg-white transition ${dragOverIndex === idx ? 'border-dashed border-gray-400' : ''} ${draggedIndex === idx ? 'opacity-40' : ''}`}
+                        className={`relative bg-[#F8F8FA] p-4 rounded-lg border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 cursor-pointer hover:shadow-md hover:bg-white transition ${dragOverIndex === idx ? 'border-dashed border-gray-400' : ''} ${draggedIndex === idx ? 'opacity-40' : ''}`}
                       >
                         {(() => {
                           const pStatus = (f && f.promotionStatus) || (promotionStatuses && promotionStatuses[f.id]);
@@ -363,18 +363,19 @@ export default function ListeForma() {
 
                         {/* price moved under title; thumbnail on the left */}
 
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center justify-between w-full sm:w-auto gap-4 mt-2 sm:mt-0 pt-3 sm:pt-0 border-t border-gray-200 sm:border-none">
                           <span className={`px-3 py-1 rounded-md text-sm font-medium ${f.active ? 'bg-green-900 text-white' : 'bg-gray-100 text-gray-700'}`}>
                             {f.active ? (<><FiTrendingUp className="inline-block mr-1 w-4 h-4"/>En vente</>) : 'Désactivée'}
                           </span>
 
-                          <button
-                            onClick={(e) => { e.stopPropagation(); toggleActive(f.id); }}
-                            aria-pressed={f.active}
-                            className={`relative inline-flex items-center h-6 w-12 rounded-full p-1 transition-colors ${f.active ? 'bg-black' : 'bg-gray-200'}`}
-                          >
-                            <span className={`h-4 w-4 bg-white rounded-full shadow transform transition-transform ${f.active ? 'translate-x-6' : 'translate-x-0'}`} />
-                          </button>
+                          <div className="flex items-center gap-4">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); toggleActive(f.id); }}
+                              aria-pressed={f.active}
+                              className={`relative inline-flex items-center h-6 w-12 rounded-full p-1 transition-colors ${f.active ? 'bg-black' : 'bg-gray-200'}`}
+                            >
+                              <span className={`h-4 w-4 bg-white rounded-full shadow transform transition-transform ${f.active ? 'translate-x-6' : 'translate-x-0'}`} />
+                            </button>
 
                           {/* Action menu */}
                           <div className="relative">
@@ -405,6 +406,7 @@ export default function ListeForma() {
                                 </button>
                               </div>
                             )}
+                          </div>
                           </div>
                         </div>
                       </article>

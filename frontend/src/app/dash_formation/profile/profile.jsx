@@ -212,7 +212,7 @@ export default function Profile() {
 						<Sidebar />
 					</div>
 
-					<div className="flex-1">
+					<div className="flex-1 min-w-0">
 						<div className="max-w-7xl mx-auto px-4 sm:px-6">
 							<main>
 								<div className="container mx-auto px-4 py-8 pt-6 max-w-6xl">

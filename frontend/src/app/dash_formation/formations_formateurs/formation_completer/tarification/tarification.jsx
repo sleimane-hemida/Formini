@@ -225,7 +225,7 @@ export default function TarificationPage() {
             <Sidebar />
           </div>
 
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <div className="max-w-7xl mx-auto px-4 sm:px-6">
               <main>
                 <div className="container mx-auto px-4 py-8 pt-6 max-w-6xl">
@@ -245,7 +245,7 @@ export default function TarificationPage() {
                     ) : <></>
                   } />
 
-                  <form onSubmit={handleSave} className="bg-white p-8 rounded-2xl shadow-sm w-full text-black">
+                  <form onSubmit={handleSave} className="bg-white p-4 sm:p-8 rounded-2xl shadow-sm w-full text-black overflow-hidden">
                     {message && <div className="mb-4 text-sm text-gray-700">{message}</div>}
 
                     <div className="mb-4">
@@ -254,17 +254,17 @@ export default function TarificationPage() {
 
                     <div className="mt-4">
                       <label className="block text-sm font-semibold mb-2">Gains souhaités (MRU)</label>
-                      <div className="flex gap-3 items-center">
-                        <div className="relative flex-1">
+                      <div className="flex flex-col sm:flex-row gap-3 items-center">
+                        <div className="relative w-full sm:flex-1">
                           <input type="number" step="0.01" min="0" placeholder="1200" value={desiredNet} onChange={(e) => { setDesiredNet(e.target.value); setHasChanges(true); }} disabled={isFree} className="w-full pr-12 px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
                           <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">MRU</span>
                         </div>
-                        <button type="button" onClick={handleComputeGross} className="px-4 py-2 bg-[#0C8CE9] text-white rounded-lg hover:bg-[#096bb3]">Calculer le prix</button>
+                        <button type="button" onClick={handleComputeGross} className="w-full sm:w-auto px-6 py-3 bg-[#0C8CE9] text-white rounded-lg hover:bg-[#096bb3] font-semibold">Calculer le prix</button>
                       </div>
                       {computeMsg && <div className="mt-2 text-sm text-gray-600">{computeMsg}</div>}
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                       <div>
                         <label className="block text-sm font-semibold mb-2">Prix normal</label>
                         <div className="relative">
@@ -308,7 +308,7 @@ export default function TarificationPage() {
                     </div>
 
                     {promoPrice && !isFree && (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-6">
                         <div>
                           <label className="block text-sm font-semibold mb-2">Date début promo</label>
                           <input 
@@ -330,13 +330,12 @@ export default function TarificationPage() {
                       </div>
                     )}
 
-                    <div className="mt-6 flex items-center justify-between">
-                      <div>
-                        <button type="button" onClick={() => router.back()} className="px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-gray-800 transition">Retour</button>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-3">
-                          {/* Toggle switch placed before Enregistrer */}
+                    <div className="mt-8 flex flex-col-reverse sm:flex-row items-center justify-between gap-6 sm:gap-4">
+                      <button type="button" onClick={() => router.back()} className="w-full sm:w-auto px-6 py-3 rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-gray-800 transition font-semibold text-center">Retour</button>
+                      
+                      <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+                        <div className="flex items-center justify-between w-full sm:w-auto gap-3 p-3 sm:p-0 bg-gray-50 sm:bg-transparent rounded-lg border sm:border-none border-gray-200">
+                          <span className="text-sm font-medium text-gray-700">{isFree ? 'Formation gratuite' : 'Rendre gratuite'}</span>
                           <button
                             type="button"
                             role="switch"
@@ -347,15 +346,11 @@ export default function TarificationPage() {
                           >
                             <span className={`inline-block w-5 h-5 bg-white rounded-full shadow transform transition-transform ${isFree ? 'translate-x-5' : 'translate-x-0'}`} />
                           </button>
-
-                          <span className="text-sm text-gray-700">{isFree ? 'Formation gratuite activée' : 'Rendre la formation gratuite'}</span>
                         </div>
 
-                        <div className="flex items-center gap-3">
-                          <button type="button" onClick={() => router.push(`/dash_formation/formations_formateurs/formations_liste`)} className="bg-gray-800 hover:bg-black text-white px-5 py-2 rounded-lg transition-colors">
-                            Terminer
-                          </button>
-                        </div>
+                        <button type="button" onClick={() => router.push(`/dash_formation/formations_formateurs/formations_liste`)} className="w-full sm:w-auto bg-gray-800 hover:bg-black text-white px-8 py-3 rounded-lg transition-colors font-bold text-center">
+                          Terminer
+                        </button>
                       </div>
                     </div>
                   </form>

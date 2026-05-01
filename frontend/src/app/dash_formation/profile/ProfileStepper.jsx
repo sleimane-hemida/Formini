@@ -21,7 +21,7 @@ export default function ProfileStepper({ current = 1 }) {
                 <div className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ${completed ? 'bg-green-500 text-white shadow-lg shadow-green-100' : active ? 'bg-[#0C8CE9] text-white shadow-lg shadow-blue-100' : 'bg-white border-2 border-gray-100 text-gray-400'}`}>
                   {completed ? <HiCheck className="w-5 h-5 transition-all animate-in zoom-in" /> : <span className="font-bold">{s.id}</span>}
                 </div>
-                <div className={`ml-3 whitespace-nowrap ${active ? 'font-bold text-gray-900' : completed ? 'font-semibold text-gray-700' : 'font-medium text-gray-400'} text-sm transition-colors`}>
+                <div className={`hidden md:block ml-3 whitespace-nowrap ${active ? 'font-bold text-gray-900' : completed ? 'font-semibold text-gray-700' : 'font-medium text-gray-400'} text-sm transition-colors`}>
                   {s.label}
                 </div>
               </div>

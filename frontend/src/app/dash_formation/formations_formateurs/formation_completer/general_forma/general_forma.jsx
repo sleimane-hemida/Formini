@@ -254,7 +254,7 @@ export default function GeneralForma() {
 						<Sidebar />
 					</div>
 
-					<div className="flex-1">
+					<div className="flex-1 min-w-0">
 						<div className="max-w-7xl mx-auto px-4 sm:px-6">
 							<main>
 								<div className="container mx-auto px-4 py-8 pt-6 max-w-6xl">
@@ -274,10 +274,10 @@ export default function GeneralForma() {
 										) : <></>
 									} />
 
-									<form onSubmit={handleSave} className="bg-white p-8 rounded-2xl shadow-sm w-full text-black">
+									<form onSubmit={handleSave} className="bg-white p-4 sm:p-8 rounded-2xl shadow-sm w-full text-black overflow-hidden">
 										{message && <div className="mb-4 text-sm text-gray-700">{message}</div>}
 
-										<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+										<div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
 											<div>
 												<label className="block text-sm font-semibold mb-2">Titre</label>
 												<input name="name" value={form.name} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
@@ -309,16 +309,16 @@ export default function GeneralForma() {
 											<div>
 												<label className="block text-sm font-semibold mb-2">Images de couverture</label>
 												<input id="coverUpload" type="file" accept="image/*" multiple onChange={handleCoverImagesUpload} className="hidden" />
-												<label htmlFor="coverUpload" className="w-full cursor-pointer border-dashed border-2 border-gray-200 rounded-lg p-4 flex items-center justify-center gap-3 hover:border-blue-300 transition-colors focus-within:ring-2 focus-within:ring-blue-200 focus-within:border-blue-500">
+												<label htmlFor="coverUpload" className="w-full cursor-pointer border-dashed border-2 border-gray-200 rounded-lg p-4 flex flex-col sm:flex-row items-center justify-center gap-3 hover:border-blue-300 transition-colors focus-within:ring-2 focus-within:ring-blue-200 focus-within:border-blue-500">
 													<div className="text-2xl">📤</div>
-													<div className="text-sm text-gray-600">
+													<div className="text-sm text-gray-600 text-center sm:text-left">
 														<div className="font-medium">Cliquez pour ajouter des images</div>
 														<div className="text-xs text-gray-400">PNG, JPG — max 5 images</div>
 													</div>
 												</label>
 												<div className="flex gap-3 flex-wrap mt-3">
 													{form.coverImages.map((img, idx) => (
-														<div key={idx} className="relative w-32 h-20 bg-gray-100 rounded overflow-hidden transform hover:scale-105 transition-shadow duration-150 shadow-sm hover:shadow-md">
+														<div key={idx} className="relative w-24 h-16 sm:w-32 sm:h-20 bg-gray-100 rounded overflow-hidden transform hover:scale-105 transition-shadow duration-150 shadow-sm hover:shadow-md">
 															<img src={img} alt={`cover-${idx}`} className="w-full h-full object-cover" />
 															<button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/90 rounded-full p-1 text-red-600 hover:bg-red-50">✕</button>
 														</div>
@@ -358,12 +358,10 @@ export default function GeneralForma() {
 											</div>
 										</div>
 
-										<div className="mt-6 flex items-center justify-between">
-											<div>
-												<button type="button" onClick={() => router.back()} className="px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-gray-800 transition">Retour</button>
-											</div>
-											<div className="flex items-center gap-3">
-												<button type="button" onClick={() => router.push(`/dash_formation/formations_formateurs/formation_completer/detail_forma?fId=${fId}`)} className="bg-gray-800 hover:bg-black text-white px-5 py-2 rounded-lg transition-colors">Suivant</button>
+										<div className="mt-8 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
+											<button type="button" onClick={() => router.back()} className="w-full sm:w-auto px-6 py-3 rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-gray-800 transition font-semibold text-center">Retour</button>
+											<div className="w-full sm:w-auto flex flex-col sm:flex-row items-center gap-3">
+												<button type="button" onClick={() => router.push(`/dash_formation/formations_formateurs/formation_completer/detail_forma?fId=${fId}`)} className="w-full sm:w-auto bg-gray-800 hover:bg-black text-white px-8 py-3 rounded-lg transition-colors font-bold text-center">Suivant</button>
 											</div>
 										</div>
 									</form>

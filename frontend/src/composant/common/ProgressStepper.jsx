@@ -22,7 +22,7 @@ export default function ProgressStepper({ current = 1, fId = null }) {
                 <div className={`w-9 h-9 rounded-full flex items-center justify-center ${completed ? 'bg-green-500 text-white shadow-sm' : active ? 'bg-blue-500 text-white shadow-md' : 'bg-white border border-gray-200 text-gray-400'}`}>
                   {completed ? <HiCheck className="w-5 h-5" /> : <span className="font-semibold">{s.id}</span>}
                 </div>
-                <div className={`ml-3 ${active ? 'font-bold text-black' : 'text-gray-500'} text-sm`}>{s.label}</div>
+                <div className={`hidden md:block ml-3 ${active ? 'font-bold text-black' : 'text-gray-500'} text-sm whitespace-nowrap`}>{s.label}</div>
               </div>
 
               {i < steps.length - 1 && (

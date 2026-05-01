@@ -201,11 +201,11 @@ export default function NewFormation() {
                 <div className="container mx-auto px-4 py-8 pt-6 max-w-6xl">
                   <PageHeader title="Ajouter une formation" actions={(<></>)} />
 
-                  <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-lg w-full text-black">
+                  <form onSubmit={handleSubmit} className="bg-white p-4 sm:p-8 rounded-2xl shadow-lg w-full text-black overflow-hidden">
           {error && <div className="mb-4 text-sm text-red-600">{error}</div>}
           {success && <div className="mb-4 text-sm text-green-600">Formation créée avec succès.</div>}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <div>
               <label className="block text-sm font-semibold mb-2">Titre <span className="text-gray-400 text-xs">({form.name.length}/40)</span></label>
               <input name="name" maxLength={40} value={form.name} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-shadow shadow-sm" placeholder="Titre de la formation" />
@@ -231,11 +231,11 @@ export default function NewFormation() {
               <div className={`text-xs mt-1 ${form.descriptionLong.length >= 500 ? 'text-green-600' : 'text-red-600'}`}>{form.descriptionLong.length} caractères (minimum 500)</div>
             </div>
 
-            <div>
+            <div className="md:col-span-2">
               <label className="block text-sm font-semibold mb-2">Images de couverture</label>
               <input id="coverUpload" type="file" accept="image/*" multiple onChange={handleCoverImagesUpload} className="hidden" />
               <label htmlFor="coverUpload" className="w-full block cursor-pointer border-dashed border-2 border-gray-200 hover:border-blue-300 transition-colors rounded-lg p-4 text-center text-sm text-gray-600">
-                <div className="flex items-center justify-center gap-3">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                   <span className="text-2xl">📤</span>
                   <div>
                     <div className="font-medium">Cliquez pour ajouter des images</div>
@@ -245,7 +245,7 @@ export default function NewFormation() {
               </label>
               <div className="flex gap-3 flex-wrap mt-3">
                 {form.coverImages.map((img, idx) => (
-                  <div key={idx} className="relative w-32 h-20 bg-gray-100 rounded overflow-hidden transform hover:scale-105 transition-shadow duration-150 shadow-sm hover:shadow-md">
+                  <div key={idx} className="relative w-24 h-16 sm:w-32 sm:h-20 bg-gray-100 rounded overflow-hidden transform hover:scale-105 transition-shadow duration-150 shadow-sm hover:shadow-md">
                     <img src={img} alt={`cover-${idx}`} className="w-full h-full object-cover" />
                     <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/90 rounded-full p-1 text-red-600 hover:bg-red-50">✕</button>
                   </div>
@@ -286,15 +286,11 @@ export default function NewFormation() {
             </div>
           </div>
 
-          <div className="mt-6 flex items-center justify-between">
-            <div>
-              <button type="button" onClick={() => router.push('/dash_formation/formations_formateurs/formations_liste')} className="px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition">Annuler</button>
-            </div>
-            <div>
-              <button type="submit" disabled={isSubmitting} className="bg-[#0C8CE9] hover:bg-[#096bb3] active:scale-95 transform text-white px-5 py-2 rounded-lg shadow hover:shadow-md transition">
-                {isSubmitting ? 'Enregistrement...' : 'Enregistrer la formation'}
-              </button>
-            </div>
+          <div className="mt-8 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
+            <button type="button" onClick={() => router.push('/dash_formation/formations_formateurs/formations_liste')} className="w-full sm:w-auto px-6 py-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition font-semibold text-gray-700 text-center">Annuler</button>
+            <button type="submit" disabled={isSubmitting} className="w-full sm:w-auto bg-[#0C8CE9] hover:bg-[#096bb3] active:scale-95 transform text-white px-8 py-3 rounded-lg shadow hover:shadow-md transition font-bold text-center">
+              {isSubmitting ? 'Enregistrement...' : 'Enregistrer la formation'}
+            </button>
           </div>
                   </form>
                 </div>
