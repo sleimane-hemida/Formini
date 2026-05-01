@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { AdminSidebarPage } from '../sidebar/sidebar';
 import { AdminHeaderPage } from '../headerAdmin/headerAdmin';
-import { FaUserPlus, FaEdit, FaTrashAlt, FaExclamationTriangle, FaTimes, FaEllipsisV, FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
+import { FaUserPlus, FaEdit, FaTrashAlt, FaExclamationTriangle, FaTimes, FaEllipsisV, FaSort, FaSortUp, FaSortDown, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 const mockUsers = [
   { id: 1, name: 'Amadou Diallo', email: 'amadou@formini.com', status: 'Actif', date: '12 Mars 2024', avatar: 'AD' },
@@ -129,10 +129,10 @@ export function AdminUsersPage() {
         onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)} 
       />
 
-      <div className={`flex-1 flex flex-col transition-all duration-300 ${isSidebarCollapsed ? 'pl-20' : 'pl-72'}`}>
+      <div className={`flex-1 min-w-0 flex flex-col transition-all duration-300 ${isSidebarCollapsed ? 'lg:pl-20' : 'lg:pl-72'}`}>
         <AdminHeaderPage />
 
-        <main className="p-8 space-y-6 overflow-y-auto">
+        <main className="p-4 sm:p-8 pb-20 lg:pb-8 space-y-6 overflow-y-auto">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h1 className="text-xl font-black text-gray-800 tracking-tight">Gestion des Apprenants</h1>
@@ -237,16 +237,17 @@ export function AdminUsersPage() {
             </div>
             
             {/* Footer avec Navigation pagination numérique */}
-            <div className="p-5 border-t border-gray-100 flex items-center justify-between text-[10px] font-black text-gray-300 uppercase tracking-widest bg-white">
-                <span className=" text-gray-400">Page {currentPage} sur {totalPages}</span>
+            <div className="p-4 sm:p-5 border-t border-gray-100 flex items-center justify-between text-[10px] font-black text-gray-300 uppercase tracking-widest bg-white">
+                <span className="text-gray-400">Page {currentPage} sur {totalPages}</span>
                 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2">
                    <button 
                     disabled={currentPage === 1}
                     onClick={() => handlePageChange(currentPage - 1)}
-                    className={`px-3 py-1.5 border rounded-lg transition-all ${currentPage === 1 ? 'opacity-30 cursor-not-allowed border-gray-50' : 'border-gray-100 hover:bg-gray-50 text-gray-400'}`}
+                    className={`px-2 sm:px-3 py-1.5 border rounded-lg transition-all flex items-center gap-1 ${currentPage === 1 ? 'opacity-30 cursor-not-allowed border-gray-50' : 'border-gray-100 hover:bg-gray-50 text-gray-400'}`}
                    >
-                    Précédent
+                    <FaChevronLeft size={10} />
+                    <span className="hidden sm:inline">Précédent</span>
                    </button>
 
                    <div className="flex items-center gap-1">
@@ -254,7 +255,7 @@ export function AdminUsersPage() {
                         <button
                           key={page}
                           onClick={() => handlePageChange(page)}
-                          className={`w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-black transition-all ${
+                          className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-[10px] font-black transition-all ${
                             currentPage === page 
                             ? 'bg-[#0C8CE9] text-white' 
                             : 'bg-white text-gray-400 border border-gray-100 hover:bg-gray-50'
@@ -268,9 +269,10 @@ export function AdminUsersPage() {
                    <button 
                     disabled={currentPage === totalPages}
                     onClick={() => handlePageChange(currentPage + 1)}
-                    className={`px-3 py-1.5 border rounded-lg transition-all ${currentPage === totalPages ? 'opacity-30 cursor-not-allowed border-gray-50' : 'border-gray-100 hover:bg-gray-50 text-gray-400'}`}
+                    className={`px-2 sm:px-3 py-1.5 border rounded-lg transition-all flex items-center gap-1 ${currentPage === totalPages ? 'opacity-30 cursor-not-allowed border-gray-50' : 'border-gray-100 hover:bg-gray-50 text-gray-400'}`}
                    >
-                    Suivant
+                    <span className="hidden sm:inline">Suivant</span>
+                    <FaChevronRight size={10} />
                    </button>
                 </div>
             </div>

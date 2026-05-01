@@ -159,41 +159,41 @@ export function AdminDashboardPage() {
         onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)} 
       />
 
-      <div className={`flex-1 flex flex-col transition-all duration-300 ${isSidebarCollapsed ? 'pl-20' : 'pl-72'}`}>
+      <div className={`flex-1 min-w-0 flex flex-col transition-all duration-300 ${isSidebarCollapsed ? 'lg:pl-20' : 'lg:pl-72'}`}>
         <AdminHeaderPage />
 
-        <main className="p-8 max-w-7xl mx-auto w-full space-y-10">
+        <main className="p-4 sm:p-8 pb-20 lg:pb-8 max-w-7xl mx-auto w-full space-y-10">
           {/* Header Simple */}
-          <div className="flex justify-between items-center border-b border-gray-200 pb-6">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-gray-200 pb-4 sm:pb-6 gap-3">
             <div>
-              <h1 className="text-xl font-bold text-gray-900 tracking-tight">Vue d'ensemble</h1>
-              <p className="text-gray-400 text-xs mt-1">Plateforme Formini • Dimanche 16 Avril</p>
+              <h1 className="text-base sm:text-xl font-bold text-gray-900 tracking-tight">Vue d'ensemble</h1>
+              <p className="text-gray-400 text-[10px] sm:text-xs mt-1">Plateforme Formini • Dimanche 16 Avril</p>
             </div>
-            <div className="flex gap-3">
-              <button className="px-4 py-2 border border-gray-100 rounded-lg text-xs font-bold text-gray-500 hover:bg-gray-50 transition-colors">
+            <div className="flex gap-2 sm:gap-3">
+              <button className="px-3 py-1.5 sm:px-4 sm:py-2 border border-gray-100 rounded-lg text-[10px] sm:text-xs font-bold text-gray-500 hover:bg-gray-50 transition-colors">
                 Rapport
               </button>
-              <button className="px-4 py-2 bg-[#0C8CE9] rounded-lg text-xs font-bold text-white hover:bg-[#0a70bb] transition-all">
+              <button className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#0C8CE9] rounded-lg text-[10px] sm:text-xs font-bold text-white hover:bg-[#0a70bb] transition-all">
                 Nouvelle Formation
               </button>
             </div>
           </div>
 
           {/* Cartes de Statistiques Ultra-Clean */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             {stats.map((stat, i) => (
-              <div key={i} className="flex flex-col gap-4 p-6 border border-gray-200 rounded-3xl group hover:border-gray-300 transition-colors">
+              <div key={i} className="flex flex-col gap-2 sm:gap-4 p-4 sm:p-6 border border-gray-200 rounded-2xl sm:rounded-3xl group hover:border-gray-300 transition-colors">
                 <div className="flex items-center justify-between">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-gray-50 ${stat.color}`}>
-                    <stat.icon size={18} />
+                  <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-gray-50 ${stat.color}`}>
+                    <stat.icon size={16} />
                   </div>
-                  <span className={`text-[10px] font-black px-2 py-1 rounded-md ${stat.isPositive ? 'bg-emerald-50 text-emerald-500' : 'bg-rose-50 text-rose-500'}`}>
+                  <span className={`text-[9px] sm:text-[10px] font-black px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md ${stat.isPositive ? 'bg-emerald-50 text-emerald-500' : 'bg-rose-50 text-rose-500'}`}>
                     {stat.growth}
                   </span>
                 </div>
                 <div>
-                  <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1">{stat.label}</p>
-                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                  <p className="text-[9px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-0.5 sm:mb-1">{stat.label}</p>
+                  <p className="text-lg sm:text-2xl font-bold text-gray-900">{stat.value}</p>
                 </div>
               </div>
             ))}
@@ -202,9 +202,9 @@ export function AdminDashboardPage() {
           {/* Section Graphiques et Details */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Ligne de tendance */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-2 space-y-4 sm:space-y-6">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">Volume de revenus</h3>
+                <h3 className="text-xs sm:text-sm font-bold text-gray-800 uppercase tracking-wider">Volume de revenus</h3>
               </div>
               <div className="h-64 w-full border border-gray-200 rounded-2xl p-4">
                 <Chart 

@@ -6,7 +6,8 @@ import {
   FaEllipsisV, FaCheckCircle, FaExclamationCircle, FaTimesCircle, FaImage, 
   FaClock, FaMinusCircle, FaSort, FaSortUp, FaSortDown,
   FaPlayCircle, FaUsers, FaStar, FaRegClock, FaRegStar, 
-  FaBookOpen, FaGlobeAfrica, FaChevronDown, FaChevronUp, FaFileAlt
+  FaBookOpen, FaGlobeAfrica, FaChevronDown, FaChevronUp, FaFileAlt,
+  FaChevronLeft, FaChevronRight
 } from 'react-icons/fa';
 import { FiBookOpen, FiBarChart2, FiCalendar } from 'react-icons/fi';
 
@@ -216,10 +217,10 @@ export function AdminAchatPage() {
         onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)} 
       />
 
-      <div className={`flex-1 flex flex-col transition-all duration-300 ${isSidebarCollapsed ? 'pl-20' : 'pl-72'}`}>
+      <div className={`flex-1 min-w-0 flex flex-col transition-all duration-300 ${isSidebarCollapsed ? 'lg:pl-20' : 'lg:pl-72'}`}>
         <AdminHeaderPage />
 
-        <main className="p-8 space-y-6 overflow-y-auto">
+        <main className="p-4 sm:p-8 pb-20 lg:pb-8 space-y-6 overflow-y-auto">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h1 className="text-xl font-black text-gray-800 tracking-tight text-gray-700">Gestion des Achats</h1>
@@ -413,16 +414,17 @@ export function AdminAchatPage() {
               </table>
             </div>
             
-            <div className="p-5 border-t border-gray-100 flex items-center justify-between text-[10px] font-black text-gray-400 uppercase tracking-widest bg-white">
+            <div className="p-4 sm:p-5 border-t border-gray-100 flex items-center justify-between text-[10px] font-black text-gray-400 uppercase tracking-widest bg-white">
                 <span>Page {currentPage} sur {totalPages} ({processedAchats.length} transactions)</span>
                 
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5 sm:gap-1">
                    <button 
                       onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                       disabled={currentPage === 1}
-                      className={`px-3 py-1.5 border border-gray-100 rounded-lg transition-colors ${currentPage === 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gray-50'}`}
+                      className={`px-2 sm:px-3 py-1.5 border border-gray-100 rounded-lg transition-colors flex items-center gap-1 ${currentPage === 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gray-50'}`}
                    >
-                     Précédent
+                     <FaChevronLeft size={10} />
+                     <span className="hidden sm:inline">Précédent</span>
                    </button>
 
                    {/* Boutons Numériques */}
@@ -430,7 +432,7 @@ export function AdminAchatPage() {
                       <button
                         key={i}
                         onClick={() => setCurrentPage(i + 1)}
-                        className={`w-8 h-8 flex items-center justify-center rounded-lg border transition-all ${
+                        className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg border transition-all ${
                           currentPage === i + 1 
                           ? 'bg-[#0C8CE9] border-[#0C8CE9] text-white shadow-sm' 
                           : 'border-gray-100 text-gray-400 hover:border-gray-200 hover:bg-gray-50'
@@ -443,9 +445,10 @@ export function AdminAchatPage() {
                    <button 
                       onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                       disabled={currentPage === totalPages || totalPages === 0}
-                      className={`px-3 py-1.5 border border-gray-100 rounded-lg transition-colors ${currentPage === totalPages || totalPages === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gray-50'}`}
+                      className={`px-2 sm:px-3 py-1.5 border border-gray-100 rounded-lg transition-colors flex items-center gap-1 ${currentPage === totalPages || totalPages === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gray-50'}`}
                    >
-                     Suivant
+                     <span className="hidden sm:inline">Suivant</span>
+                     <FaChevronRight size={10} />
                    </button>
                 </div>
             </div>

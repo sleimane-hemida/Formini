@@ -19,7 +19,7 @@ export function AdminHeaderPage({ searchTerm, onSearchChange }) {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
 
   return (
-    <header className="h-17 bg-white border-b border-gray-100 flex items-center justify-between px-8 sticky top-0 z-50">
+    <header className="h-14 sm:h-17 bg-white border-b border-gray-100 flex items-center justify-between px-4 sm:px-8 sticky top-0 z-50">
       {/* Search Section */}
       <div className="flex-1 max-w-xl">
         <div className="relative group">
@@ -55,8 +55,8 @@ export function AdminHeaderPage({ searchTerm, onSearchChange }) {
               <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-rose-500 border-2 border-white rounded-full"></div>
             </div>
             
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-bold text-gray-700">Notifications</span>
+            <div className="flex items-center gap-1 sm:gap-2">
+              <span className="hidden sm:inline text-sm font-bold text-gray-700">Notifications</span>
               <FaChevronDown size={12} className={`text-gray-400 transition-transform duration-200 ${isNotifOpen ? 'rotate-180' : ''}`} />
             </div>
           </button>

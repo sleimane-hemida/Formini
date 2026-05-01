@@ -161,13 +161,13 @@ export default function FormateurFormationsAdmin({ formateurId }) {
         onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)} 
       />
 
-      <div className={`flex-1 flex flex-col transition-all duration-300 ${isSidebarCollapsed ? 'pl-20' : 'pl-72'}`}>
+      <div className={`flex-1 min-w-0 flex flex-col transition-all duration-300 ${isSidebarCollapsed ? 'lg:pl-20' : 'lg:pl-72'}`}>
         <AdminHeaderPage 
           searchTerm={searchTerm} 
           onSearchChange={setSearchTerm} 
         />
 
-        <main className="p-8 space-y-6 overflow-y-auto">
+        <main className="p-4 sm:p-8 pb-20 lg:pb-8 space-y-6 overflow-y-auto">
           {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
