@@ -43,7 +43,7 @@ export default function NewFormation() {
 
   // Récupérer les catégories au montage du composant
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories')
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`)
       .then(res => res.json())
       .then(data => {
         setCategories(data);
@@ -66,7 +66,7 @@ export default function NewFormation() {
       return;
     }
     
-    fetch(`${ process.env.NEXT_PUBLIC_API_URL } / api / subcategories ? categoryId = ${ form.categoryId }`)
+    fetch(`${ process.env.NEXT_PUBLIC_API_URL }/api/subcategories?categoryId=${form.categoryId}`)
       .then(res => res.json())
       .then(data => {
         setSubcategories(data);
@@ -139,7 +139,7 @@ export default function NewFormation() {
         price: form.price || null
       };
 
-      const res = await fetch(`${ process.env.NEXT_PUBLIC_API_URL } / api / formations', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/formations`, {
         method: 'POST',
       headers: {
       'Content-Type': 'application/json',

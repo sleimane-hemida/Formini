@@ -62,7 +62,7 @@ export default function LeconPage() {
 
 		try {
 			const nextOrder = lessons.length + 1;
-			const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons', {
+			const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -135,7 +135,7 @@ export default function LeconPage() {
 				formData.append('file', file);
 				formData.append('lessonId', lessonId);
 				
-				const response = await fetch(`${ process.env.NEXT_PUBLIC_API_URL } /api/lesson - cover', {
+				const response = await fetch(`${ process.env.NEXT_PUBLIC_API_URL }/api/lesson-cover`, {
 		method: 'POST',
 			headers: {
 			'Authorization': `Bearer ${token}`

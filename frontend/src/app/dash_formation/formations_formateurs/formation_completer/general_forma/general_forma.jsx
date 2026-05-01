@@ -41,8 +41,8 @@ export default function GeneralForma() {
 	// Récupérer les catégories et sous-catégories au montage
 	useEffect(() => {
 		Promise.all([
-			fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories').then(res => res.json()),
-			fetch(`${ process.env.NEXT_PUBLIC_API_URL } / api / subcategories').then(res => res.json())
+			fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`).then(res => res.json()),
+			fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/subcategories`).then(res => res.json())
 		])
 			.then(([cats, subcats]) => {
 				setCategories(cats || []);

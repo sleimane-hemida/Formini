@@ -566,8 +566,8 @@ export default function ContenueLecon() {
 		xhr.onerror = () => onError('Erreur réseau');
 		xhr.ontimeout = () => onError('Timeout — fichier trop lourd ou connexion trop lente');
 
-		xhr.open('POST', `${process.env.NEXT_PUBLIC_API_URL}/api/resources');
-		xhr.setRequestHeader('Authorization', `Bearer ${ token }`);
+		xhr.open('POST', `${process.env.NEXT_PUBLIC_API_URL}/api/resources`);
+		xhr.setRequestHeader('Authorization', `Bearer ${token}`);
 		xhr.send(formData);
 	};
 

@@ -24,7 +24,7 @@ export default function MesFormations() {
                     return;
                 }
 
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/my-formations', {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/my-formations`, {
                     headers: {
                         'Authorization': `Bearer ${ token }`
                     }

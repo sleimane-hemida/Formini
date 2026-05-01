@@ -145,7 +145,7 @@ export default function ModuleLecon() {
 
     try {
       const moduleIndex = modules.length + 1;
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modules', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modules`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -198,7 +198,7 @@ export default function ModuleLecon() {
       for (const mod of modules) {
         if (!mod.id) {
           // Create new module
-          const res = await fetch(`${ process.env.NEXT_PUBLIC_API_URL } / api / modules', {
+          const res = await fetch(`${ process.env.NEXT_PUBLIC_API_URL}/api/modules`, {
             method: 'POST',
         headers: {
         'Content-Type': 'application/json',

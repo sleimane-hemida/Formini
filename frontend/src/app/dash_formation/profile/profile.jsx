@@ -53,7 +53,7 @@ export default function Profile() {
 				const token = localStorage.getItem('token');
 				if (!token) return;
 
-				const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/profile', {
+				const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/profile`, {
 					headers: { 'Authorization': `Bearer ${ token }` }
 				});
 
@@ -63,7 +63,7 @@ export default function Profile() {
 				setUser(userData);
 
 				if (userData.avatar) {
-					setProfileImage(`${ process.env.NEXT_PUBLIC_API_URL }${ userData.avatar }`);
+					setProfileImage(`${ process.env.NEXT_PUBLIC_API_URL}${userData.avatar}`);
 				}
 
 				setFormData({
@@ -99,7 +99,7 @@ export default function Profile() {
 				const formDataUpload = new FormData();
 				formDataUpload.append('avatar', file);
 
-				const response = await fetch(`${ process.env.NEXT_PUBLIC_API_URL } / api / user / avatar', {
+				const response = await fetch(`${ process.env.NEXT_PUBLIC_API_URL}/api/user/avatar`, {
 					method: 'POST',
 					headers: { 'Authorization': `Bearer ${token}` },
 					body: formDataUpload
@@ -126,7 +126,7 @@ const handleSave = async () => {
 		const token = localStorage.getItem('token');
 		if (!token) throw new Error('Non authentifié');
 
-		const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/profile', {
+		const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/profile`, {
 				method: 'PUT',
 				headers: {
 					'Authorization': `Bearer ${ token }`,
