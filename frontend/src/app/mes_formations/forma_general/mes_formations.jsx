@@ -4,6 +4,7 @@ import { HiBookOpen, HiMagnifyingGlass } from 'react-icons/hi2';
 import { useRouter } from 'next/navigation';
 import Header from '../../../composant/layout/header';
 import { CardLarge } from '../../pages_common/card';
+//
 import { getIconForCategory } from '@/utils/categoryIcons';
 
 export default function MesFormations() {
